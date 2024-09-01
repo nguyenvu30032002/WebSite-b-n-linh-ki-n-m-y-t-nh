@@ -34,7 +34,6 @@ export const WrapperIntroduce = styled.div`
     margin: 0 0 20px 0;
     & p{
         width: 180px;
-        display: block;
         margin: 10px 0 0 30px;
         float: left;
         cursor: pointer;    
@@ -43,35 +42,67 @@ export const WrapperIntroduce = styled.div`
     & div:last-child{
         margin-top: -10px;
     } 
-    /* & h4{
-        margin-bottom: 5px;
-    } */
 `
 
 export const WrapperList = styled.div`
-    background-color: red;
+     margin: 0 0 0 15px;
+     width: 200px;
+     height: 110px;
+    & ul{
+
+        list-style: none;
+    }
+
+    & a{
+        text-decoration: none;
+        float: left;
+        margin: 5px 0 0 0;
+        color: black;
+    }
+    & a:hover{
+        color: #1677ff;
+    }
 `
 
 export const WrapperConnect = styled.div`
     width: 200px;
     height: 100%;
     margin: 0 0 20px 0;
-    & p{
-        margin: 5px 0 0 -120px;
-        cursor: pointer;    
-        
-    }
-    :nth-child(2){
-        margin-top: -10px;
-    }
-    
-    & h4{
-        margin-bottom: 5px;
-    }
+    & ul{
+        display: block;
+        list-style: none;
+        margin: 5px;
+        & div{
+            display: flex;
+            margin: 3px 15px 0 0 ;
+            & p{
+                margin: 3px 15px 0 0 ;
+            }
+        }
+        & a{
+           
+            overflow: hidden; /* Ẩn nội dung vượt quá chiều rộng */
+            white-space: nowrap; /* Ngăn chặn xuống dòng */
+            text-overflow: ellipsis; /* Hiển thị dấu ba chấm khi văn bản bị cắt */
+        }
+
+        & a:hover{
+           
+          color: #1677ff ;
+       }
+    } 
+`
+export const WrapperListConnect = styled.div`
+    margin: -10px 0 0 -35px ;
 `
 
 
 export const WrapperMap = styled.div`
     width: 200px;
     height: 100%;
+    & iframe{
+        width: 200px;
+        height: 100px;
+        margin: -10px 0 0 0 ;
+    }
 `
