@@ -30,10 +30,11 @@ export const WrapperIcon = styled(FontAwesomeIcon)`
 export const WrapperList = styled.div`
     width: 95%;
      margin: 0 5px;
+     
     & ul{
         list-style-type: none;
         & li{
-           width: 150px;
+           width: 120px;
            position: relative;
            display: flex;
            margin: 25px 10px;
@@ -43,11 +44,13 @@ export const WrapperList = styled.div`
            right: 0;
            font-weight: 400;
            text-transform: uppercase;
-           overflow: hidden; /* Ẩn nội dung vượt quá chiều rộng */
-           white-space: nowrap; /* Ngăn chặn xuống dòng */
-           text-overflow: ellipsis; /* Hiển thị dấu ba chấm khi văn bản bị cắt */
            &:hover ${WrapperIcon} {
                 display: inline; 
+            }
+            & span {
+                overflow: hidden; /* Ẩn nội dung vượt quá chiều rộng */
+                white-space: nowrap; /* Ngăn chặn xuống dòng */
+                text-overflow: ellipsis; /* Hiển thị dấu ba chấm khi văn bản bị cắt */
             }
         }
         & li:hover{

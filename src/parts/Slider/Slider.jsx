@@ -35,7 +35,7 @@ const AnimatedImage = () => {
         >
           {images.concat(images).map((img, index) => (
             <WrapperImage key={index}>
-              <Image src={img} alt={`example-${index}`} preview={true} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <Image src={img} alt={`example-${index}`} preview={false} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </WrapperImage>
           ))}
         </animated.div>

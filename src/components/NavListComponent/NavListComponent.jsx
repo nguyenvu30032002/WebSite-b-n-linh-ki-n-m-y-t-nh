@@ -17,11 +17,11 @@ const NavListComponent = () => {
         </WrapperCategories>
       <WrapperList>
         <ul>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> afsddnsfssfsdfosdoiifjdjfoijofssdfssdf</li>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> Rtx</li>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> Ban phim</li>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> tan nhiet</li>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> man hinh</li>
+              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>afsddnsfssfsdfosdoiifjdjfoijofssdfssdf</span></li>
+              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>Rtx</span></li>
+              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>Ban phim</span></li>
+              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>tan nhiet</span></li>
+              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>man hinh</span></li>
           </ul>
       </WrapperList>
     </Wrapper>

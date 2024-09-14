@@ -3,9 +3,10 @@ import logo from '../../assets/images/logo/logo-asus-inkythuatso-2-01-26-09-21-1
 import { WrapperLogo } from './style'
 
 const LogoComponent = () => {
+  
   return (
     <div>
-        <a href="h"><WrapperLogo src={logo} alt='logo'/></a>
+        <a href="/"><WrapperLogo src={logo} alt='logo'/></a>
     </div>
   )
 }

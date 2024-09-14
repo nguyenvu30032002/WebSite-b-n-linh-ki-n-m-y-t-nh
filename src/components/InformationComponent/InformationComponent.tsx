@@ -3,26 +3,35 @@ import logo from '../../assets/images/avatar/logo192.png'
 import type { MenuProps } from 'antd';
 import { Button, Dropdown, Space } from 'antd';
 import { WrapperInformantion, WrapperInformantionImg } from './style';
+import { useNavigate } from 'react-router-dom';
 
-const items: MenuProps['items'] = [
+const InformationComponent = () => {
+  const navigate = useNavigate();
+
+  const items: MenuProps['items'] = [
     {
-      label: <>Information</>,
+      label: <>Thông tin tài khoản</>,
       key: '0',
+      onClick: () => navigate('/information'),
     },
     {
-      label: <>Order</>,
+      label: <>Đơn hàng</>,
       key: '1',
+      
     },
     {
-      type: 'divider',
+      label: <>Đổi mật khẩu</>,
+      key: '2',
+      
     },
+    // {
+    //   type: 'divider',
+    // },
     {
-      label: 'Logout',
+      label: 'Đăng xuất',
       key: '3',
     },
   ];
-
-const InformationComponent = () => {
     
   return (
     <WrapperInformantion>

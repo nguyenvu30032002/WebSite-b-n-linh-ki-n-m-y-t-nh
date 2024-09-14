@@ -2,6 +2,8 @@ import styled from "styled-components";
 import LogoComponent from "../../components/LogoComponent/LogoComponent";
 
 export const Wrapper =  styled.div`
+    width: 1535px; // Chiếm toàn bộ chiều rộng của container cha
+    margin: 0 auto; // Căn giữa theo chiều ngang
     height: 160px;
     background-color: #f5f5f5;
     display: flex;
@@ -74,9 +76,9 @@ export const WrapperConnect = styled.div`
         margin: 5px;
         & div{
             display: flex;
-            margin: 3px 15px 0 0 ;
+            margin: 3px 20px 0 0 ;
             & p{
-                margin: 3px 15px 0 0 ;
+                margin: 3px 20px 0 0 ;
             }
         }
         & a{
@@ -84,6 +86,7 @@ export const WrapperConnect = styled.div`
             overflow: hidden; /* Ẩn nội dung vượt quá chiều rộng */
             white-space: nowrap; /* Ngăn chặn xuống dòng */
             text-overflow: ellipsis; /* Hiển thị dấu ba chấm khi văn bản bị cắt */
+            text-decoration: none;
         }
 
         & a:hover{
