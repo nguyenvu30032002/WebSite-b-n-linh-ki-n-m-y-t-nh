@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-background-color: #e8e8e8;
+  background-color: #e8e8e8;
   display: inline-block;
   align-items: center;
   justify-content: center;
