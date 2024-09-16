@@ -32,7 +32,7 @@ export const WrapperBody = styled.div`
 `
 
 export const WrapperNav = styled.div`
-    width: 300px;
+    width: 250px;
     height: 100%;
     border-right: 1px solid silver ;
 
@@ -42,7 +42,7 @@ export const WrapperButton = styled(Button)`
 `
 
 export const Wrappertable = styled.div`
-    width: 850px;
+    width: 80%;
     height: 100%;
     margin: 0 auto;
 `
@@ -53,9 +53,5 @@ export const WrapperH1 = styled.h1`
 export const WrapperOrder = styled.div`
   width: 100%;
   height: 85%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-y: scroll;
-
+  overflow-y: auto;
 `

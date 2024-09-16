@@ -1,45 +1,51 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-    width: 700px;
-    height: 50px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    /* justify-content: space-evenly; */
     & .product{
-        width: 100%;
-        height: 100%;
+        width: 250px;
+        height: 350px;
+        border: 1px solid #000;
+        border-radius: 10px;
         display: flex;
-        margin: 10px 0 30px 0;
-        & .orderNumber{
-            margin: 15px 30px 15px 0;
-            font-size: 17px;
-            font-weight: 500;
-        }
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 10px 20px 10px 20px;
     }
 ` 
 export const WrapperInformation = styled.div`
-    width: 100%;
-    height: 100%;
+    width: 90%;
+    height: 90%;
     background-color: white;
     display: flex;
-    justify-content: space-evenly;
+    flex-direction: column;
     align-items: center;
-    border: 1px solid silver; 
-    
+    border: none;
     & .imgProduct{
-        width: 30px;
-        height: 30px;
-        border: 1px solid silver; 
+        width: 90%;
+        height: 150px;
+        border: none;
         & img{
-            width: 30px;
-            height: 30px;
+            width: 90%;
+            height: 150px;
             object-fit: contain;
+            border: none;
         }
     }
     & .nameProduct{
-        width: 120px;
-        height: 50px;   
+        width: 90%;
+        height: 30px;   
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 10px 0 10px 0;
         & p{
             overflow: hidden;
             white-space: nowrap;
@@ -49,24 +55,95 @@ export const WrapperInformation = styled.div`
         }
     }
     & .amountProduct{
-        width: 120px;
-        height: 50px;
+        width: 90%;
+        height: 30px;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
+        align-items: center;
         font-weight: 500;
-        & p:not(:first-child){
-            font-weight: 400;
+        & .quantityProduct{
+            width: 50%;
+            height: 100%;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            white-space: nowrap;
+            border-right: 1px solid silver;
+            & p:not(:first-child){
+                font-weight: 400;
+                margin-left: 5px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
         }
+        & .originProduct{
+            width: 50%;
+            height: 100%;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            border-left: 1px solid silver;
+            padding-left: 5px;
+            & p:not(:first-child){
+                font-weight: 400;
+                margin-left: 5px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+        }
+        }
+        
     }
 
     & .totalMoney{
-        width: 250px;
-        height: 50px;
+        width: 90%;
+        height: 30px;
         display: flex;
-        justify-content: space-evenly;
+        justify-content: center;
+        align-items: center;
         font-weight: 500;
-        & p:not(:first-child){
+        margin: 10px 0 10px 0;
+        white-space: nowrap;
+        & p:nth-child(2) {
             font-weight: 400;
+            margin-left: 10px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
     }
+
+    & .condition{
+        width: 90%;
+        height: 30px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        font-weight: 500;
+        margin-right: 10px;
+        & p:not(:first-child){
+            font-weight: 400;
+            margin-left: 10px;
+        }
+    }
+`
+
+export const WrapperSelect = styled.div`
+   display: flex;
+   width: 100%;
+   height: 32px;
+   justify-content: space-evenly;
+   align-items: center;
+   border-top: 1px solid silver;
+   & button{
+    background-color: #fff;
+    border: 1px solid silver;
+    border-radius: 10px;
+
+   }
 `

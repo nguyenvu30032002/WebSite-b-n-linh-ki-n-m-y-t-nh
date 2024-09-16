@@ -15,38 +15,31 @@ const Order = () => {
           label: 'Chờ xác nhận',
           key: '1',
           icon: <FontAwesomeIcon icon={faHourglassHalf} />,
-          onclick: () => setSelectedOrderStatus('Chờ xác nhận'),
+          onClick: () => setSelectedOrderStatus('Chờ xác nhận'),
         },
         {
           label: 'Đã giao',
           key: '2',
           icon: <FontAwesomeIcon icon={faTruck} />,
-          onclick: () => setSelectedOrderStatus('Đã giao')
+          onClick: () => setSelectedOrderStatus('Đã giao')
         },
         {
           label: 'Đã nhận',
           key: '3',
           icon: <FontAwesomeIcon icon={faCheck} />,
-          onclick: () => setSelectedOrderStatus('Đã nhận')
+          onClick: () => setSelectedOrderStatus('Đã nhận')
         },
         {
           label: 'Đã hủy',
           key: '4',
           icon: <FontAwesomeIcon icon={faXmark} />,
-          onclick: () => setSelectedOrderStatus('Đã hủy')
+          onClick: () => setSelectedOrderStatus('Đã hủy')
         },
         
       ];
     const menuProps = {
         items,
       };
-
-      // const ordersData = {
-      //   'Chờ xác nhận': ['Order #123', 'Order #124', 'Order #125'],
-      //   'Đã giao': ['Order #111', 'Order #112'],
-      //   'Đã hủy': ['Order #101', 'Order #102'],
-      // };
-
   return (
     <Wrapper>
         <WrapperHeader>
@@ -66,7 +59,7 @@ const Order = () => {
             <Wrappertable>
                 <WrapperH1>{selectedOrderStatus}</WrapperH1>
                 <WrapperOrder>           
-                   <OrderComponent/>
+                   <OrderComponent selectedOrderStatus={selectedOrderStatus}/>
                 </WrapperOrder>
             </Wrappertable>
         </WrapperBody>
