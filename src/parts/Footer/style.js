@@ -2,7 +2,7 @@ import styled from "styled-components";
 import LogoComponent from "../../components/LogoComponent/LogoComponent";
 
 export const Wrapper =  styled.div`
-    width: 1535px; // Chiếm toàn bộ chiều rộng của container cha
+    width: 1500px; // Chiếm toàn bộ chiều rộng của container cha
     margin: 0 auto; // Căn giữa theo chiều ngang
     height: 160px;
     background-color: #f5f5f5;

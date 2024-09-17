@@ -6,13 +6,13 @@ export const Wrapper = styled.div`
   display: inline-block;
   align-items: center;
   justify-content: center;
-  width: 1535px; // Chiếm toàn bộ chiều rộng của container cha
+  width: 1500px; // Chiếm toàn bộ chiều rộng của container cha
   margin: 0 auto; // Căn giữa theo chiều ngang
 
 `
 
 export const WrapperHeader = styled.div`
-  width: 1535px; // Chiếm toàn bộ chiều rộng của container cha
+  width: 1500px; // Chiếm toàn bộ chiều rộng của container cha
   margin: 0 auto; // Căn giữa theo chiều ngang
   display: flex;
   justify-content: center;
@@ -29,12 +29,14 @@ export const WrapperBody = styled.div`
     margin: 0 auto; // Căn giữa theo chiều ngang
     border-left: 1px solid black;
     border-right: 1px solid black;
+
 `
 
 export const WrapperNav = styled.div`
     width: 250px;
-    height: 100%;
+    height: 585px;
     border-right: 1px solid silver ;
+    margin: 64px 0 0 0;
 
 `
 export const WrapperButton = styled(Button)`

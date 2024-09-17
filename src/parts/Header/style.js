@@ -6,5 +6,6 @@ export const WapperHeader = styled.div`
     justify-content: space-between;
     align-items: center;
     text-align: center;
-    width: 1230px;
+    width: 1500px;
+    margin: 0 135px 0 135px;
 `

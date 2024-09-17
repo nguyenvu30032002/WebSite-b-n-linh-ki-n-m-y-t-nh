@@ -3,6 +3,7 @@ import { DatePicker, Radio } from 'antd';
 import { Wrapper, WrapperAvatar, WrapperBody, WrapperHeader, WrapperInformation} from './style'
 import Header from "../../parts/Header/Header";
 import { useNavigate } from 'react-router-dom';
+import Footer from '../../parts/Footer/Footer';
 const Information = () => {
   const onDate = (name,dateString) => {
     console.log(name);
@@ -105,6 +106,7 @@ const Information = () => {
             </>
           </WrapperInformation>
        </WrapperBody>
+       <Footer/>
     </Wrapper>
   )
 }

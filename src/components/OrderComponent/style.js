@@ -4,9 +4,8 @@ export const Wrapper = styled.div`
     width: 100%;
     height: 100%;
     display: grid;
-    gap: 20px;
+    gap: 25px;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    /* justify-content: space-evenly; */
     & .product{
         width: 250px;
         height: 350px;
@@ -147,3 +146,5 @@ export const WrapperSelect = styled.div`
 
    }
 `
+
+

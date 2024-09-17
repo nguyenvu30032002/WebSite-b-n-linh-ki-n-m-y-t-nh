@@ -6,6 +6,8 @@ import { Dropdown, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faHourglassHalf, faTruck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import OrderComponent from '../../components/OrderComponent/OrderComponent';
+import Footer from '../../parts/Footer/Footer';
+
 
 
 const Order = () => {
@@ -63,6 +65,7 @@ const Order = () => {
                 </WrapperOrder>
             </Wrappertable>
         </WrapperBody>
+        <Footer/>
     </Wrapper>
   )
 }

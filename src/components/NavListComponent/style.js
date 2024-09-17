@@ -29,7 +29,7 @@ export const WrapperIcon = styled(FontAwesomeIcon)`
 
 export const WrapperList = styled.div`
     width: 95%;
-     margin: 0 5px;
+    margin: 0 5px;
      
     & ul{
         list-style-type: none;

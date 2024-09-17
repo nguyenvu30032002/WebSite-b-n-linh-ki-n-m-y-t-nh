@@ -18,7 +18,7 @@ const InformationComponent = () => {
     {
       label: <>Đổi mật khẩu</>,
       key: '3',
-      
+      onClick: () => navigate('/changePassword')
     },
     // {
     //   type: 'divider',
