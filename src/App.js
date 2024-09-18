@@ -6,6 +6,7 @@ import Information from './pages/Information/Information';
 import Order from './pages/Order/Order';
 import Administrator from './pages/Administrator/Administrator';
 import ChangPassword from './pages/ChangePassword/ChangPassword';
+import Product from './pages/Product/Product';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path='/order' element={<Order/>}/>
           <Route path='/administrator' element={<Administrator/>}/>
           <Route path='/changePassword' element={<ChangPassword/>}/>
+          <Route path='/product/id/:id/name/:name' element={<Product/>}/>
         </Routes>
       </BrowserRouter>
     </div>

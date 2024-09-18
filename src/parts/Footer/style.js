@@ -87,6 +87,7 @@ export const WrapperConnect = styled.div`
             white-space: nowrap; /* Ngăn chặn xuống dòng */
             text-overflow: ellipsis; /* Hiển thị dấu ba chấm khi văn bản bị cắt */
             text-decoration: none;
+            color: #551A8B;
         }
 
         & a:hover{

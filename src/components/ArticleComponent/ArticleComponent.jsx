@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Product, Wrapper, WrapperCondition, WrapperOrigin, WrapperPaginate, WrapperPrice, WrapperProduct } from './style';
+import { Product, ProductOutOfStock, Wrapper, WrapperCondition, WrapperConditionOutOfStock, WrapperOrigin, WrapperOriginOutOfStock, WrapperPaginate, WrapperPrice, WrapperPriceOutOfStock, WrapperProduct } from './style';
 import img from '../../assets/images/Product/man-hinh-gaming-asus-vy249hf-24-inch_2.webp';
 import { Pagination } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const ArticleComponent = () => {
   // Danh sách 10 sản phẩm mẫu
   const products = [
-    { id: 1, name: 'Màn hình Gaming ASUS VY249HF-R 24 inch', origin: 'USA', brand: 'Asus', newPrice: '999.999.999', oldPrice: '1.199.999.999', sold: '100+', inventory: '0' },
-    { id: 2, name: 'Laptop Gaming ASUS TUF A15', origin: 'USA', brand: 'Asus', newPrice: '29.999.999', oldPrice: '32.999.999', sold: '200+', inventory: '50+' },
+    { id: 1, name: 'Màn hình Gaming ASUS VY249HF-R 24 inch', origin: 'USA', brand: 'Asus', newPrice: '999.999.999', oldPrice: '1.199.999.999', sold: '100+', inventory: '0', img: img, },
+    { id: 2, name: 'Laptop Gaming ASUS TUF A15', origin: 'USA', brand: 'Asus', newPrice: '29.999.999', oldPrice: '32.999.999', sold: '200+', inventory: '50+', img: img,  },
     { id: 3, name: 'Chuột Gaming Logitech G102', origin: 'China', brand: 'Logitech', newPrice: '499.000', oldPrice: '599.000', sold: '300+', inventory: '200+' },
     { id: 4, name: 'Bàn phím cơ Corsair K70 RGB', origin: 'USA', brand: 'Corsair', newPrice: '2.999.000', oldPrice: '3.499.000', sold: '150+', inventory: '75+' },
     { id: 5, name: 'Tai nghe SteelSeries Arctis 7', origin: 'USA', brand: 'SteelSeries', newPrice: '3.999.000', oldPrice: '4.299.000', sold: '120+', inventory: '60+' },
@@ -31,42 +32,81 @@ const ArticleComponent = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+  const navigate = useNavigate();
+  const handleClick = (product) => {
+    navigate(`/product/id/${product.id}/name/${encodeURIComponent(product.name)}`, { state: { product } });
+  }
 
   return (
     <Wrapper>
       <WrapperProduct>
         {currentItems.map(product => (
-          <Product key={product.id}>
-            <p className='discountProduct'>-5%</p>
-            <img src={img} alt={product.name} />
-            <p className='nameProduct'>{product.name}</p>
-            <WrapperOrigin>
-              <p>{product.origin}</p>
-              <p>{product.brand}</p>
-            </WrapperOrigin>
-            <WrapperPrice>
-              <div className='newPrice'>
-                <p>{product.newPrice}</p>
-                <p>đ</p>
-              </div>
-
-              <div className='oldPrice'>
-                <p>{product.oldPrice}</p>
-                <p>đ</p>
-              </div>
-            </WrapperPrice>
-
-            <WrapperCondition>
-              <div className="soldProduct">
-                <p>Đã bán:</p>
-                <p>{product.sold}</p>
-              </div>
-              <div className="inventoryProduct">
-                <p>Kho:</p>
-                <p>{product.inventory}</p>
-              </div>
-            </WrapperCondition>
-          </Product>
+          product.inventory !== '0' ? (
+            <Product onClick={() => handleClick(product)} key={product.id}>
+              <p className='discountProduct'>-5%</p>
+              <img src={img} alt={product.name} />
+              <p className='nameProduct'>{product.name}</p>
+              <WrapperOrigin>
+                <p>{product.origin}</p>
+                <p>{product.brand}</p>
+              </WrapperOrigin>
+              <WrapperPrice>
+                <div className='newPrice'>
+                  <p>{product.newPrice}</p>
+                  <p>đ</p>
+                </div>
+        
+                <div className='oldPrice'>
+                  <p>{product.oldPrice}</p>
+                  <p>đ</p>
+                </div>
+              </WrapperPrice>
+        
+              <WrapperCondition>
+                <div className="soldProduct">
+                  <p>Đã bán:</p>
+                  <p>{product.sold}</p>
+                </div>
+                <div className="inventoryProduct">
+                  <p>Kho:</p>
+                  <p>{product.inventory}</p>
+                </div>
+              </WrapperCondition>
+            </Product>
+          ) : (
+            <ProductOutOfStock key={product.id}>
+              <p className='OutOfStock'>Hết hàng</p>
+              <p className='discountProduct'>-5%</p>
+              <img src={img} alt={product.name} />
+              <p className='nameProduct'>{product.name}</p>
+              <WrapperOriginOutOfStock>
+                <p>{product.origin}</p>
+                <p>{product.brand}</p>
+              </WrapperOriginOutOfStock>
+              <WrapperPriceOutOfStock>
+                <div className='newPrice'>
+                  <p>{product.newPrice}</p>
+                  <p>đ</p>
+                </div>
+        
+                <div className='oldPrice'>
+                  <p>{product.oldPrice}</p>
+                  <p>đ</p>
+                </div>
+              </WrapperPriceOutOfStock>
+        
+              <WrapperConditionOutOfStock>
+                <div className="soldProduct">
+                  <p>Đã bán:</p>
+                  <p>{product.sold}</p>
+                </div>
+                <div className="inventoryProduct">
+                  <p>Kho:</p>
+                  <p>{product.inventory}</p>
+                </div>
+              </WrapperConditionOutOfStock>
+            </ProductOutOfStock>
+          )
         ))}
       </WrapperProduct>
 

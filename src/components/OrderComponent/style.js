@@ -128,6 +128,7 @@ export const WrapperInformation = styled.div`
         & p:not(:first-child){
             font-weight: 400;
             margin-left: 10px;
+            color: #ee4d2d;
         }
     }
 `
