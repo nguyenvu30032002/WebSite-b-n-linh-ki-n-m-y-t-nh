@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { DatePicker, Radio } from 'antd';
+import { Button, DatePicker, Radio } from 'antd';
 import { Wrapper, WrapperAvatar, WrapperBody, WrapperHeader, WrapperInformation} from './style'
 import Header from "../../parts/Header/Header";
 import { useNavigate } from 'react-router-dom';
@@ -100,8 +100,8 @@ const Information = () => {
                 <input type="text" name='email' placeholder='Ha noi' />
               </div>
               <div className='button'>
-                <button type='submit'>Lưu thay đổi</button>
-                <button onClick={handleHome}> Quay lai</button>
+                <Button type="primary">Lưu thay đổi</Button>
+                <Button type="primary" onClick={handleHome}>Quay lai</Button>
               </div>
             </>
           </WrapperInformation>

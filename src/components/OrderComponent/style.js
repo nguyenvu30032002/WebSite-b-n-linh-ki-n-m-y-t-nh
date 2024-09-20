@@ -2,13 +2,13 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
     width: 100%;
-    height: 100%;
+    height: 67%;
     display: grid;
     gap: 25px;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     & .product{
         width: 250px;
-        height: 350px;
+        
         border: 1px solid #000;
         border-radius: 10px;
         display: flex;
@@ -26,6 +26,25 @@ export const WrapperInformation = styled.div`
     flex-direction: column;
     align-items: center;
     border: none;
+   
+    & .notesProduct{
+        width: 130px;
+        height: 20px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        background-color: red;
+        margin-top: 5px;
+        & p{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: green;
+        }
+    }
+
     & .imgProduct{
         width: 90%;
         height: 150px;
@@ -38,7 +57,7 @@ export const WrapperInformation = styled.div`
         }
     }
     & .nameProduct{
-        width: 90%;
+        width: 100%;
         height: 30px;   
         box-sizing: border-box;
         display: flex;
@@ -54,7 +73,7 @@ export const WrapperInformation = styled.div`
         }
     }
     & .amountProduct{
-        width: 90%;
+        width: 100%;
         height: 30px;
         display: flex;
         justify-content: space-between;
@@ -71,6 +90,7 @@ export const WrapperInformation = styled.div`
             & p:not(:first-child){
                 font-weight: 400;
                 margin-left: 5px;
+                margin-right: 5px;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
@@ -106,7 +126,7 @@ export const WrapperInformation = styled.div`
         justify-content: center;
         align-items: center;
         font-weight: 500;
-        margin: 10px 0 10px 0;
+        margin: 10px 0 5px 0;
         white-space: nowrap;
         & p:nth-child(2) {
             font-weight: 400;
@@ -118,13 +138,12 @@ export const WrapperInformation = styled.div`
     }
 
     & .condition{
-        width: 90%;
+        width: 100%;
         height: 30px;
         display: flex;
-        justify-content: end;
+        justify-content: center;
         align-items: center;
         font-weight: 500;
-        margin-right: 10px;
         & p:not(:first-child){
             font-weight: 400;
             margin-left: 10px;
@@ -144,6 +163,7 @@ export const WrapperSelect = styled.div`
     background-color: #fff;
     border: 1px solid silver;
     border-radius: 10px;
+    cursor: pointer;
 
    }
 `

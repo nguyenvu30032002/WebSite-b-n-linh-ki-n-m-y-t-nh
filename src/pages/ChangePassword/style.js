@@ -62,19 +62,13 @@ export const WrapperBody = styled.div`
       display: flex;
       justify-content: space-between;
       align-items: center;
-
       margin: 10px 0 0 0;
       & button{
         width: 120px;
-        height: 30px;
-        background-color: #1677ff;
-        border: 1px solid #ccc;
-        border-radius: 15px;
-        color: #fff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
+        height: 40px;
+        & div{
+          display: none;
+        }
       }
     }
    

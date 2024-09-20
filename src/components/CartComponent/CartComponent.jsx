@@ -8,7 +8,7 @@ const CartComponent = () => {
         <WrapperAmount>
           1
         </WrapperAmount>
-        <a href='h'><WapperCart icon={faCartShopping} /></a>
+        <a href='/cart'><WapperCart icon={faCartShopping} /></a>
         
     </div>
   )

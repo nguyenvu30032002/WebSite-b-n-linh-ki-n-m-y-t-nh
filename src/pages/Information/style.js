@@ -169,39 +169,11 @@ export const WrapperInformation = styled.div`
         align-items: center;
         
             & button{
-                background-color: #fff;
-                width: 150px;
-                height: 40px;
-                box-shadow: none;
-                border: 1px solid silver;
-                border-radius: 15px;
-                -webkit-box-shadow: -5px 5px 3px 1px rgba(0,0,0,0.58);
-                transition: all 1.0s ease;
-                position: relative; 
-                transform: translate(0, 0); /* Khởi tạo transform */
-                cursor: pointer;
-            }
-
-            button:focus {
-                background-color: #1677ff;
-                box-shadow: none;
-                -webkit-box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.58);
-                animation: moveBack 1.0s forwards; /* Thực hiện animation trong 0.5 giây */
-                transform: translate(-5px, 5px); /* Di chuyển vị trí khi focus */
-                border: 1px solid black;
-            }
-
-            @keyframes moveBack {
-                0% {
-                    transform: translate(-5px, 5px);/* Bắt đầu với vị trí đã di chuyển */
-                    
-                }
-                100% {
-                    transform: translate(0, 0); /* Quay lại vị trí ban đầu */
-                    -webkit-box-shadow: -5px 5px 3px 1px rgba(0,0,0,0.58);
-                    background-color: #fff;
-                    border: 1px solid silver    ;
-                }
+               width: 120px;
+               height: 40px;
+               & div{
+                display: none;
+               }
             }
         }
 `

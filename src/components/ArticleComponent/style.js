@@ -7,11 +7,28 @@ export const Wrapper = styled.div`
    
 `
 
+export const WrapperArrange = styled.div`
+    width: 100%;
+    height: 50px;
+    margin: 0 0 10px 0;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    & button{
+        margin: 0 10px 0 10px;
+    }
+    & Button.active {
+        background-color: #1890ff; /* Màu sắc khi nút được nhấn */
+        color: white;
+        border: 1px solid #1890ff;
+    }
+`
+
 export const WrapperProduct = styled.div`
     width: 100%;
     height: 95%;
     display: grid;
-    gap: 5px;
+    gap: 2px;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 `
 
@@ -25,7 +42,7 @@ export const Product = styled.div`
     margin-left: 40px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin: 0px 10px -10px 10px;
+    margin: 0px 10px 0px 10px;
     cursor: pointer;
     & .discountProduct{
         position: absolute;
@@ -159,6 +176,7 @@ export const WrapperPaginate = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: -40px 0 0 0 ;
 `
 
 ///////////////////////////////////

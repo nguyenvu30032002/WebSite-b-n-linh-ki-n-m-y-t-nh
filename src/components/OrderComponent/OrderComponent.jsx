@@ -4,16 +4,16 @@ import logo from "../../assets/images/avatar/logo192.png";
 
 const OrderComponent = ({ selectedOrderStatus }) => {
   const orders = [
-    { id: 1, name: 'Sản phẩm 1', quantity: 10, total: 1000000, status: 'Chờ xác nhận' },
-    { id: 2, name: 'Sản phẩm 2adiofsifsofijsdofjisdjfjsfijsidfjisjjopjfsfsdf', quantity: 5000000, total: 5000003453543455435353, status: 'Đã giao' },
-    { id: 3, name: 'Sản phẩm 3', quantity: 2, total: 200000, status: 'Đã nhận' },
-    { id: 4, name: 'Sản phẩm 4', quantity: 8, total: 800000, status: 'Đã hủy' },
-    { id: 5, name: 'Sản phẩm 5', quantity: 3, total: 300000, status: 'Chờ xác nhận' },
-    { id: 6, name: 'Sản phẩm 6', quantity: 1, total: 100000, status: 'Đã nhận' },
-    { id: 7, name: 'Sản phẩm 7', quantity: 6, total: 600000, status: 'Đã hủy' },
-    { id: 8, name: 'Sản phẩm 8', quantity: 6, total: 600000, status: 'Đã hủy' },
-    { id: 9, name: 'Sản phẩm 9', quantity: 6, total: 600000, status: 'Đã hủy' },
-    { id: 10    , name: 'Sản phẩm 10', quantity: 6, total: 600000, status: 'Đã hủy' },
+    { id: 1, name: 'Sản phẩm 1', quantity: 10, total: 1000000, status: 'Chờ xác nhận', notes: 'Đã thanh toán' },
+    { id: 2, name: 'Sản phẩm 2adiofsifsofijsdofjisdjfjsfijsidfjisjjopjfsfsdf', quantity: 100, total: 5000003453543455435353, status: 'Đã giao', notes: 'Chưa thanh toán' },
+    { id: 3, name: 'Sản phẩm 3', quantity: 2, total: 200000, status: 'Đã nhận', notes: 'Đã thanh toán' },
+    { id: 4, name: 'Sản phẩm 4', quantity: 8, total: 800000, status: 'Đã hủy', notes: 'Chưa thanh toán' },
+    { id: 5, name: 'Sản phẩm 5', quantity: 3, total: 300000, status: 'Chờ xác nhận', notes: 'Đã thanh toán' },
+    { id: 6, name: 'Sản phẩm 6', quantity: 99, total: 100000, status: 'Đã nhận', notes: 'Đã thanh toán' },
+    { id: 7, name: 'Sản phẩm 7', quantity: 6, total: 600000, status: 'Đã hủy', notes: 'Chưa thanh toán' },
+    { id: 8, name: 'Sản phẩm 8', quantity: 6, total: 600000, status: 'Đã hủy', notes: 'Chưa thanh toán' },
+    { id: 9, name: 'Sản phẩm 9', quantity: 6, total: 600000, status: 'Đã hủy', notes: 'Đã thanh toán' },
+    { id: 10, name: 'Sản phẩm 10', quantity: 60, total: 600000, status: 'Đã hủy', notes: 'Đã thanh toán' },
   ];
 
   // Lọc đơn hàng theo trạng thái đã chọn
@@ -43,13 +43,14 @@ const OrderComponent = ({ selectedOrderStatus }) => {
             </div>
             <div className='totalMoney'>
               <p>Thành giá:</p>
-              <p>{order.total}</p>
-              <p>VND</p>
+              <p>{(order.total).toLocaleString('vi-VN')} VND</p>
+            
             </div>
             <div className='condition'>
               <p>Trạng thái:</p>
-              <p>{order.status}</p>
+              <p>{order.notes}</p>
             </div> 
+            
           </WrapperInformation>
           {
             order.status !== 'Chờ xác nhận' && (

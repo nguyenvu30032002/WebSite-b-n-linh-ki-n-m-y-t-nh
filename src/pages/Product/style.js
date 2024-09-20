@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Carousel } from 'antd';
+import { Carousel, Modal } from 'antd';
 
 export const Wrapper = styled.div`
    width: 1500px; // Chiếm toàn bộ chiều rộng của container cha
@@ -233,5 +233,25 @@ export const WrapperOrder = styled.div`
 
     & button:focus {
         border-color: #ccc;
+    }
+`
+
+export const WrapperModal = styled(Modal)`
+    width: 800px !important;
+    height: 500px !important;
+    & .ant-modal-content{
+        width: 100%;
+        height: 100%;
+        & .Orders {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            margin: 30px 0 30px 0;
+            /* border: 1px solid #ccc; */
+            & img{
+            width: 50px;
+            height: 50px;
+            }
+        }
     }
 `
