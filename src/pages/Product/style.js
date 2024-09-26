@@ -253,5 +253,18 @@ export const WrapperModal = styled(Modal)`
             height: 50px;
             }
         }
+        & .information{
+            border-top: 1px solid #ccc ;
+            & div{
+                display: flex;
+               & .address{
+                margin: 0 0 0 100px;
+                & p:last-child{
+                    padding-left: 10px;
+                }
+               }
+            }
+        }
     }
+
 `

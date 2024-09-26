@@ -17,7 +17,7 @@ const Product = () => {
     const handlePlus = () =>{
         setAmount(() => amount + 1)
     }
-    const handleMius = () =>{
+    const handleMinus = () =>{
       setAmount(() => amount - 1)
     }
 /////////////////////////////////////////////////////////////////////////////
@@ -101,9 +101,9 @@ const Product = () => {
                           <p>Số lượng:</p>
                           {
                             amount > 1 ? (
-                              <button onClick={handleMius}><FontAwesomeIcon icon={faMinus} /></button>
+                              <button onClick={handleMinus}><FontAwesomeIcon icon={faMinus} /></button>
                             ) : (
-                              <button disabled onClick={handleMius}><FontAwesomeIcon icon={faMinus} /></button>
+                              <button disabled onClick={handleMinus}><FontAwesomeIcon icon={faMinus} /></button>
                             )
                           }
                           <div>{amount}</div>
@@ -141,7 +141,17 @@ const Product = () => {
                     <p>{product.variants}</p>
                   ) : null
                 }
-                <p>{(product.newPrice * amount).toLocaleString('vi-VN')} VND</p>
+                <p>{(product.newPrice * amount).toLocaleString('vi-VN')} đ</p>
+              </div>
+              <div className='information'>
+                <div>
+                  <p>Tới: NGUYEN ANH VU</p>
+                  <div className='address'>
+                    <p>Địa chỉ:</p>
+                    <p>Ha Noi</p>
+                  </div>
+                </div>
+                <p>Số điện thoại: 00124931493</p>
               </div>
               <Radio.Group onChange={handleRadioChange} value={value}>
                 <Radio value="Chưa thanh toán">Thanh toán bằng tiền mặt</Radio>

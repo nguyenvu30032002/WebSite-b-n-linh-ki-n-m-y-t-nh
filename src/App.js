@@ -8,6 +8,8 @@ import Administrator from './pages/Administrator/Administrator';
 import ChangPassword from './pages/ChangePassword/ChangPassword';
 import Product from './pages/Product/Product';
 import Cart from './pages/Cart/Cart';
+import Login from './pages/Login/Login';
+import Register from './pages/Register/Register';
 
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
           <Route path='/changePassword' element={<ChangPassword/>}/>
           <Route path='/product/id/:id/name/:name' element={<Product/>}/>
           <Route path='/cart' element={<Cart/>}/>
+          <Route path='/login' element={<Login/>}/>
+          <Route path='/register' element={<Register/>}/>
         </Routes>
       </BrowserRouter>
     </div>
