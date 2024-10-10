@@ -2,19 +2,52 @@ import React from 'react';
 import { EyeInvisibleOutlined, EyeOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { Wrapper, WrapperForm } from './style';
+import AuthUser from '../../services/AuthUser';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
+
+
 
 const Login = () => {
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-  };
-
+    const  {http, setToken, setExpires_in, setUser} = AuthUser();
+    const onFinish = (values) => {
+      // api call
+      http.post('/login', {email:values.email, password:values.password})
+      .then((res)=>{
+        const accessToken = res.data.access_token;
+        const expires_in = res.data.expires_in
+        setToken(accessToken)
+        setExpires_in(expires_in)
+        setUser(res.data.user)
+      })
+      .catch((err)=>{
+        toast.error(
+          <div>
+            Sai tài khoản hoặc mật khẩu <br />
+            Vui lòng đăng nhập lại.
+          </div>);
+        
+      })
+    };
   return (
     <Wrapper>
+      <ToastContainer
+        position="top-center"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+        />
       <h1>LOGIN</h1>
       <WrapperForm
         name="login"
         initialValues={{
-          remember: true,
+          remember: false,
         }}
         style={{
           maxWidth: 360,
@@ -22,19 +55,19 @@ const Login = () => {
         onFinish={onFinish}
       >
         <Form.Item
-          name="username"
+          name="email"
           rules={[
             {
               required: true,
-              message: 'Please input your Username!',
+              message: 'Please input your Email!',
             },
           ]}
           hasFeedback
         >
           <Input
             prefix={<UserOutlined />}
-            placeholder="Username"
-            autoComplete="username" // Added autocomplete attribute
+            placeholder="Email"
+            autoComplete="Email" // Added autocomplete attribute
           />
         </Form.Item>
 
@@ -62,7 +95,7 @@ const Login = () => {
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>Remember me</Checkbox>
             </Form.Item>
-            <a href="#">Forgot password</a>
+            <a href="/forgotpassword">Forgot password</a>
           </div>
         </Form.Item>
 
@@ -70,7 +103,7 @@ const Login = () => {
           <Button block type="primary" htmlType="submit">
             Log in
           </Button>
-          or <a href="/register">Register now!</a>
+          or <a  href="/register">Register now!</a>
         </Form.Item>
       </WrapperForm>
     </Wrapper>

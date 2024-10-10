@@ -10,9 +10,15 @@ export const Wrapper = styled.div`
     flex-direction: column;
 `
 export const WrapperForm = styled(Form)`
-    width: 700px !important;
-    height: 300px;
+    width: 500px !important;
+    height: 400px;
     border: 1px solid #ccc;
     padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     border-radius: 5px;
+    & Button{
+        margin: 10px 30px 0 30px;
+    }
 `

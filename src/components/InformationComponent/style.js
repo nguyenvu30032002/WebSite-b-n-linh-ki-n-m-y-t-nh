@@ -13,6 +13,10 @@ export const WrapperInformantion = styled.div`
         text-overflow: ellipsis; /* Hiển thị dấu ba chấm khi văn bản bị cắt */
     }
     border: none;
+    & div:hover{
+        cursor: pointer;
+        color:#1677ff ;
+    }
 `
 
 export const WrapperInformantionImg = styled.img`
