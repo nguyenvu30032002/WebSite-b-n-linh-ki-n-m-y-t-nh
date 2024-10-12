@@ -8,17 +8,15 @@ import AuthUser from '../../services/AuthUser';
 
 const InformationComponent = () => {
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL;
-  const {token, logout, getToken} = AuthUser();
-  const { getUser } = AuthUser();
+  const {token, logout, getToken, getUser} = AuthUser();
   const logoutUser = () => {
     if(token !== undefined){
         logout();
     }
   }
-
-  const userAvt = `${apiUrl}${getUser().avatar}`;
   const user = getUser();
+  const userAvt = user && user.avatar ? `http://localhost:3000${ user.avatar}` : avatar;
+  const userDisplayName =  user ? (user.name ? user.name : user.email) : null;
   const items: MenuProps['items'] = [
     {
       label: <>Thông tin tài khoản</>,
@@ -64,22 +62,12 @@ const InformationComponent = () => {
     <>
     {getToken() !== null ? ( // Nếu token không null, hiển thị nội dung
       <WrapperInformantion>
-        <WrapperInformantionImg src={
-          user.avatar === null ? (
-            avatar
-          ) : (
-            userAvt
-          )
-        } alt="avatar" />
+        <WrapperInformantionImg src={userAvt} alt="avatar" />
         <Dropdown menu={{ items }} trigger={['click']}>
           <Button>
             <Space>
               {
-                user.name === null ? (
-                  user.email
-                ):(
-                  user.name
-                )
+                userDisplayName
               }     
             </Space>
           </Button>

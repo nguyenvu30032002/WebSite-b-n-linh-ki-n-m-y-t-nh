@@ -268,3 +268,15 @@ export const WrapperModal = styled(Modal)`
     }
 
 `
+
+export const WrapperDescription = styled.div`
+    width: 100%;
+    max-height: 200px;
+    float: left;
+    text-align: justify;
+    font-size: 20px;
+    padding-left: 15px;
+    line-height: 1.5;
+    overflow-y: auto; /* Hiển thị thanh cuộn dọc khi cần thiết */
+    overflow-x: hidden;
+`

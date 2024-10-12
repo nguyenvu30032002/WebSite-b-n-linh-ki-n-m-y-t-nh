@@ -1,19 +1,24 @@
 import React, { useState } from 'react'
 import Header from "../../parts/Header/Header";
-import { Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPrice, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperVariants } from "./style";
+import { Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPrice, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperVariants } from "./style";
 import Footer from "../../parts/Footer/Footer";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCartShopping, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Button, Radio} from 'antd';
+import { Button, message, Radio} from 'antd';
+import AuthUser from '../../services/AuthUser';
+import UserService from '../../services/UserService';
 
 
 const Product = () => {
-    const  location = useLocation();
+    const location = useLocation();
     const product = location.state?.product;
-    // console.log("dsfsd: " ,product)
-    
+    const {getUser} = AuthUser();
     const [amount, setAmount] = useState(1)
+    const navigate = useNavigate(); 
+    const { userOrder} = UserService();
+
+
     const handlePlus = () =>{
         setAmount(() => amount + 1)
     }
@@ -32,12 +37,34 @@ const Product = () => {
     };
 ////////////////////////////////////////////////////////////////////////////////
 
-    const [value, setValue] = useState("");
+    const [valueRadio, setValueRadio] = useState("");
     const handleRadioChange = (e) => {
-      setValue(e.target.value); // Cập nhật giá trị khi chọn radio
+      setValueRadio(e.target.value); // Cập nhật giá trị khi chọn radio
     };
     const handleOk = (e) => {
-      console.log('radio checked', value);
+      if(getUser().address === null){
+        message.error('Vui lòng điền địa chỉ nhận hàng')
+        setIsModalOpen(true);
+      }
+      if(!valueRadio){
+        message.error('Vui lòng chọn phương thức thanh toán');
+        setIsModalOpen(true);
+      }
+
+      const data =
+       {
+        user_id: getUser().id,
+        userName: getUser().name,
+        address: getUser().address,
+        phone: getUser().phone,
+        status: valueRadio,
+        imgProduct: product.image,
+        nameProduct: product.name,
+        amount: amount,
+        totalMoney: (product.price * product.discount)*amount,
+       };
+
+      userOrder(data);
       setIsModalOpen(false);
     };
   return (
@@ -50,10 +77,8 @@ const Product = () => {
                   <WrapperImg>
                     <WrapperCarousel arrows infinite={false}>
                       <div>
-                        <img src={product.img} alt="imgProduct" />
-                      </div>
-                      <div>
-                      <img src={product.img} alt="imgProduct" />
+                      <img src={`http://localhost:3000/${product.image}`} alt={product.name} />
+                      {/* <img src={product.image} alt={product.name} onError={() => console.error('Error loading image')} /> */}
                       </div>
                     </WrapperCarousel>
                     </WrapperImg>
@@ -73,26 +98,35 @@ const Product = () => {
                         </WrapperVariants>
                         ) : null
                       }
+                      {
+                        product.description !== null ? (
+                          <WrapperDescription>
+                            {product.description}
+                          </WrapperDescription>
+                        ) : (
+                          null
+                        )
+                      }
                       <WrapperOrigin>
                         <div className='originProduct'>
                           <p>Nguồn gốc:</p>
-                          <p>USA</p>
+                          <p>{product.origin}</p>
                         </div>
                         <div className='brandProduct'>
                           <p>Thương hiệu:</p>
-                          <p>Asus</p>
+                          <p>{product.brand}</p>
                         </div>
                       </WrapperOrigin>
                       <WrapperPrice>
                       <div className='oldPrice'>
-                        <p>{product.oldPrice.toLocaleString('vi-VN')}</p>
+                        <p>{(product.price).toLocaleString('vi-VN')}</p>
                         <p>đ</p>
                       </div>
                       <div className='arrow'>
                         <FontAwesomeIcon icon={faArrowRight} />
                       </div>
                       <div className='newPrice'>
-                        <p>{product.newPrice.toLocaleString('vi-VN')}</p>
+                        <p>{(product.price * product.discount).toLocaleString('vi-VN')}</p>
                         <p>đ</p>
                       </div>
                       </WrapperPrice>
@@ -132,8 +166,9 @@ const Product = () => {
                 Hủy
               </Button>,
             ]}>
+              
               <div className='Orders' key={product.id}>
-                <img src={product.img} alt="" />
+              <img src={`http://localhost:3000/${product.image}`} alt={product.name} />
                 <p>{product.name}</p>
                 <p>x {amount}</p>
                 {
@@ -141,19 +176,25 @@ const Product = () => {
                     <p>{product.variants}</p>
                   ) : null
                 }
-                <p>{(product.newPrice * amount).toLocaleString('vi-VN')} đ</p>
+                <p>{((product.price * product.discount)*amount).toLocaleString('vi-VN')} đ</p>
               </div>
               <div className='information'>
                 <div>
-                  <p>Tới: NGUYEN ANH VU</p>
+                  <p>Tới: {getUser().name}</p>
                   <div className='address'>
                     <p>Địa chỉ:</p>
-                    <p>Ha Noi</p>
+                    {
+                      getUser().address !== null ? (
+                        <p>{getUser().address}</p>
+                      ) : (
+                        <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
+                      )
+                    }
                   </div>
                 </div>
                 <p>Số điện thoại: 00124931493</p>
               </div>
-              <Radio.Group onChange={handleRadioChange} value={value}>
+              <Radio.Group onChange={handleRadioChange} value={valueRadio}>
                 <Radio value="Chưa thanh toán">Thanh toán bằng tiền mặt</Radio>
                 <Radio value="Đã thanh toán">Thanh toán bằng tài khoản ngân hàng</Radio>
               </Radio.Group>

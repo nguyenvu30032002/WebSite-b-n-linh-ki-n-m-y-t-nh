@@ -4,7 +4,7 @@ import { Wrapper, WrapperAvatar, WrapperBody, WrapperHeader, WrapperInformation 
 import Header from "../../parts/Header/Header";
 import { useNavigate } from 'react-router-dom';
 import Footer from '../../parts/Footer/Footer';
-import avatarPlaceholder from '../../assets/images/avatar/d0tb7-copy.jpg';
+import img from '../../assets/images/avatar/d0tb7-copy.jpg'
 import AuthUser from '../../services/AuthUser';
 import moment from 'moment';
 import axios from 'axios';
@@ -13,16 +13,15 @@ const Information = () => {
   const { getUser, token } = AuthUser();
   const userFromSession = getUser();
   const apiUrl = process.env.REACT_APP_API_URL;
-
   const [user, setUser] = useState({
     name: userFromSession?.name || '',
     phone: userFromSession?.phone || '',
     address: userFromSession?.address || '',
     gender: userFromSession?.gender || '',
-    avatar: userFromSession?.avatar ? `${apiUrl}${userFromSession.avatar}` : avatarPlaceholder,
+    avatar: userFromSession?.avatar || img ,
     date_of_birth: userFromSession?.date_of_birth ? moment(userFromSession.date_of_birth).format('YYYY-MM-DD') : null,
-    newAvatarFile: null,
-    newAvatarUrl: avatarPlaceholder,
+    newAvatarName: userFromSession?.avatar || '',  // Lưu tên hình ảnh
+    newAvatarPreviewUrl: null,  // URL xem trước hình ảnh
   });
 
   const onDate = (date, dateString) => {
@@ -55,44 +54,37 @@ const Information = () => {
   const onImg = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file); // Hiển thị ảnh ngay khi người dùng chọn
-      setUser(prevUser => ({
-        ...prevUser,
-        newAvatarFile: file,
-        newAvatarUrl: imageUrl,  // Hiển thị ngay hình ảnh đã chọn
-      }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUser(prevUser => ({
+          ...prevUser,
+          newAvatarName: file.name,       // Lưu tên hình ảnh
+          newAvatarPreviewUrl: reader.result,  // Lưu URL xem trước
+        }));
+      };
+      reader.readAsDataURL(file); // Đọc file và chuyển thành Base64
     }
   };
 
   const updateUser = async (id, userData) => {
-    const formData = new FormData();
-    formData.append('name', userData.name);
-    formData.append('phone', userData.phone);
-    formData.append('address', userData.address);
-    formData.append('gender', userData.gender);
-    if (userData.newAvatarFile) {
-      formData.append('avatar', userData.newAvatarFile); // Gửi avatar mới nếu có
-    }
-    formData.append('date_of_birth', userData.date_of_birth);
+    const updateData = {
+      name: userData.name,
+      phone: userData.phone,
+      address: userData.address,
+      gender: userData.gender,
+      avatar: userData.newAvatarName,  // Chỉ gửi tên hình ảnh
+      date_of_birth: userData.date_of_birth
+    };
 
     try {
-      const response = await axios.post(`${apiUrl}/update/${id}`, formData, {
+      const response = await axios.post(`${apiUrl}/update/${id}`, updateData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
         }
       });
 
-      // Cập nhật avatar trong state ngay sau khi update thành công
-      const updatedAvatarUrl = response.data.avatar ? `${apiUrl}${response.data.avatar}` : avatarPlaceholder;
-      setUser(prevUser => ({
-        ...prevUser,
-        avatar: updatedAvatarUrl,  // Cập nhật avatar hiển thị ngay lập tức
-      }));
-
-      // Cập nhật thông tin người dùng từ phản hồi để đảm bảo tất cả dữ liệu mới
-      userFromSession.avatar = updatedAvatarUrl; // Cập nhật lại avatar trong session
       message.success('Thay đổi thông tin thành công');
+      return response;
     } catch (error) {
       message.error('Thay đổi thất bại');
     }
@@ -100,13 +92,12 @@ const Information = () => {
 
   const handleSubmit = () => {
     const id = userFromSession?.id;
-
     const userData = {
       name: user.name || userFromSession?.name,
       phone: user.phone || userFromSession?.phone,
       address: user.address || userFromSession?.address,
       gender: user.gender || userFromSession?.gender,
-      newAvatarFile: user.newAvatarFile,  // Gửi file mới nếu có
+      newAvatarName: user.newAvatarName,  // Gửi tên file ảnh
       date_of_birth: user.date_of_birth || userFromSession?.date_of_birth,
     };
 
@@ -122,9 +113,9 @@ const Information = () => {
         <WrapperAvatar>
           <div className='avatar'>
             <img 
-              src={user.newAvatarFile ? user.newAvatarUrl : user.avatar}  // Hiển thị avatar mới nếu có
+              src={user.newAvatarPreviewUrl ? user.newAvatarPreviewUrl : `http://localhost:3000${user.avatar}`}
               alt="avatar" 
-              style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+              style={{ objectFit: 'cover' }} 
             />
             <div className='changeAvatar'>
               <label htmlFor="fileAvatar">Thay đổi avatar</label>
@@ -164,7 +155,7 @@ const Information = () => {
 
           <div>
             <label>Số điện thoại: </label>
-            <input type="text" name='phone' value={user.phone} onChange={handleInputChange} placeholder='3482347324' />
+            <input type="text" name='phone' value={user.phone} onChange={handleInputChange} placeholder='Số điện thoại' />
           </div>
 
           <div>

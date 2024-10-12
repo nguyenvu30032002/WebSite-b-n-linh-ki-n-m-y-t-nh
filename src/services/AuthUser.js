@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
+import { message } from "antd";
 
 export default function AuthUser() {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -23,7 +24,11 @@ export default function AuthUser() {
     const saveToken = (token) => {
         sessionStorage.setItem('token', JSON.stringify(token));
         setToken(token);
-        navigate('/');
+        message.success('Đăng nhập thành công')
+        setTimeout(() => {
+            navigate('/');
+        }, 500);
+        
     }
 
     const saveExpiresIn = (expires_in) => {
