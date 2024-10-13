@@ -80,12 +80,12 @@ const ArticleComponent = () => {
               </WrapperOrigin>
               <WrapperPrice>
                 <div className='newPrice'>
-                  <p>{(product.price * product.discount).toLocaleString('vi-VN')}</p>
+                  <p>{Number(product.price * product.discount).toLocaleString('vi-VN')}</p>
                   <p>đ</p>
                 </div>
         
                 <div className='oldPrice'>
-                  <p>{(product.price).toLocaleString('vi-VN')}</p>
+                  <p>{Number(product.price).toLocaleString('vi-VN')}</p>
                   <p>đ</p>
                 </div>
               </WrapperPrice>

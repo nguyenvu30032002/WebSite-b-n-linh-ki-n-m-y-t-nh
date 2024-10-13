@@ -42,15 +42,6 @@ const Product = () => {
       setValueRadio(e.target.value); // Cập nhật giá trị khi chọn radio
     };
     const handleOk = (e) => {
-      if(getUser().address === null){
-        message.error('Vui lòng điền địa chỉ nhận hàng')
-        setIsModalOpen(true);
-      }
-      if(!valueRadio){
-        message.error('Vui lòng chọn phương thức thanh toán');
-        setIsModalOpen(true);
-      }
-
       const data =
        {
         user_id: getUser().id,
@@ -58,14 +49,26 @@ const Product = () => {
         address: getUser().address,
         phone: getUser().phone,
         status: valueRadio,
+        product_id: product.id,
         imgProduct: product.image,
         nameProduct: product.name,
         amount: amount,
         totalMoney: (product.price * product.discount)*amount,
+        origin: product.origin,
        };
 
-      userOrder(data);
-      setIsModalOpen(false);
+      if(getUser().address === null){
+        message.error('Vui lòng điền địa chỉ nhận hàng')
+        setIsModalOpen(true);
+      }
+      else if(!valueRadio){
+        message.error('Vui lòng chọn phương thức thanh toán');
+        setIsModalOpen(true);
+      }
+      else{
+        userOrder(data);
+        setIsModalOpen(false);
+      }
     };
   return (
     <Wrapper>
@@ -119,14 +122,14 @@ const Product = () => {
                       </WrapperOrigin>
                       <WrapperPrice>
                       <div className='oldPrice'>
-                        <p>{(product.price).toLocaleString('vi-VN')}</p>
+                        <p>{Number(product.price).toLocaleString('vi-VN')}</p>
                         <p>đ</p>
                       </div>
                       <div className='arrow'>
                         <FontAwesomeIcon icon={faArrowRight} />
                       </div>
                       <div className='newPrice'>
-                        <p>{(product.price * product.discount).toLocaleString('vi-VN')}</p>
+                        <p>{Number(product.price * product.discount).toLocaleString('vi-VN')}</p>
                         <p>đ</p>
                       </div>
                       </WrapperPrice>
@@ -176,7 +179,7 @@ const Product = () => {
                     <p>{product.variants}</p>
                   ) : null
                 }
-                <p>{((product.price * product.discount)*amount).toLocaleString('vi-VN')} đ</p>
+                <p>{(Number(product.price * product.discount)*amount).toLocaleString('vi-VN')} đ</p>
               </div>
               <div className='information'>
                 <div>

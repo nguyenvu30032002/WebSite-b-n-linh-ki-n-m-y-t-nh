@@ -15,7 +15,7 @@ const InformationComponent = () => {
     }
   }
   const user = getUser();
-  const userAvt = user && user.avatar ? `http://localhost:3000${ user.avatar}` : avatar;
+  const userAvt = user && user.avatar ? `http://localhost:3000/${ user.avatar}` : avatar;
   const userDisplayName =  user ? (user.name ? user.name : user.email) : null;
   const items: MenuProps['items'] = [
     {

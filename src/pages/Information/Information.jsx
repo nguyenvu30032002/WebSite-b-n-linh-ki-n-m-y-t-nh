@@ -18,7 +18,7 @@ const Information = () => {
     phone: userFromSession?.phone || '',
     address: userFromSession?.address || '',
     gender: userFromSession?.gender || '',
-    avatar: userFromSession?.avatar || img ,
+    avatar: userFromSession?.avatar || '/' + img ,
     date_of_birth: userFromSession?.date_of_birth ? moment(userFromSession.date_of_birth).format('YYYY-MM-DD') : null,
     newAvatarName: userFromSession?.avatar || '',  // Lưu tên hình ảnh
     newAvatarPreviewUrl: null,  // URL xem trước hình ảnh
@@ -113,7 +113,7 @@ const Information = () => {
         <WrapperAvatar>
           <div className='avatar'>
             <img 
-              src={user.newAvatarPreviewUrl ? user.newAvatarPreviewUrl : `http://localhost:3000${user.avatar}`}
+              src={user.newAvatarPreviewUrl ? user.newAvatarPreviewUrl : `http://localhost:3000/${user.avatar}`}
               alt="avatar" 
               style={{ objectFit: 'cover' }} 
             />
