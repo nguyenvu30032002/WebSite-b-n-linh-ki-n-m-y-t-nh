@@ -16,8 +16,7 @@ const Product = () => {
     const {getUser} = AuthUser();
     const [amount, setAmount] = useState(1)
     const navigate = useNavigate(); 
-    const { userOrder} = UserService();
-
+    const { userOrder, userCart} = UserService();
 
     const handlePlus = () =>{
         setAmount(() => amount + 1)
@@ -53,7 +52,7 @@ const Product = () => {
         imgProduct: product.image,
         nameProduct: product.name,
         amount: amount,
-        totalMoney: (product.price * product.discount)*amount,
+        totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
         origin: product.origin,
        };
 
@@ -70,6 +69,26 @@ const Product = () => {
         setIsModalOpen(false);
       }
     };
+
+    const handleCart = () => {
+      const data =
+       {
+        user_id: getUser().id,
+        userName: getUser().name,
+        address: getUser().address,
+        phone: getUser().phone,
+        product_id: product.id,
+        imgProduct: product.image,
+        nameProduct: product.name,
+        amount: amount,
+        totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
+        origin: product.origin,
+       };
+       
+       userCart(data)
+
+    }
+
   return (
     <Wrapper>
             <WrapperHeader>
@@ -121,17 +140,29 @@ const Product = () => {
                         </div>
                       </WrapperOrigin>
                       <WrapperPrice>
-                      <div className='oldPrice'>
-                        <p>{Number(product.price).toLocaleString('vi-VN')}</p>
-                        <p>đ</p>
-                      </div>
-                      <div className='arrow'>
-                        <FontAwesomeIcon icon={faArrowRight} />
-                      </div>
-                      <div className='newPrice'>
-                        <p>{Number(product.price * product.discount).toLocaleString('vi-VN')}</p>
-                        <p>đ</p>
-                      </div>
+                      
+                      {
+                        product.discount ===0 ? (
+                          <div className='newPrice'>
+                            <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                            <p>đ</p>
+                          </div>
+                        ) : (
+                        <>
+                        <div className='oldPrice'>
+                          <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                          <p>đ</p>
+                        </div>
+                        <div className='arrow'>
+                          <FontAwesomeIcon icon={faArrowRight} />
+                        </div>
+                        <div className='newPrice'>
+                          <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                          <p>đ</p>
+                        </div>
+                        </>
+                        )
+                      }
                       </WrapperPrice>
 
                         <WrapperAmount>
@@ -154,7 +185,7 @@ const Product = () => {
                         </WrapperAmount>
                         <WrapperOrder>
                           <Button className='OrderProduct' type="primary" onClick={showModal} >Đặt hàng</Button>
-                          <Button className='cartProduct' type="primary" danger><FontAwesomeIcon icon={faCartShopping} /></Button>
+                          <Button className='cartProduct' type="primary" danger><FontAwesomeIcon icon={faCartShopping} onClick={handleCart}/></Button>
                         </WrapperOrder>
                   </WrapperProduct>
               </WrapperProductInformation>
@@ -172,14 +203,14 @@ const Product = () => {
               
               <div className='Orders' key={product.id}>
               <img src={`http://localhost:3000/${product.image}`} alt={product.name} />
-                <p>{product.name}</p>
+                <p className='name'>{product.name}</p>
                 <p>x {amount}</p>
                 {
                   product.id && product.variants === true ? (
                     <p>{product.variants}</p>
                   ) : null
                 }
-                <p>{(Number(product.price * product.discount)*amount).toLocaleString('vi-VN')} đ</p>
+                <p>{(Number((product.price) - (product.price * (product.discount / 100)))*amount).toLocaleString('vi-VN')} đ</p>
               </div>
               <div className='information'>
                 <div>

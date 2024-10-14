@@ -12,11 +12,11 @@ export default function UserService() {
             console.log('Order data being sent: ', order);
             const response = await axios.post(
                 `${apiUrl}/order`, 
-                order, // Gửi dữ liệu order
+                order,
                 {
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}` // Đính kèm token vào header
+                        "Authorization": `Bearer ${token}` 
                     }
                 }
             );
@@ -29,6 +29,9 @@ export default function UserService() {
             
         }
     }
+
+    /////////////////////////////////////////////////////////////////////////
+
     const getOrder = async() => {
         try {
             const response = await axios.get(`${apiUrl}/getAllOrder/${getUser().id}`, {
@@ -39,7 +42,6 @@ export default function UserService() {
             });
             return response.data
         } catch (error) {
-            console.error('There was an error!', error);
             throw error;
         }
     }
@@ -58,6 +60,8 @@ export default function UserService() {
     fetchOrders(); // Gọi hàm fetchOrders khi component mount
   }, []); // Chạy lại nếu getOrder thay đổi
 
+  ////////////////////////////////////////////////////////////////////////
+
   const updateCondition = async(condition, idOrder) => {
     try{
       const response = await axios.post(
@@ -66,7 +70,7 @@ export default function UserService() {
         {
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}` // Đính kèm token vào header
+                "Authorization": `Bearer ${token}` 
             }
         });
         if(response.data.message === "success"){
@@ -86,10 +90,36 @@ export default function UserService() {
     }
   }
 
+  /////////////////////////////////////////////////////////////
+  
+  const [cart,  setCart] = useState([]);
+
+  const userCart = async(cart) => {
+    try{
+      const response = await axios.post(
+        `${apiUrl}/cart`, 
+        cart,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` 
+            }
+        }
+      );
+      
+      message.success('Thêm vào giỏ hàng thành công')
+      return response
+    }
+    catch(error){
+      message.error(<>Thêm vào giỏ hàng thất bại <br />Vui lòng thử lại</>)
+      throw error
+    }
+  }
     return {
       userOrder,
-      getOrder,
       orders,
-      updateCondition
+      updateCondition,
+      userCart,
+      cart
     };
 }

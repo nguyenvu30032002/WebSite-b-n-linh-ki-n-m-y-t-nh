@@ -6,5 +6,5 @@ export const Wrapper = styled.div`
     border: solid 1px #CECECE;
     border-radius: 10px;
     background-color: #fff;
-    height: 500px;
+    max-height: 600px;
 `

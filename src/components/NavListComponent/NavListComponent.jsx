@@ -3,8 +3,10 @@ import { Wrapper, WrapperCategories, WrapperIcon, WrapperList } from './style'
 
 import { faArrowRight, faList} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ProductService from '../../services/ProductService';
 
 const NavListComponent = () => {
+  const {categories} = ProductService();
   const handlesubmit = (e) => {
       const name = e.target.innerText;
       console.log(name)
@@ -17,11 +19,14 @@ const NavListComponent = () => {
         </WrapperCategories>
       <WrapperList>
         <ul>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>afsddnsfssfsdfosdoiifjdjfoijofssdfssdf</span></li>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>Rtx</span></li>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>Ban phim</span></li>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>tan nhiet</span></li>
-              <li onClick={handlesubmit}><WrapperIcon icon={faArrowRight} /> <span>man hinh</span></li>
+        {
+           categories.map(category => (
+            <li key={category.id} onClick={handlesubmit}>
+              <WrapperIcon icon={faArrowRight} />
+              <span>{category.name}</span>
+            </li>
+          ))
+        }
           </ul>
       </WrapperList>
     </Wrapper>

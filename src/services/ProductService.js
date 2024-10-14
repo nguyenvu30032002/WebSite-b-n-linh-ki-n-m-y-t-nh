@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 export default function ProductService() {
     const apiUrl = process.env.REACT_APP_API_URL;
     const [products, setProducts] = useState([]);
-
+    const [categories, setCategories] = useState([])
     useEffect(() => {
         const fetchProducts = async() => {
             try{
@@ -12,13 +12,29 @@ export default function ProductService() {
                 const products = response.data
                 setProducts(products)
             }catch(error) {
-                console.error('Error fetching products:', error);
                 throw error
             }
         }
         fetchProducts();
     }, [])
+
+    /////////////////////////////////////////////////////////
+    
+    useEffect(() => {
+        const fetchCategories = async() => {
+            try{
+                const response = await axios.get(`${apiUrl}/categories/getAll`)
+                const categories = response.data
+                setCategories(categories)
+            }
+            catch(error){
+                throw error
+            }
+        }
+        fetchCategories();
+    }, [])
     return {
-        products
+        products,
+        categories
     }
 }   

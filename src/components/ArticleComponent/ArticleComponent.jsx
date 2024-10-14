@@ -69,9 +69,13 @@ const ArticleComponent = () => {
       </WrapperArrange>
       <WrapperProduct>
         {currentItems.map(product => (
-          product.inventory !== '0' ? (
+          product.inventory !== 0 ? (
             <Product onClick={() => handleClick(product)} key={product.id}>
-              <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
+              {
+                product.discount !== 0 ? (
+                  <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
+                ) : null
+              }
               <img src={product.image} alt={product.name} />
               <p className='nameProduct'>{product.name}</p>
               <WrapperOrigin>
@@ -79,15 +83,29 @@ const ArticleComponent = () => {
                 <p>{product.brand}</p>
               </WrapperOrigin>
               <WrapperPrice>
-                <div className='newPrice'>
-                  <p>{Number(product.price * product.discount).toLocaleString('vi-VN')}</p>
-                  <p>đ</p>
-                </div>
+                {
+                  product.discount === 0 ? (
+                    <div className='Price'>
+                      <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                      <p>đ</p>
+                    </div>
+                  ) : (
+                      <div className='newPrice'>
+                        <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                        <p>đ</p>
+                      </div>
+                  )
+                }
+
+{
+                  product.discount !== 0 ? (
+                    <div className='oldPrice'>
+                      <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                      <p>đ</p>
+                    </div>
+                  ) : null 
+                }
         
-                <div className='oldPrice'>
-                  <p>{Number(product.price).toLocaleString('vi-VN')}</p>
-                  <p>đ</p>
-                </div>
               </WrapperPrice>
         
               <WrapperCondition>
@@ -104,7 +122,11 @@ const ArticleComponent = () => {
           ) : (
             <ProductOutOfStock key={product.id}>
                 <p className='OutOfStock'>Hết hàng</p>
-                <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
+                {
+                  product.discount !== 0 ? (
+                    <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
+                  ) : null
+                }
                 <img src={product.image} alt={product.name} />
                 <p className='nameProduct'>{product.name}</p>
               <WrapperOriginOutOfStock>
@@ -112,15 +134,28 @@ const ArticleComponent = () => {
                 <p>{product.brand}</p>
               </WrapperOriginOutOfStock>
               <WrapperPriceOutOfStock>
-                <div className='newPrice'>
-                  <p>{(product.price * product.discount).toLocaleString('vi-VN')}</p>
-                  <p>đ</p>
-                </div>
-        
-                <div className='oldPrice'>
-                  <p>{product.price.toLocaleString('vi-VN')}</p>
-                  <p>đ</p>
-                </div>
+              {
+                  product.discount === 0 ? (
+                    <div className='Price'>
+                      <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                      <p>đ</p>
+                    </div>
+                  ) : (
+                      <div className='newPrice'>
+                        <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                        <p>đ</p>
+                      </div>
+                  )
+                }
+
+{
+                  product.discount !== 0 ? (
+                    <div className='oldPrice'>
+                      <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                      <p>đ</p>
+                    </div>
+                  ) : null 
+                }
               </WrapperPriceOutOfStock>
         
               <WrapperConditionOutOfStock>

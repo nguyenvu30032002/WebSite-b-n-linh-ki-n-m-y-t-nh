@@ -253,6 +253,12 @@ export const WrapperModal = styled(Modal)`
             height: 50px;
             }
         }
+        & .name{
+            width: 350px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
         & .information{
             border-top: 1px solid #ccc ;
             & div{

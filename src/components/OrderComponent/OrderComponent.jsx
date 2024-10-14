@@ -43,8 +43,17 @@ const OrderComponent = ({ selectedOrderStatus }) => {
             
           </WrapperInformation>
           {
-            order.condition !== 'Chờ xác nhận' && (
+            order.condition === 'Chờ xác nhận' ? (
                 <WrapperSelect>
+                  <button onClick={() => {
+                      const condition = "Hủy";
+                      const idOrder = order.id
+                      updateCondition(condition,idOrder)
+                      }}>Hủy
+                  </button>
+                </WrapperSelect>
+            ) : (
+              <WrapperSelect>
                 {order.condition === 'Đã giao' ? (
                     <>
                     <button onClick={() => {

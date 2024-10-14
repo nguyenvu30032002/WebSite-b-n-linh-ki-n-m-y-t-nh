@@ -78,29 +78,29 @@ export default function AuthUser() {
      setUser(userData); 
     };
  
-   const fetchUser = async () => {
-    if (token) {
-       try {
-           const response = await http.post('/me', {}, { 
-               headers: {
-                   "Authorization": `Bearer ${token}`
-               }
-           });
-           const userData = response.data;
-           if (userData) {
-               saveUser(userData);
-           }
-       } catch (err) {
-       }
-   }
-   };
+//    const fetchUser = async () => {
+//     if (token) {
+//        try {
+//            const response = await http.post('/me', {}, { 
+//                headers: {
+//                    "Authorization": `Bearer ${token}`
+//                }
+//            });
+//            const userData = response.data;
+//            if (userData) {
+//                saveUser(userData);
+//            }
+//        } catch (err) {
+//        }
+//    }
+//    };
  
-   useEffect(() => {
-     // Chỉ gọi fetchUser nếu chưa có thông tin người dùng
-     if (!user && token) {
-         fetchUser();
-   }
-   }, [token]);
+//    useEffect(() => {
+//      // Chỉ gọi fetchUser nếu chưa có thông tin người dùng
+//      if (!user && token) {
+//          fetchUser();
+//    }
+//    }, [token]);
 
 
     return {

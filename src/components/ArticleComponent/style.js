@@ -99,6 +99,23 @@ export const WrapperPrice = styled.div`
     justify-content: space-evenly;
     align-items: center;
     margin: 5px 0 10px 0;
+    & .Price{
+        width: 50%;
+        height: 30px;
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        &  p:first-child{
+            color: #d70018;
+            font-weight: 500;
+            margin-right: 2px;
+        }
+        &  p:last-child{
+            color: #d70018;
+            font-size: 15px;
+            font-weight: 500;
+        }
+    }
     & .newPrice{
         width: 50%;
         height: 30px;
@@ -286,6 +303,24 @@ export const WrapperPriceOutOfStock = styled.div`
     align-items: center;
     margin: 5px 0 10px 0;
     opacity: 0.3;
+    & .Price{
+        width: 50%;
+        height: 30px;
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        &  p:first-child{
+            color: #d70018;
+            font-weight: 500;
+            margin-right: 2px;
+        }
+        &  p:last-child{
+            color: #d70018;
+            font-size: 15px;
+            font-weight: 500;
+        }
+    }
+    
     & .newPrice{
         width: 50%;
         height: 30px;

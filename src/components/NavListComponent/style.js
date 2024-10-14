@@ -4,7 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export const Wrapper = styled.div`
     display: flex ;
     flex-direction: column;
-    justify-content: center;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 `
 export const WrapperCategories = styled.div`
     display: flex;
