@@ -1,48 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Wrapper, WrapperBody, WrapperCart, WrapperCheckAll, WrapperCheckBox, WrapperDelete, WrapperDeleteAll, WrapperHeader, WrapperPay } from './style';
+import { Wrapper, WrapperBody, WrapperCart, WrapperCheckAll, WrapperCheckBox, WrapperDeleteAll, WrapperHeader, WrapperPay } from './style';
 import Header from '../../parts/Header/Header';
 import Footer from '../../parts/Footer/Footer';
-import { Button, Checkbox, InputNumber, Radio } from 'antd';
-import img from '../../assets/images/avatar/logo192.png';
+import { Button, Checkbox, InputNumber, message, Radio } from 'antd';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import UserService from '../../services/UserService';
+import AuthUser from '../../services/AuthUser';
+import { PayPalButton } from 'react-paypal-button-v2';
 
 const Cart = () => {
-  const products = [
-    { id: 1, name: 'Apple', price: 99000000, img: img },
-    { id: 2, name: 'Pear', price: 2000000, img: img },
-    { id: 3, name: 'Orange', price: 1500000, img: img },
-    { id: 4, name: 'Orange', price: 1500000, img: img },
-    { id: 5, name: 'Orange', price: 1500000, img: img },
-    { id: 6, name: 'Orange', price: 1500000, img: img },
-    { id: 7, name: 'Orange', price: 1500000, img: img },
-    { id: 8, name: 'Orange', price: 1500000, img: img },
-  ];
-
+  const {carts, updateCart, orderCart, deleteCart} = UserService();
+ 
+  const {user} = AuthUser()
   // Lưu trạng thái các sản phẩm đã chọn
   const [checkedList, setCheckedList] = useState([]);
-  const productOptions = products.map((product) => product.id.toString());
-  const checkAll = checkedList.length === productOptions.length;
-  const indeterminate = checkedList.length > 0 && checkedList.length < productOptions.length;
+  const cartOptions = carts.map((cart) => cart.id);
+  const checkAll = carts.length > 0 && checkedList.length === cartOptions.length;
+  const indeterminate = checkedList.length > 0 && checkedList.length < cartOptions.length;
 
-  // Lưu trữ số lượng sản phẩm
-  const [amounts, setAmounts] = useState(
-    products.reduce((acc, product) => {
-      acc[product.id] = 1; // Mặc định số lượng mỗi sản phẩm là 1
-      return acc;
-    }, {})
-  );
-
-  // State for total price
   const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `https://www.paypal.com/sdk/js?client-id=AfB9WXP0WczD-_mnfInE8yKoZf2Qy_BqrsB83l4O1AeW2iauLKLXNV29i0cNbTpZg_bQsd0V_sySxFnI`;
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   // Tính tổng giá trị dựa trên sản phẩm được chọn và số lượng
   useEffect(() => {
-    const total = products
-      .filter((product) => checkedList.includes(product.id.toString()))
-      .reduce((sum, product) => sum + product.price * amounts[product.id], 0);
+    const total = carts
+      .filter((cart) => checkedList.includes(cart.id))
+      .reduce((sum, cart) => sum + cart.price * cart.amount, 0);
 
     setTotalPrice(total);
-  }, [checkedList, amounts]);
+  }, [checkedList, carts]);
 
   // Xử lý khi thay đổi trạng thái checkbox từng sản phẩm
   const handleProductChange = (list) => {
@@ -51,41 +46,87 @@ const Cart = () => {
 
   // Xử lý khi nhấn checkbox "Check all"
   const handleCheckAllChange = (e) => {
-    setCheckedList(e.target.checked ? productOptions : []);
+    // setCheckedList(e.target.checked ? cartOptions : []);
+    const newCheckedList = e.target.checked ? cartOptions : [];
+    setCheckedList(newCheckedList);
   };
 
-  // Xử lý khi số lượng thay đổi
+  // // Xử lý khi số lượng thay đổi
   const handleAmountChange = (id, value) => {
-    setAmounts((prevAmounts) => ({
-      ...prevAmounts,
-      [id]: value, // Cập nhật số lượng cho sản phẩm tương ứng
-    }));
+    updateCart(id, Number(value))
   };
 
    // State lưu thông tin các sản phẩm đã chọn sau khi nhấn "Đặt hàng"
-   const [selectedProducts, setSelectedProducts] = useState([]);
-  // Hàm xử lý khi nhấn nút "Đặt hàng"
+  const [selectedCarts, setSelectedCarts] = useState([]);
+  useEffect(() => {
+    const selected = carts
+      .filter((cart) => checkedList.includes(cart.id)) // Lọc sản phẩm có trong checkedList
+      .map((cart) => ({
+        ...cart,
+        quantity: cart.amount, // Thêm số lượng vào sản phẩm
+        totalPrice: cart.price * cart.amount, // Tính tổng giá sản phẩm
+      }));
+    setSelectedCarts(selected); // Lưu thông tin sản phẩm đã chọn
+  }, [carts, checkedList]); // Chỉ chạy khi carts hoặc checkedList thay đổi
+  
+  // // Hàm xử lý khi nhấn nút "Đặt hàng"
   const handleOrder = () => {
-    const selected = products.filter((product) =>
-      checkedList.includes(product.id.toString()) // Lọc sản phẩm có trong checkedList
-    ).map((product) => ({
-      ...product,
-      quantity: amounts[product.id], // Thêm số lượng vào sản phẩm
-      totalPrice: product.price * amounts[product.id], // Tính tổng giá sản phẩm
-    }));
-
-    setSelectedProducts(selected); // Lưu thông tin sản phẩm đã chọn
-    console.log('radio checked', value);
-    console.log(selected); // Hiển thị sản phẩm đã chọn lên console
+    
+   
+    if(user.phone === null) {
+      message.error('Vui lòng thêm số điện thoại')
+    }
+    else if(value === null){
+      message.error('Vui lòng chọn phương thức thanh toán')
+    }
+    else if(user.address === null){
+      message.error('Vui lòng điền thêm địa chỉ nhận hàng')
+    }
+    else{
+      // const selectedCarts = carts.filter(cart => checkedList.includes(cart.id));
+      const orders = selectedCarts.map((cart) => ({
+        user_id: user.id,
+        userName: user.name,
+        address: user.address,
+        phone: user.phone,
+        status: value,
+        product_id: cart.product_id,
+        imgProduct: cart.imgProduct,
+        nameProduct: cart.nameProduct,
+        amount: cart.amount,
+        totalMoney: cart.totalPrice,
+        origin: cart.origin,
+        id_cart: cart.id
+      }));
+      orderCart(orders).then(() => {
+        // Reset checkedList và thông báo thành công
+        setCheckedList([]);
+      })
+    }
   };
+  
 
   /////////////////////
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(null);
     const handleRadioChange = (e) => {
       setValue(e.target.value); // Cập nhật giá trị khi chọn radio
     };
 
-  const address = "Thai Binh";
+    const handleCheckbox = (e) => {
+      const checkedId = Number(e.target.value); // Chuyển đổi ID thành số
+      const newCheckedList = e.target.checked 
+        ? [...checkedList, checkedId] // Thêm ID vào danh sách nếu checkbox được chọn
+        : checkedList.filter(id => id !== checkedId); // Xóa ID khỏi danh sách nếu checkbox không còn được chọn
+
+      setCheckedList(newCheckedList); // Cập nhật trạng thái checkedLis
+    };
+
+    const handleDelete = () => {
+      deleteCart(checkedList).then(() => {
+        // Reset checkedList và thông báo thành công
+        setCheckedList([]);
+      })
+    }
 
   return (
     <Wrapper>
@@ -94,7 +135,7 @@ const Cart = () => {
       </WrapperHeader>
       <WrapperBody>
         <WrapperCart>
-          {/* Checkbox "Check all" */}
+         
           <WrapperCheckAll
             indeterminate={indeterminate}
             onChange={handleCheckAllChange}
@@ -102,30 +143,28 @@ const Cart = () => {
           >
             Chọn tất cả ({checkedList.length} sản phẩm)
           </WrapperCheckAll>
-          <WrapperDeleteAll icon={faTrash} />
-          {/* Checkbox Group cho danh sách sản phẩm */}
+          {checkedList.length > 0 && (
+            <WrapperDeleteAll onClick={handleDelete} icon={faTrash} />
+          )}
           <WrapperCheckBox value={checkedList} onChange={handleProductChange}>
-            {products.map((product) => (
-              <div className="Order" key={product.id}>
-                <Checkbox value={product.id.toString()} />
+            {carts.map((cart) => (
+              <div className="Order" key={cart.id}>
+                <Checkbox onClick={handleCheckbox} value={cart.id} />
                 <div className="informationOrder">
-                  <img src={product.img} alt={product.name} />
-                  <p className="nameProduct">{product.name}</p>
+                  <img src={cart.imgProduct} alt={cart.nameProduct} />
+                  <p className="nameProduct">{cart.nameProduct}</p>
                   <div>
-                    {/* Truyền hàm handleAmountChange vào InputNumber */}
                     <InputNumber
                       min={1}
                       max={99}
-                      defaultValue={amounts[product.id]}
-                      onChange={(value) => handleAmountChange(product.id, value)}
+                      defaultValue={cart.amount}
+                      onChange={(value) => handleAmountChange(cart.id, value)}
                     />
                   </div>
-                  {/* Tính tổng giá trị (giá x số lượng) */}
                   <p className="price">
-                    {(product.price * amounts[product.id]).toLocaleString('vi-VN')} đ
+                    {Number(cart.price * cart.amount).toLocaleString('vi-VN')} đ
                   </p>
                 </div>
-                <WrapperDelete icon={faTrash} value={product.id.toString()} />
               </div>
             ))}
           </WrapperCheckBox>
@@ -133,14 +172,22 @@ const Cart = () => {
         <WrapperPay>
           <div className="address">
             <p>Giao tới:</p>
-            {address !== null ? (
-              <p>{address}</p>
+            {user.address !== null ? (
+              <p>{user.address}</p>
+            ) : (
+              <a href="/information">Thay đổi</a>
+            )}
+          </div>
+          <div className="phone">
+            <p>Số điện thoại:</p>
+            {user.phone !== null ? (
+              <p>{user.phone}</p>
             ) : (
               <a href="/information">Thay đổi</a>
             )}
           </div>
           <div className='nameUser'>
-            <p>Nguyen ANh Vu</p>
+            <p>{user.name}</p>
           </div>
           <div className='totalAmount'>
             <p>Thành tiền:</p>
@@ -158,9 +205,58 @@ const Cart = () => {
             )}
           </div>
           <div className='submitData'>
-            {checkedList.length > 0 && (
+            {checkedList.length > 0 && value === "Chưa thanh toán" && (
               <Button type="primary" onClick={handleOrder}>Đặt hàng</Button>
             )}
+            {checkedList.length > 0 && value === "Đã thanh toán" ? (
+              <PayPalButton
+                amount={Number(totalPrice/23000).toFixed(2)}
+                currency="USD"
+                // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
+                onSuccess={(details, data) => {
+                  if(user.phone === null) {
+                    message.error('Vui lòng thêm số điện thoại')
+                  }
+                  else if(user.address === null){
+                    message.error('Vui lòng thêm địa chỉ nhận hàng')
+                  }
+                  else{
+                    // const selectedCarts = carts.filter(cart => checkedList.includes(cart.id));
+                    const orders = selectedCarts.map((cart) => ({
+                      user_id: user.id,
+                      userName: user.name,
+                      address: user.address,
+                      phone: user.phone,
+                      status: value,
+                      product_id: cart.product_id,
+                      imgProduct: cart.imgProduct,
+                      nameProduct: cart.nameProduct,
+                      amount: cart.amount,
+                      totalMoney: cart.totalPrice,
+                      origin: cart.origin,
+                      id_cart: cart.id
+                    }));
+                    orderCart(orders).then(() => {
+                      // Reset checkedList và thông báo thành công
+                      setCheckedList([]);
+                    })
+                  }
+                  
+                  // OPTIONAL: Call your server to save the transaction
+                  // return fetch("/paypal-transaction-complete", {
+                  //   method: "post",
+                  //   body: JSON.stringify({
+                  //     orderID: data.orderID
+                  //   })
+                  // });
+                }}
+                
+                onError={() => {
+                  message.error('Lỗi thanh toán');
+                }}
+              />
+            ):null
+            }
           </div>
         </WrapperPay>
       </WrapperBody>

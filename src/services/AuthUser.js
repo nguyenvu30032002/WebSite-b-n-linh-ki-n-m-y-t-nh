@@ -112,6 +112,7 @@ export default function AuthUser() {
         setExpires_in: saveExpiresIn,
         expires_in,
         getUser,
-        setUser: saveUser
+        setUser: saveUser,
+        user
     }
 }

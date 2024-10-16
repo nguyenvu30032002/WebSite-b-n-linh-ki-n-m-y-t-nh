@@ -41,11 +41,11 @@ const InformationComponent = () => {
 
 
   if (getToken() !== null && user?.role === 'Admin') {
-    items.splice(1,0, {
-          label: <>Quản lý</>,
-          key: '1',
-          onClick: () => navigate('/administrator'),
-        });
+        items.splice(1,0, {
+              label: <>Quản lý</>,
+              key: '1',
+              onClick: () => navigate('/administrator'),
+          });
   }
 
   if (getToken() !== null && user?.role === 'User') {

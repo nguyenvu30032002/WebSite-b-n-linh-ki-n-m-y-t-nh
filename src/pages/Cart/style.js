@@ -27,25 +27,26 @@ export const WrapperBody = styled.div`
     border-top: none;
     display: flex;
     align-items: center;
+    display: flex;
     
 `
 
 export const WrapperCart = styled.div`
     width: 70%;
     height: 100%;
-    display: flex;
+    display: flex; 
     flex-direction: column;
     align-items: center;
+    & .svg-inline--fa{
+            width: 50px;
+        }
     & .Order{
         width: 600px;
         height: 70px;
         display: flex;
-        justify-content: center;
         align-items: center;
-        margin: 0 0  20px 10px;
-    & .Order:nth-child(1){
-        margin: 50px 0 10px 0;
-    }
+        margin: 10px ;
+        
         & .informationOrder{
             width: 550px;
             height: 50px;
@@ -95,6 +96,7 @@ export const WrapperCart = styled.div`
                 align-items: center;
             }
         }
+        
     }
 `
 
@@ -108,21 +110,23 @@ export const WrapperDeleteAll = styled(FontAwesomeIcon)`
         margin: -20px 0 0 580px;
         color: #ccc;
         cursor: pointer;
+        & .svg-inline--fa{
+            background-color: red;
+            width: 50px;
+        }
 `
 export const WrapperCheckBox = styled(CheckboxGroup)`
     width: 700px;
-    height: 470px;
+    height: auto; /* Thay vì một chiều cao cố định */
+    max-height: 470px;
     overflow-y: auto;
-    justify-content: center;
+    margin-left: 80px;
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    margin: 25px 0 0 0  ;
+
 `
 
-export const WrapperDelete = styled(FontAwesomeIcon)`
-    margin: 0 0 0 10px;
-    cursor: pointer;
-    color: #ccc;
-`
 
 export const WrapperPay = styled.div`
     width: 30%;
@@ -133,13 +137,26 @@ export const WrapperPay = styled.div`
     justify-content: center;
     border-left: 1px solid #ccc;
     padding: 0 30px 0 10px;
+    margin: -90px 0 0 0;
     & .address{
         width: 100%;
         height: 30px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: 50px 0 0 0;
+        margin: 0 0 5px 0;
+        & p:first-child{
+            font-weight: 500;
+        }
+    }
+
+    & .phone{
+        width: 100%;
+        height: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 5px 0 0 0 ;
         & p:first-child{
             font-weight: 500;
         }
@@ -177,22 +194,28 @@ export const WrapperPay = styled.div`
     }
 
     & .submitData{
+       
         width: 100%;
         height: 60px;
         display: flex;
         justify-content: start;
         align-items: center;
+        /* margin-bottom: 60px; */
         & button{
             width: 100%;
             height: 50px;
             font-size: 20px;
             font-weight: 500;
         }
+        & div{
+            width: 120px;
+          
+        }
     }
 
     & .select{
         height: 80px;
-        margin: 0 0 10px 0;
+        margin: 0 0 80px 0;
         & .ant-radio-wrapper{
             margin: 10px ;
             float: left;

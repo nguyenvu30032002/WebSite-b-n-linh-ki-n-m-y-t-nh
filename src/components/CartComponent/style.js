@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export const WapperCart = styled(FontAwesomeIcon)`
     margin-left: 40px;
     margin-right: 25px;
+    margin-top: 20px;
     width: 20px;
     height: 20px;
     color: black;
@@ -25,9 +26,9 @@ export const WrapperAmount = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-    right: -50px;
-    top: -3px;
+    position: absolute;
+    right: 160px;
+    top: 10px;
     z-index: 1;
     font-size: 13px;
 

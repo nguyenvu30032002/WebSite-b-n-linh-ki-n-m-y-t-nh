@@ -8,6 +8,7 @@ import { faArrowRight, faCartShopping, faMinus, faPlus } from '@fortawesome/free
 import { Button, message, Radio} from 'antd';
 import AuthUser from '../../services/AuthUser';
 import UserService from '../../services/UserService';
+import { PayPalButton } from 'react-paypal-button-v2';
 
 
 const Product = () => {
@@ -64,6 +65,10 @@ const Product = () => {
         message.error('Vui lòng chọn phương thức thanh toán');
         setIsModalOpen(true);
       }
+      else if(getUser().phone === null){
+        message.error('Vui lòng thêm số điện thoại');
+        setIsModalOpen(true);
+      }
       else{
         userOrder(data);
         setIsModalOpen(false);
@@ -81,7 +86,7 @@ const Product = () => {
         imgProduct: product.image,
         nameProduct: product.name,
         amount: amount,
-        totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
+        price: ((product.price) - (product.price * (product.discount / 100))),
         origin: product.origin,
        };
        
@@ -193,9 +198,11 @@ const Product = () => {
             <Footer/>
             <WrapperModal title="Thông tin đơn hàng" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okText="Mua"  
             footer={[
-              <Button key="ok" type="primary" onClick={handleOk}>
-                Mua
-              </Button>,
+                valueRadio === "Chưa thanh toán" && (
+                  <Button key="ok" type="primary" onClick={handleOk}>
+                    Mua
+                  </Button>
+                ),
               <Button key="cancel" onClick={handleCancel}>
                 Hủy
               </Button>,
@@ -226,12 +233,64 @@ const Product = () => {
                     }
                   </div>
                 </div>
-                <p>Số điện thoại: 00124931493</p>
+                <div className='phone'>
+                <p>Số điện thoại: </p>
+                <p>
+                  {
+                      getUser().phone !== null ? (
+                        <p>{getUser().phone}</p>
+                      ) : (
+                        <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
+                      )
+                    }</p>
+                </div>
               </div>
               <Radio.Group onChange={handleRadioChange} value={valueRadio}>
                 <Radio value="Chưa thanh toán">Thanh toán bằng tiền mặt</Radio>
                 <Radio value="Đã thanh toán">Thanh toán bằng tài khoản ngân hàng</Radio>
               </Radio.Group>
+              <div className='paypal'>
+              {
+                valueRadio === 'Đã thanh toán' && (
+                  <PayPalButton
+                amount={Number((((product.price) - (product.price * (product.discount / 100)))*amount)/23000).toFixed(2)}
+                currency="USD"
+                // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
+                onSuccess={(details, data) => {
+                  if(getUser().phone === null) {
+                    message.error('Vui lòng thêm số điện thoại')
+                  }
+                  else if(getUser().address === null){
+                    message.error('Vui lòng thêm địa chỉ nhận hàng')
+                  }
+                  else{
+                    const data =
+                        {
+                          user_id: getUser().id,
+                          userName: getUser().name,
+                          address: getUser().address,
+                          phone: getUser().phone,
+                          status: valueRadio,
+                          product_id: product.id,
+                          imgProduct: product.image,
+                          nameProduct: product.name,
+                          amount: amount,
+                          totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
+                          origin: product.origin,
+                        };
+                        userOrder(data);
+                        setIsModalOpen(false);
+                  }
+                  
+                }}
+                
+                onError={() => {
+                  message.error('Lỗi thanh toán');
+                }}
+              />
+                )
+              }
+              </div>
             </WrapperModal>
         </Wrapper>
         

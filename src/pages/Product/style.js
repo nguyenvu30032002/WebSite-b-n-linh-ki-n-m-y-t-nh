@@ -238,7 +238,7 @@ export const WrapperOrder = styled.div`
 
 export const WrapperModal = styled(Modal)`
     width: 800px !important;
-    height: 500px !important;
+    max-height: 500px !important;
     & .ant-modal-content{
         width: 100%;
         height: 100%;
@@ -270,7 +270,23 @@ export const WrapperModal = styled(Modal)`
                 }
                }
             }
+            & .phone{
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                /* background-color: red; */
+                & p:first-child{
+                    width: 100px;
+                }
+            }
         }
+    }
+
+    & .paypal{
+        width: 200px;
+        height: 200px;
+        display: flex;
+        margin: 10px 0 0 200px;
     }
 
 `

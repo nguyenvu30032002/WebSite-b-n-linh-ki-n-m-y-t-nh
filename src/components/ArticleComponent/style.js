@@ -88,6 +88,9 @@ export const WrapperOrigin = styled.div`
         border-right: 1px solid #ccc;
     }
     & p:last-child{
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         border-left: 1px solid #ccc;
     }
 `
@@ -291,6 +294,9 @@ export const WrapperOriginOutOfStock = styled.div`
         border-right: 1px solid #ccc;
     }
     & p:last-child{
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         border-left: 1px solid #ccc;
     }
 `
