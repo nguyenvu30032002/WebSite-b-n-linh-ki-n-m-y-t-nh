@@ -235,14 +235,14 @@ const Product = () => {
                 </div>
                 <div className='phone'>
                 <p>Số điện thoại: </p>
-                <p>
+                <div>
                   {
                       getUser().phone !== null ? (
                         <p>{getUser().phone}</p>
                       ) : (
                         <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
                       )
-                    }</p>
+                    }</div>
                 </div>
               </div>
               <Radio.Group onChange={handleRadioChange} value={valueRadio}>

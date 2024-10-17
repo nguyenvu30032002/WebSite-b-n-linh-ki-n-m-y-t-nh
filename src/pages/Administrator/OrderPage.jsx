@@ -153,9 +153,9 @@ const OrderPage = () => {
             </div>
         </div>
         <div className='user'>
-              <p>Người mua: <p style={{color: '#4096ff'}}>{selectedOrder.userName}</p></p>
-              <p>Địa chỉ: <p style={{color: '#4096ff'}}>{selectedOrder.address}</p></p>
-              <p>Số điện thoại: <p style={{color: '#4096ff'}}>{selectedOrder.phone}</p></p>
+              <p>Người mua: <span style={{color: '#4096ff'}}>{selectedOrder.userName}</span></p>
+              <p>Địa chỉ: <span style={{color: '#4096ff'}}>{selectedOrder.address}</span></p>
+              <p>Số điện thoại: <span style={{color: '#4096ff'}}>{selectedOrder.phone}</span></p>
 
         </div>
        </>

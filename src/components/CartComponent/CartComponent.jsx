@@ -6,31 +6,20 @@ import UserService from '../../services/UserService';
 
 const CartComponent = () => {
   const {getToken} = AuthUser();
-  const {carts, fetchCart} = UserService();
-  const [loading, setLoading] = useState(true);
-  // useEffect(() => {
-  //   const loadCart = async () => {
-  //     setLoading(true);
-  //     await fetchCart();
-  //     setLoading(false);
-  //   };
-  //   loadCart();
-  // }, [fetchCart]);
+  const {carts} = UserService();
   return (
     <div> 
-        {/* {
-            carts.length > 0 ? (
+          {
+            getToken() !== null && carts.length > 0 && (
               <WrapperAmount>
               {carts.length}
             </WrapperAmount>
-            ) : null
-          } */}
+            ) 
+          }
         {
-          getToken() === null ? (
-            <a href='/login'><WapperCart icon={faCartShopping} /></a>
-          ) : (
+          getToken() !== null ? (
             <a href='/cart'><WapperCart icon={faCartShopping} /></a>
-          )
+          ) : null
         }
         
     </div>
