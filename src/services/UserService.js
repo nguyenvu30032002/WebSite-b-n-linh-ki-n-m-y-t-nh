@@ -64,11 +64,14 @@ export default function UserService() {
 
   ////////////////////////////////////////////////////////////////////////
 
-  const updateCondition = async(condition, idOrder) => {
+  const updateCondition = async(condition, idOrder, product_id) => {
     try{
+      console.log(product_id, condition , idOrder)
       const response = await axios.post(
         `${apiUrl}/condition/${idOrder}`, 
-        {condition: condition},
+        {condition: condition,
+          product_id: product_id
+        },
         {
             headers: {
                 "Content-Type": "application/json",

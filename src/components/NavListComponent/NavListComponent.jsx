@@ -7,9 +7,10 @@ import ProductService from '../../services/ProductService';
 
 const NavListComponent = () => {
   const {categories} = ProductService();
+  const {getAllProduct} = ProductService();
   const handlesubmit = (e) => {
       const name = e.target.innerText;
-      console.log(name)
+      getAllProduct(name)
   }
   return (
     <Wrapper>

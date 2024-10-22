@@ -32,6 +32,7 @@ const AuthUserWrapper = () => {
                     <Route path='/register' element={<Register />} />
                     <Route path='/forgotpassword' element={<ForgotPassword/>} />
                     <Route path='/' element={<Home />} />
+                    <Route path='/administrator' element={<Administrator />} />
                 </>
 
             {/* Các route khác chỉ cho phép người dùng đã đăng nhập */}
@@ -39,7 +40,7 @@ const AuthUserWrapper = () => {
                 <>
                     <Route path='/information' element={<Information />} />
                     <Route path='/order' element={<Order />} />
-                    <Route path='/administrator' element={<Administrator />} />
+                    
                     <Route path='/changePassword' element={<ChangPassword />} />
                     <Route path='/product/id/:id/name/:name' element={<Product />} />
                     <Route path='/cart' element={<Cart />} />

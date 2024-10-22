@@ -1,12 +1,12 @@
+import ProductService from "../../services/ProductService";
 import {WrapperSearch} from "./style"
 
 
 const SearchComponent = () => {
-    
+    const {getAllProduct} = ProductService();
 
     const handleButton = (value) => {
-        console.log("Sending search data 2:", value);
-        // Thực hiện gọi API hoặc xử lý dữ liệu
+       getAllProduct(value)
     };
     return(
         <div>

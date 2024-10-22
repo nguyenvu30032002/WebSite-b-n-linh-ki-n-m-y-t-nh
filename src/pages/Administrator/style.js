@@ -48,6 +48,7 @@ export const Wrappertable = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color
     & .ant-flex{
       width: 890px;
       height: 550px;

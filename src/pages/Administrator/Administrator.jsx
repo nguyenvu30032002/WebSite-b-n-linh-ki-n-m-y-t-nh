@@ -6,9 +6,11 @@ import { DownCircleFilled } from '@ant-design/icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter, faParachuteBox, faPeopleRoof, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faProductHunt } from '@fortawesome/free-brands-svg-icons';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import AdminPage from './AdminPage'
 import OrderPage from './OrderPage'
+import UserPage from './UserPage'
+import ProductPage from './ProductPage'
+import CategoriesPage from './CategoriesPage'
 
 const Administrator = () => {
   const [selectedPage, setSelectedPage] = useState('admin');
@@ -59,11 +61,11 @@ const Administrator = () => {
             case 'admin':
                 return <AdminPage />;
             case 'user':
-                return <div>Thông tin Người dùng</div>;
+                return <UserPage/>;
             case 'product':
-                return <div>Thông tin Sản phẩm</div>;
+                return <ProductPage/>;
             case 'category':
-                return <div>Thông tin Loại sản phẩm</div>;
+                return <CategoriesPage/>;
             case 'supplier':
                 return <div>Thông tin Nhà cung cấp</div>;
             case 'order':

@@ -6,7 +6,6 @@ import { Button, Checkbox, InputNumber, message, Radio } from 'antd';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import UserService from '../../services/UserService';
 import AuthUser from '../../services/AuthUser';
-import { PayPalButton } from 'react-paypal-button-v2';
 
 const Cart = () => {
   const {carts, updateCart, orderCart, deleteCart} = UserService();
@@ -20,15 +19,6 @@ const Cart = () => {
 
   const [totalPrice, setTotalPrice] = useState(0);
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = `https://www.paypal.com/sdk/js?client-id=AfB9WXP0WczD-_mnfInE8yKoZf2Qy_BqrsB83l4O1AeW2iauLKLXNV29i0cNbTpZg_bQsd0V_sySxFnI`;
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   // Tính tổng giá trị dựa trên sản phẩm được chọn và số lượng
   useEffect(() => {
@@ -208,55 +198,7 @@ const Cart = () => {
             {checkedList.length > 0 && value === "Chưa thanh toán" && (
               <Button type="primary" onClick={handleOrder}>Đặt hàng</Button>
             )}
-            {checkedList.length > 0 && value === "Đã thanh toán" ? (
-              <PayPalButton
-                amount={Number(totalPrice/23000).toFixed(2)}
-                currency="USD"
-                // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
-                onSuccess={(details, data) => {
-                  if(user.phone === null) {
-                    message.error('Vui lòng thêm số điện thoại')
-                  }
-                  else if(user.address === null){
-                    message.error('Vui lòng thêm địa chỉ nhận hàng')
-                  }
-                  else{
-                    // const selectedCarts = carts.filter(cart => checkedList.includes(cart.id));
-                    const orders = selectedCarts.map((cart) => ({
-                      user_id: user.id,
-                      userName: user.name,
-                      address: user.address,
-                      phone: user.phone,
-                      status: value,
-                      product_id: cart.product_id,
-                      imgProduct: cart.imgProduct,
-                      nameProduct: cart.nameProduct,
-                      amount: cart.amount,
-                      totalMoney: cart.totalPrice,
-                      origin: cart.origin,
-                      id_cart: cart.id
-                    }));
-                    orderCart(orders).then(() => {
-                      // Reset checkedList và thông báo thành công
-                      setCheckedList([]);
-                    })
-                  }
-                  
-                  // OPTIONAL: Call your server to save the transaction
-                  // return fetch("/paypal-transaction-complete", {
-                  //   method: "post",
-                  //   body: JSON.stringify({
-                  //     orderID: data.orderID
-                  //   })
-                  // });
-                }}
-                
-                onError={() => {
-                  message.error('Lỗi thanh toán');
-                }}
-              />
-            ):null
-            }
+           
           </div>
         </WrapperPay>
       </WrapperBody>

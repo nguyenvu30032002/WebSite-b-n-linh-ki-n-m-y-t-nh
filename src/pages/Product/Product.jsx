@@ -8,7 +8,6 @@ import { faArrowRight, faCartShopping, faMinus, faPlus } from '@fortawesome/free
 import { Button, message, Radio} from 'antd';
 import AuthUser from '../../services/AuthUser';
 import UserService from '../../services/UserService';
-import { PayPalButton } from 'react-paypal-button-v2';
 
 
 const Product = () => {
@@ -18,6 +17,7 @@ const Product = () => {
     const [amount, setAmount] = useState(1)
     const navigate = useNavigate(); 
     const { userOrder, userCart} = UserService();
+
 
     const handlePlus = () =>{
         setAmount(() => amount + 1)
@@ -250,46 +250,7 @@ const Product = () => {
                 <Radio value="Đã thanh toán">Thanh toán bằng tài khoản ngân hàng</Radio>
               </Radio.Group>
               <div className='paypal'>
-              {
-                valueRadio === 'Đã thanh toán' && (
-                  <PayPalButton
-                amount={Number((((product.price) - (product.price * (product.discount / 100)))*amount)/23000).toFixed(2)}
-                currency="USD"
-                // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
-                onSuccess={(details, data) => {
-                  if(getUser().phone === null) {
-                    message.error('Vui lòng thêm số điện thoại')
-                  }
-                  else if(getUser().address === null){
-                    message.error('Vui lòng thêm địa chỉ nhận hàng')
-                  }
-                  else{
-                    const data =
-                        {
-                          user_id: getUser().id,
-                          userName: getUser().name,
-                          address: getUser().address,
-                          phone: getUser().phone,
-                          status: valueRadio,
-                          product_id: product.id,
-                          imgProduct: product.image,
-                          nameProduct: product.name,
-                          amount: amount,
-                          totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
-                          origin: product.origin,
-                        };
-                        userOrder(data);
-                        setIsModalOpen(false);
-                  }
-                  
-                }}
-                
-                onError={() => {
-                  message.error('Lỗi thanh toán');
-                }}
-              />
-                )
-              }
+              
               </div>
             </WrapperModal>
         </Wrapper>

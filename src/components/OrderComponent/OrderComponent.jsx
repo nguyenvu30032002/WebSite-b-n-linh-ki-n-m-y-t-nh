@@ -48,6 +48,7 @@ const OrderComponent = ({ selectedOrderStatus }) => {
                   <button onClick={() => {
                       const condition = "Hủy";
                       const idOrder = order.id
+                      
                       updateCondition(condition,idOrder)
                       }}>Hủy
                   </button>
@@ -59,7 +60,8 @@ const OrderComponent = ({ selectedOrderStatus }) => {
                     <button onClick={() => {
                       const condition = "Xác nhận";
                       const idOrder = order.id
-                      updateCondition(condition,idOrder)
+                      const product_id = order.product_id
+                      updateCondition(condition,idOrder,product_id)
                       }}>Xác nhận
                     </button>
                     <button onClick={() => {
