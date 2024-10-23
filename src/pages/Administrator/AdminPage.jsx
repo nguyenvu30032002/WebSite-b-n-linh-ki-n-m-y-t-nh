@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Flex, Form, Input, message, Select } from 'antd';
 import AdminService from '../../services/AdminService'
 import { WrapperTable, WrapperToggle, WrapperToggleShow } from './Admin';
 import Search from 'antd/es/input/Search';
-import { DeleteOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons';
+import { CloseOutlined, DeleteOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
+import { WrapperModal } from './Admin';
+import img from '../../assets/images/avatar/d0tb7-copy.jpg'
+
 
 const columns = [
     {
@@ -16,6 +19,8 @@ const columns = [
     {
       title: 'Email',
       dataIndex: 'email',
+      sorter: (a, b) => a.email.length - b.email.length,
+        sortDirections: ['descend'],
     },
     {
       title: 'Address',
@@ -55,18 +60,28 @@ const AdminPage = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showWrapperToggle, setShowWrapperToggle] = useState(false);
-    const {admins, createAdmin, deleteAdmin} = AdminService()
+    const [selectedAdmin, setSelectedAdmin] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [formData, setFormData] = useState('')
+    const {createAdmin, deleteAdmin, getAdmin, updateAdmin,admins} = AdminService()
+
+
+
+
     const dataSource = admins.map((admin) => ({
       key: admin.id,
       name: admin.name,
       email: admin.email,
+      role: admin.role,
+      gender: admin.gender,
       address: admin.address,
-      phone: admin.phone
+      phone: admin.phone,
+      avatar: admin.avatar,
+      date_of_birth: admin.date_of_birth
     }));
 
-    const onSearch = (value) => {
-      console.log(value)
-    }
+/////////////////////////////////////////////////////////////////////////////////////////
 
     const start = () => {
       setLoading(true);
@@ -77,7 +92,6 @@ const AdminPage = () => {
       }, 1000);
     };
     const onSelectChange = (newSelectedRowKeys) => {
-      console.log('newSelectedRowKeys', newSelectedRowKeys)
       setSelectedRowKeys(newSelectedRowKeys);
     };
     const rowSelection = {
@@ -85,8 +99,10 @@ const AdminPage = () => {
       onChange: onSelectChange,
     };
     const hasSelected = selectedRowKeys.length > 0;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////    
     
-    const exportToExcel = () => {
+      const exportToExcel = () => {
       // Create a new array of data excluding the checkbox
       const dataToExport = dataSource.map(({ key, ...rest }) => rest); // Exclude the 'key' property if not needed
 
@@ -101,7 +117,9 @@ const AdminPage = () => {
       XLSX.writeFile(workbook, 'admin_data.xlsx');
     };
 
-    const toggleWrapper = () => {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+  const toggleWrapper = () => {
       setShowWrapperToggle(!showWrapperToggle);
   };
 
@@ -122,14 +140,70 @@ const AdminPage = () => {
       }
     }).catch((error) => {
       message.error('Có lỗi xảy ra, vui lòng thử lại!');
-      console.error(error); // In ra lỗi để dễ dàng debug
+      
     });
   };
 
+  const onSearch = (value) => {
+    getAdmin(value)
+  }
 
   const DeleteUser = () => {
     deleteAdmin(selectedRowKeys)
+    .then((response) =>{
+      if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
+        message.success('Xóa người dùng thành công');
+      } else {
+          message.error('Xóa người dùng thất bại'); // Nếu có lỗi từ server
+      }
+    })
+    .catch((error) => {
+      message.error('Có lỗi xảy ra, vui lòng thử lại!')
+    })
   };
+
+//////////////////////////////////////////
+
+const handleRowClick = (record) => {
+  setSelectedAdmin(record); // Lưu thông tin hàng đã chọn
+  setIsModalOpen(true); // Mở Modal
+};
+
+
+const handleCancel = () => {
+  setIsModalOpen(false)
+}
+
+const isClose = () => {
+  setIsModalOpen(false);
+};
+
+const handleChange = (value) => {
+  setFormData((prevFormData) => ({
+    ...prevFormData,
+    role: value, 
+}));
+};
+
+const handleUpdate = () => {
+    const id = selectedAdmin.key
+    updateAdmin(formData,id)
+    .then((response) => {
+      if(response.data.message === 'success')
+      {
+        message.success('Thay đổi thành công')
+        setIsModalOpen(false)
+      }
+      else{
+        message.error('Thay đổi thất bại')
+        setIsModalOpen(false);
+      }
+    })
+    .catch((error) => {
+      message.error('Có lỗi xảy ra, vui lòng thử lại!')
+      setIsModalOpen(false);
+    })
+};
 
   return (
       <>
@@ -156,10 +230,16 @@ const AdminPage = () => {
             <PrinterOutlined  onClick={exportToExcel} style={{cursor:'pointer', marginLeft:'1070px', marginRight:'40px', position: 'absolute'}} />
           </Flex>
           
-          <WrapperTable rowSelection={rowSelection} columns={columns} dataSource={dataSource} pagination={{ pageSize: 5 }} />
+          <WrapperTable rowSelection={rowSelection} columns={columns} dataSource={dataSource} pagination={{ pageSize: 7 }} onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+          style: { cursor: 'pointer' }, // Gọi hàm khi click vào hàng
+        })}/>
         </Flex>
         {showWrapperToggle ? (
             <WrapperToggle>
+                <div className='cancel'>
+                <CloseOutlined onClick={() => setShowWrapperToggle(false)}/>
+                </div>
                 <Form
                 {...formItemLayout}
                 form={form}
@@ -273,6 +353,83 @@ const AdminPage = () => {
             </WrapperToggleShow>
         )}
         
+        <WrapperModal title="Thông tin quản trị viên" maskClosable={isModalOpen} closable={false} onCancel={isClose} open={isModalOpen}  footer={[
+          <Button key="update" type="primary" onClick={handleUpdate}>
+          Cập nhật
+        </Button>,
+        <Button key="cancel" onClick={handleCancel}>
+          Hủy
+        </Button>
+          
+        ]} >
+          {selectedAdmin ? ( // Kiểm tra xem selectedAdmin không phải là null
+            <>
+              <div className='user'>
+                  {
+                    selectedAdmin.avatar !== null ?(
+                      <img src={selectedAdmin.imgProduct} alt={selectedAdmin.nameProduct} />
+                    ) : (
+                      <img src={img} alt="null" />
+                    )
+                  }
+                 <div className='infor'>
+                  <div>
+                    <label>Email: </label>
+                    <p>{selectedAdmin.email}</p>
+                  </div>
+                  <div>
+                    <label>Nickname: </label>
+                    <p>{selectedAdmin.name}</p>
+                  </div>
+                  <div>
+                    <label>Số điện thoại: </label>
+                    <p>{selectedAdmin.phone}</p>
+                  </div>
+                  <div>
+                    <label>Địa chỉ: </label>
+                    {
+                      selectedAdmin.address !== null ? (
+                        <p>{selectedAdmin.address}</p>
+                      ) : (
+                        <span>Chờ cập nhật</span>
+                      )
+                    }
+                  </div>
+                  <div>
+                    <label>Ngày sinh: </label>
+                    {
+                      selectedAdmin.date_of_birth !== null ? (
+                        <p>{selectedAdmin.date_of_birth}</p>
+                      ) : (
+                        <span>Chờ cập nhật</span>
+                      )
+                    }
+                  </div>
+                  <div>
+                    <label>Giới tính:</label>
+                    <p>{selectedAdmin.gender}</p>
+                  </div>
+                  <div>
+                  <label>Chức vụ:</label>
+                  <Select
+                      defaultValue={selectedAdmin.role}
+                      onChange={handleChange}
+                      name= 'role'
+                      options={[
+                        { value: 'Admin', label: 'Admin' },
+                        { value: 'User', label: 'User' },
+                        
+                      ]}
+                  />
+                  </div>
+                 </div>
+              </div>
+            </>
+              
+          ) : null
+          }
+        </WrapperModal>
+
       </>
   )
 }

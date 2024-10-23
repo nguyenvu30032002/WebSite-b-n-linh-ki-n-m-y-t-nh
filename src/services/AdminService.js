@@ -7,8 +7,8 @@ export default function AdminService(){
     const apiUrl = process.env.REACT_APP_API_URL_ADMIN;
     const {token} = AuthUser();
     const [orders, setOrders] = useState([]);
-    const [admins, setAdmins] = useState([]);
     const [users, setUsers] = useState([]);
+    const [admins, setAdmins] = useState([]);
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([])
 
@@ -37,9 +37,10 @@ export default function AdminService(){
         }
     }
 
-    const getAdmin = useCallback(async () => {
+    const getAdmin = useCallback(async (value) => {
         try{
             const response = await axios.get(`${apiUrl}/getAdmin`, {
+                params: { search: value },
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -52,6 +53,25 @@ export default function AdminService(){
         }
     }, [])
 
+    const updateAdmin = async(formData, id) => {
+        try{
+            const response = await axios.post(`${apiUrl}/updateRole`,
+                {
+                    data: formData.role,
+                    id: id
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+            });
+            return response
+        }
+        catch(error){
+            throw error
+        }
+    }
+
     const deleteAdmin = async(selectedRowKeys) =>{
         try{
             const response = await axios.delete(`${apiUrl}/deleteAdmin`,
@@ -61,17 +81,12 @@ export default function AdminService(){
                     },
                 }
             )
-            if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
-                message.success('Xóa người dùng thành công');
-            } else {
-                message.error('Xóa người dùng thất bại'); // Nếu có lỗi từ server
-            }
+            return response
         }
         catch(error){
             throw error
         }
     }
-
 
     useEffect(() => {
         const fetchAdmin = async() => {
@@ -85,8 +100,6 @@ export default function AdminService(){
         }
         fetchAdmin()
     }, [getAdmin])
-
-
 //////////////////////////////////// USER ////////////////////////////
 
 const getUser = useCallback(async () => {
@@ -246,7 +259,9 @@ useEffect(() => {
     }
     return{
         createAdmin,
+        getAdmin,
         admins,
+        updateAdmin,
         deleteAdmin,
         users,
         products,

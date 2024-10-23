@@ -29,7 +29,7 @@ export default function ProductService() {
                 },
             });
             setProducts(response.data); // Cập nhật danh sách sản phẩm
-            // return response.data;
+            return response.data;
         } catch (error) {
             throw error;
         }

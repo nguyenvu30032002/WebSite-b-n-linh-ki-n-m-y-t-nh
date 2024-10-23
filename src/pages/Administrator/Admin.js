@@ -1,4 +1,4 @@
-import {  Table } from "antd";
+import {  Modal, Table } from "antd";
 import styled, { keyframes } from "styled-components";
 
 
@@ -61,7 +61,14 @@ export const WrapperToggle = styled.div`
     & .ant-form {
       margin-right: 30px;
       width: 100%;
-      /* border: 1px solid #000; */
+    }
+    & .cancel{
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: 25px;
+      margin: 5px 0 0 10px;
+      cursor: pointer;
     }
 `
 
@@ -77,4 +84,63 @@ export const WrapperToggleShow = styled.div`
     border-top-left-radius: 15px ;
     border-bottom-left-radius: 15npx;
     
+`
+export const WrapperModal = styled(Modal)`
+  width: 680px !important;
+  height: 550px !important;
+  & .ant-modal-content{
+    width: 100% ;
+    height: 100%;
+    & .user{
+      width: 100%;
+      height: 400px;
+      display: flex;
+      border-bottom: 1px solid #ccc;
+      & img{
+        width: 250px;
+        height: 250px;
+        margin: 0 20px 0 0;
+      }
+      & .infor{
+        display: flex;
+        flex-direction: column;
+        & div{
+          margin: 0 0 10px 0;
+          display: flex;
+          align-items: center;
+          height: 50px;
+          & label{
+            font-size: 15px;
+            font-weight: 500;
+            margin: 0 10px 0 10px;
+          }
+          & p{
+            color: #ff4d4f;
+            font-size: 20px;
+            font-weight: 500;
+          }
+          & span{
+            color: #cccc;
+            font-size: 20px;
+            font-weight: 500;
+          }
+          & .ant-select-selector{
+            height: 30px;
+            width: 120px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            & .ant-select-selection-item{
+              color: #000;
+              font-weight: 400;
+            }
+          }
+          & .ant-select-arrow{
+              margin-top: 3px;
+            }
+        }
+      }
+    }
+  }
 `
