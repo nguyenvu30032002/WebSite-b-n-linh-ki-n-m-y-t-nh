@@ -45,7 +45,7 @@ const slideOut = keyframes`
 
 
 export const WrapperToggle = styled.div`
-    height: 520px;
+    height: 150px;
     background-color: #fff;
     z-index: 1;
     position: absolute;
@@ -59,8 +59,9 @@ export const WrapperToggle = styled.div`
     justify-content: center;
     align-items: center;
     & .ant-form {
-      margin-right: 30px;
+      margin: 45px 30px 0 0;
       width: 100%;
+      
     }
     & .cancel{
       position: absolute;
@@ -69,12 +70,13 @@ export const WrapperToggle = styled.div`
       font-size: 25px;
       margin: 5px 0 0 10px;
       cursor: pointer;
+   
     }
 `
 
 export const WrapperToggleShow = styled.div`
     right: 0;
-    height: 520px;
+    height: 150px;
     background-color: #fff;
     overflow: hidden;
     z-index: 1;
@@ -86,61 +88,13 @@ export const WrapperToggleShow = styled.div`
     
 `
 export const WrapperModal = styled(Modal)`
-  width: 680px !important;
-  height: 550px !important;
-  & .ant-modal-content{
-    width: 100% ;
-    height: 100%;
-    & .user{
-      width: 100%;
-      height: 430px;
-      display: flex;
-      border-bottom: 1px solid #ccc;
-      & img{
-        width: 250px;
-        height: 250px;
-        margin: 0 20px 0 0;
-      }
-      & .infor{
-        display: flex;
-        flex-direction: column;
-        & div{
-          margin: 0 0 10px 0;
-          display: flex;
-          align-items: center;
-          height: 50px;
-          & label{
-            font-size: 15px;
-            font-weight: 500;
-            margin: 0 10px 0 10px;
-          }
-          & p{
-            color: #ff4d4f;
-            font-size: 20px;
-            font-weight: 500;
-          }
-          & span{
-            color: #cccc;
-            font-size: 20px;
-            font-weight: 500;
-          }
-          & .ant-select-selector{
-            height: 30px;
-            width: 120px;
-            margin-top: 25px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            & .ant-select-selection-item{
-              color: #000;
-              font-weight: 400;
-            }
-          }
-          & .ant-select-arrow{
-              margin-top: 3px;
-            }
-        }
-      }
-    }
-  }
+& input{
+  width: 350px;
+  height: 40px;
+  padding: 0 0 0 10px ;
+  outline: none;
+  font-size: 20px;
+  margin: 10px 0 10px 0;
+}  
+
 `

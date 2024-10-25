@@ -7,10 +7,8 @@ export default function AdminService(){
     const apiUrl = process.env.REACT_APP_API_URL_ADMIN;
     const {token} = AuthUser();
     const [orders, setOrders] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [admins, setAdmins] = useState([]);
     const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([])
+
 
 ///////////// ADMIN ///////////////////////////////////////
 
@@ -45,17 +43,16 @@ export default function AdminService(){
                     "Content-Type": "application/json",
                 },
             })
-            setAdmins(response.data)
             return response.data
         }
         catch(error){
             throw error
         }
-    }, [])
+    }, [apiUrl])
 
     const updateAdmin = async(formData, id) => {
         try{
-            const response = await axios.post(`${apiUrl}/updateRole`,
+            const response = await axios.post(`${apiUrl}/updateRoleAdmin`,
                 {
                     data: formData.role,
                     id: id
@@ -88,49 +85,57 @@ export default function AdminService(){
         }
     }
 
-    useEffect(() => {
-        const fetchAdmin = async() => {
-            try{
-                const dataAdmin = await getAdmin()
-                setAdmins(dataAdmin)
-            }
-            catch(error){
-                throw error
-            }
-        }
-        fetchAdmin()
-    }, [getAdmin])
 //////////////////////////////////// USER ////////////////////////////
 
-const getUser = useCallback(async () => {
+const getUser = useCallback(async (value) => {
     try{
         const response = await axios.get(`${apiUrl}/getUser`, {
+            params: { search: value },
             headers: {
                 "Content-Type": "application/json",
             },
         })
-        setUsers(response.data)
         return response.data
     }
     catch(error){
         throw error
     }
-}, [])
+}, [apiUrl])
 
-
-useEffect(() => {
-    const fetchUser = async() => {
-        try{
-            const dataUser = await getUser()
-            setUsers(dataUser)
-        }
-        catch(error){
-            throw error
-        }
+const updateUser = async(formData, id) => {
+    try{
+        const response = await axios.post(`${apiUrl}/updateRoleUser`,
+            {
+                data: formData.role,
+                id: id
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+        });
+        return response
     }
-    fetchUser()
-}, [getUser])
+    catch(error){
+        throw error
+    }
+}
 
+const deleteUser = async(selectedRowKeys) =>{
+    try{
+        const response = await axios.delete(`${apiUrl}/deleteUser`,
+            {    data: { selectedRowKeys }, 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
 
 ////////////////////// PRODUCT ///////////////////////////////
 
@@ -147,7 +152,7 @@ const getProduct = useCallback(async () => {
     catch(error){
         throw error
     }
-}, [])
+}, [apiUrl])
 
 
 useEffect(() => {
@@ -166,36 +171,75 @@ useEffect(() => {
 
 ////////////////////////// CATWGORIES ////////////////////
 
-const getCategories = useCallback(async () => {
+const createCategory = async(values, admin_id) => {
     try{
-        const response = await axios.get(`${apiUrl}/getCategories`, {
+        const response = await axios.post(`${apiUrl}/createCategory`, 
+        {
+            name: values.name,
+            admin_id: admin_id
+        },
+        {
             headers: {
                 "Content-Type": "application/json",
             },
         })
-        setCategories(response.data)
+        return response;
+    }
+
+    catch(error){
+        throw error
+    }
+}
+
+const getCategories = useCallback(async (value) => {
+    try{
+        const response = await axios.get(`${apiUrl}/getCategories`, {
+            params: { search: value },
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
         return response.data
     }
     catch(error){
         throw error
     }
-}, [])
+}, [apiUrl])
 
-
-useEffect(() => {
-    const fetchCategories = async() => {
-        try{
-            const dataCategories = await getCategories()
-            setCategories(dataCategories)
-        }
-        catch(error){
-            throw error
-        }
+const updateCategory = async(data,id) => {
+    try{
+        const response = await axios.post(`${apiUrl}/updateCategory`,
+            {
+                name: data,
+                id: id
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+        });
+        return response
     }
-    fetchCategories()
-}, [getCategories])
+    catch(error){
+        throw error
+    }
+}
 
-
+const deleteCategories = async(selectedRowKeys) =>{
+    try{
+        const response = await axios.delete(`${apiUrl}/deleteCategories`,
+            {    data: { selectedRowKeys }, 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
 
 ///////////////////////// ORDER ///////////////////////////
 
@@ -212,7 +256,7 @@ useEffect(() => {
         } catch (error) {
             throw error;
         }
-    }, []);
+    }, [apiUrl]);
 
     useEffect(() => {
         const fetchAllOrder = async() => {
@@ -260,12 +304,16 @@ useEffect(() => {
     return{
         createAdmin,
         getAdmin,
-        admins,
         updateAdmin,
         deleteAdmin,
-        users,
+        getUser,
+        updateUser,
+        deleteUser,
         products,
-        categories,
+        createCategory,
+        getCategories,
+        updateCategory,
+        deleteCategories,
         updateOrder,
         orders
     }

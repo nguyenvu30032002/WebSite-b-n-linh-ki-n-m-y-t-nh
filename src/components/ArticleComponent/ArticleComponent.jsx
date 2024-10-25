@@ -10,7 +10,6 @@ import ProductService from '../../services/ProductService';
 const ArticleComponent = () => {
   const {getToken} = AuthUser();
   const {products,getAllProduct} = ProductService();
-  console.log('product', getAllProduct)
   // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;

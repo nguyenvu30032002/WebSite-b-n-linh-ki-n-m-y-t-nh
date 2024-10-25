@@ -25,7 +25,7 @@ const InformationComponent = () => {
     }, 
     {
       label: <>Đổi mật khẩu</>,
-      key: '3',
+      key: '2',
       onClick: () => navigate('/changePassword')
     },
     // {
@@ -33,25 +33,15 @@ const InformationComponent = () => {
     // },
     {
       label: 'Đăng xuất',
-      key: '4',
+      key: '3',
       onClick :logoutUser,
     },
    
   ];
-
-
-  if (getToken() !== null && user?.role === 'Admin') {
-        items.splice(1,0, {
-              label: <>Quản lý</>,
-              key: '1',
-              onClick: () => navigate('/administrator'),
-          });
-  }
-
   if (getToken() !== null && user?.role === 'User') {
     items.splice(2, 0, {
       label: <>Đơn hàng</>,
-      key: '2',
+      key: '1',
       onClick: () => navigate('/order'),
     });
   }

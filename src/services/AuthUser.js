@@ -24,11 +24,6 @@ export default function AuthUser() {
     const saveToken = (token) => {
         sessionStorage.setItem('token', JSON.stringify(token));
         setToken(token);
-        message.success('Đăng nhập thành công')
-        setTimeout(() => {
-            navigate('/');
-        }, 500);
-        
     }
 
     const saveExpiresIn = (expires_in) => {
@@ -74,8 +69,20 @@ export default function AuthUser() {
  
      const saveUser = (userData) => {
        const encryptedUser = CryptoJS.AES.encrypt(JSON.stringify(userData), secretKey).toString(); // Mã hóa
-     sessionStorage.setItem('user', encryptedUser); 
-     setUser(userData); 
+        sessionStorage.setItem('user', encryptedUser); 
+        setUser(userData); 
+        if(userData.role === 'User'){
+            message.success('Đăng nhập thành công')
+            setTimeout(() => {
+                navigate('/');
+            }, 500);
+        }
+        else{
+            message.success('Đăng nhập thành công')
+            setTimeout(() => {
+                navigate('/administrator');
+            }, 500);
+        }
     };
  
 //    const fetchUser = async () => {

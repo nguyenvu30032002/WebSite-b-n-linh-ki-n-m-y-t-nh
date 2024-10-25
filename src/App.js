@@ -23,24 +23,34 @@ function App() {
 }
 
 const AuthUserWrapper = () => {
-    const { getToken } = AuthUser();
-    const isAuthenticated = getToken();
+    const { getToken, user } = AuthUser();
     return (
         <Routes>
-                <>
-                    <Route path='/login' element={<Login />} />
-                    <Route path='/register' element={<Register />} />
-                    <Route path='/forgotpassword' element={<ForgotPassword/>} />
-                    <Route path='/' element={<Home />} />
-                    <Route path='/administrator' element={<Administrator />} />
-                </>
+            <>
+                {/* Các route không yêu cầu đăng nhập */}
+                <Route path='/login' element={<Login />} />
+                <Route path='/register' element={<Register />} />
+                <Route path='/forgotpassword' element={<ForgotPassword />} />
 
-            {/* Các route khác chỉ cho phép người dùng đã đăng nhập */}
-            {isAuthenticated !== null && (
+                {/* Render Home chỉ nếu người dùng không phải là Admin */}
+                {(!user || user.role !== 'Admin') ? (
+                    <Route path='/' element={<Home />} />
+                ) : (
+                    <Route path='/administrator' element={<Administrator />} />
+                )}
+            </>
+
+            {/* Các route chỉ cho phép người dùng đã đăng nhập */}
+            {getToken() !== null && (
                 <>
+                    {/* Các route chỉ dành cho Admin */}
+                    {user && user.role === 'Admin' && (
+                        <Route path='/administrator' element={<Administrator />} />
+                    )}
+
+                    {/* Các route khác dành cho người dùng đã đăng nhập */}
                     <Route path='/information' element={<Information />} />
                     <Route path='/order' element={<Order />} />
-                    
                     <Route path='/changePassword' element={<ChangPassword />} />
                     <Route path='/product/id/:id/name/:name' element={<Product />} />
                     <Route path='/cart' element={<Cart />} />

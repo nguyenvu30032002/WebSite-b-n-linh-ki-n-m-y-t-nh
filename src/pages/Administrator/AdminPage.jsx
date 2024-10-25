@@ -62,11 +62,23 @@ const AdminPage = () => {
     const [showWrapperToggle, setShowWrapperToggle] = useState(false);
     const [selectedAdmin, setSelectedAdmin] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const [admins, setAdmins] = useState([]);
     const [formData, setFormData] = useState('')
-    const {createAdmin, deleteAdmin, getAdmin, updateAdmin,admins} = AdminService()
+    const [searchTerm, setSearchTerm] = useState('');
+    const {createAdmin, deleteAdmin, getAdmin, updateAdmin} = AdminService()
 
-
+    useEffect(() => {
+      const fetchAdmin = async() => {
+          try{
+              const dataAdmin = await getAdmin(searchTerm)
+              setAdmins(dataAdmin)
+          }
+          catch(error){
+              throw error
+          }
+      }
+      fetchAdmin()
+  }, [getAdmin, searchTerm])
 
 
     const dataSource = admins.map((admin) => ({
@@ -75,7 +87,7 @@ const AdminPage = () => {
       email: admin.email,
       role: admin.role,
       gender: admin.gender,
-      address: admin.address,
+      address: admin.address !== null ? admin.address : 'Chờ cập nhật',
       phone: admin.phone,
       avatar: admin.avatar,
       date_of_birth: admin.date_of_birth
@@ -131,21 +143,26 @@ const AdminPage = () => {
       const data = response.data; // Lấy dữ liệu từ phản hồi
       if (data.message === 'already existed') {
           message.error('Tài khoản đã tồn tại');
+          form.resetFields(); 
+          setShowWrapperToggle(false);
       } else if (data.message === 'success') {
           message.success('Tạo tài khoản thành công');
           form.resetFields(); 
           setShowWrapperToggle(false);
       } else {
           message.error('Lỗi tạo tài khoản');
+          form.resetFields(); 
+          setShowWrapperToggle(false);
       }
     }).catch((error) => {
       message.error('Có lỗi xảy ra, vui lòng thử lại!');
-      
+      form.resetFields(); 
+      setShowWrapperToggle(false);
     });
   };
 
   const onSearch = (value) => {
-    getAdmin(value)
+    setSearchTerm(value)
   }
 
   const DeleteUser = () => {
@@ -207,7 +224,7 @@ const handleUpdate = () => {
 
   return (
       <>
-      <h1>Admin</h1>
+      <h1>Admin Page</h1>
         <Flex gap="middle" vertical>
           <Flex align="center" gap="middle">
             <Button type="primary" onClick={start} disabled={!hasSelected} loading={loading}>
@@ -232,7 +249,7 @@ const handleUpdate = () => {
           
           <WrapperTable rowSelection={rowSelection} columns={columns} dataSource={dataSource} pagination={{ pageSize: 7 }} onRow={(record) => ({
           onClick: () => handleRowClick(record),
-          style: { cursor: 'pointer' }, // Gọi hàm khi click vào hàng
+          style: { cursor: 'pointer' },
         })}/>
         </Flex>
         {showWrapperToggle ? (
@@ -243,9 +260,8 @@ const handleUpdate = () => {
                 <Form
                 {...formItemLayout}
                 form={form}
-                name="register"
+                name="Add new"
                 onFinish={onFinish}
-                initialValues={{ residence: ['zhejiang', 'hangzhou', 'xihu'], prefix: '86' }}
                 style={{ maxWidth: 600 }}
                 scrollToFirstError
               >
@@ -321,7 +337,7 @@ const handleUpdate = () => {
                     { max: 15, message: 'Phone Number must be at most 15 characters.' },
                     {
                       pattern: /^[0-9]*$/, // Chỉ cho phép số
-                      message: 'Phone Number must be numeric!', // Thông báo lỗi nếu không phải là số
+                      message: 'Phone Number must be numeric!',
                     },
                   ]}
                 >
@@ -342,7 +358,7 @@ const handleUpdate = () => {
               
                 <Form.Item {...tailFormItemLayout}>
                   <Button type="primary" htmlType="submit">
-                    Register
+                    Add new
                   </Button>
                 </Form.Item>
               </Form>
@@ -362,7 +378,7 @@ const handleUpdate = () => {
         </Button>
           
         ]} >
-          {selectedAdmin ? ( // Kiểm tra xem selectedAdmin không phải là null
+          {selectedAdmin ? (
             <>
               <div className='user'>
                   {
@@ -388,7 +404,7 @@ const handleUpdate = () => {
                   <div>
                     <label>Địa chỉ: </label>
                     {
-                      selectedAdmin.address !== null ? (
+                      selectedAdmin.address !== null && selectedAdmin.address !== 'Chờ cập nhật' ? (
                         <p>{selectedAdmin.address}</p>
                       ) : (
                         <span>Chờ cập nhật</span>
@@ -399,7 +415,7 @@ const handleUpdate = () => {
                     <label>Ngày sinh: </label>
                     {
                       selectedAdmin.date_of_birth !== null ? (
-                        <p>{selectedAdmin.date_of_birth}</p>
+                        <p>{new Date(selectedAdmin.date_of_birth).toLocaleDateString('en-GB').replace(/\//g, '-')}</p>
                       ) : (
                         <span>Chờ cập nhật</span>
                       )
