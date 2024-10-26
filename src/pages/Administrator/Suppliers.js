@@ -39,7 +39,7 @@ const slideOut = keyframes`
 
 
 export const WrapperToggle = styled.div`
-    height: 150px;
+    height: 230px;
     background-color: #fff;
     z-index: 1;
     position: absolute;

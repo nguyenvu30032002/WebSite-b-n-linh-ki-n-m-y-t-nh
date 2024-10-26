@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Button, Table } from 'antd';
+import { Button, message, Table } from 'antd';
 import AdminService from '../../services/AdminService';
 import { WrapperModal } from './Order';
+import { CopyOutlined } from '@ant-design/icons';
 
 const columns = [
   {
@@ -55,6 +56,7 @@ const OrderPage = () => {
     totalMoney: order.totalMoney,
     condition: order.condition,
     origin: order.origin,
+    bill_of_lading_code: order.bill_of_lading_code,
     options: (
       <>
         {
@@ -133,6 +135,16 @@ const OrderPage = () => {
     setIsModalOpen(false);
   };
 
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text)
+      .then(() => {
+          message.success('Đã sao chép mã vận đơn vào clipboard!');
+      })
+      .catch(() => {
+          message.error('Không thể sao chép mã vận đơn.');
+      });
+}
+
   return (
     <>
     <h1>Order</h1>
@@ -146,10 +158,11 @@ const OrderPage = () => {
         <div className='product'>
             <img src={selectedOrder.imgProduct} alt={selectedOrder.nameProduct} />
             <div>
-                <p>{selectedOrder.nameProduct}</p>
-                <p>Tổng tiền: {Number(selectedOrder.totalMoney).toLocaleString('vi-VN')} đ</p>
-                <p>Số lượng: x {selectedOrder.amount}</p>
-                <p>Tình trạng: {selectedOrder.status}</p>
+                <p>{selectedOrder.nameProduct} </p>
+                <p>Mã vận đơn: {selectedOrder.bill_of_lading_code}<CopyOutlined onClick={() => copyToClipboard(selectedOrder.bill_of_lading_code)} style={{margin: '0 0 0 20px', cursor:'pointer'}}/></p>
+                <p>Tổng tiền: <span style={{color:'#d70018'}}>{Number(selectedOrder.totalMoney).toLocaleString('vi-VN')} đ</span></p>
+                <p>Số lượng: <span style={{color:'#d70018'}}>x{selectedOrder.amount}</span></p>
+                <p>Tình trạng: <span style={{color:'#d70018'}}>{selectedOrder.status}</span></p>
             </div>
         </div>
         <div className='user'>

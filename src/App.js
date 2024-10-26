@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Home from './pages/Home/Home';
 import Information from './pages/Information/Information';
@@ -11,6 +11,7 @@ import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import AuthUser from './services/AuthUser';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
+import { useEffect } from 'react';
 
 function App() {
     return (
@@ -24,11 +25,18 @@ function App() {
 
 const AuthUserWrapper = () => {
     const { getToken, user } = AuthUser();
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (user) {
+            // Nếu có user, điều hướng về trang chính
+           
+        }
+    }, [user, navigate]);
     return (
         <Routes>
             <>
                 {/* Các route không yêu cầu đăng nhập */}
-                <Route path='/login' element={<Login />} />
+                        <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />
                 <Route path='/forgotpassword' element={<ForgotPassword />} />
 

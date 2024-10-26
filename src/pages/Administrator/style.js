@@ -21,6 +21,16 @@ export const WrapperHeader = styled.div`
   background-color: #fff;
 `
 
+export const WapperHeader = styled.div`
+    display: flex;
+    height: 70px;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    width: 1500px;
+    margin: 0 150px 0 135px;
+`
+
 export const WrapperBody = styled.div`
     background-color: #fff;
     display: flex;
@@ -34,10 +44,31 @@ export const WrapperBody = styled.div`
 
 export const WrapperNav = styled.div`
     width: 250px;
+    height: 650px;
     border-right: 1px solid #ccc;
-    & .ant-btn{
-      width: 200px;
-      margin: 20px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-top: 5px;
+    & span:first-child{
+      margin-top: 40px;
+    }
+    & span{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 210px;
+      min-height: 40px;
+      font-size: 20px;
+      cursor: pointer;
+      border-bottom: 1px solid #ccc;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-bottom: 40px;
+      font-weight: 500;
     }
 
 `

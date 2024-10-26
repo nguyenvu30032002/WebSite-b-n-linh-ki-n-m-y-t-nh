@@ -206,12 +206,13 @@ const getCategories = useCallback(async (value) => {
     }
 }, [apiUrl])
 
-const updateCategory = async(data,id) => {
+const updateCategory = async(data,id, admin_id) => {
     try{
         const response = await axios.post(`${apiUrl}/updateCategory`,
             {
                 name: data,
-                id: id
+                id: id,
+                admin_id: admin_id
             },
             {
                 headers: {
@@ -301,6 +302,83 @@ const deleteCategories = async(selectedRowKeys) =>{
             throw error
         }
     }
+
+///////////////////////////////// SUPPLIERS //////////////////////////////////////////
+
+const createSuppliers = async(values, admin_id) => {
+    try{
+        const response = await axios.post(`${apiUrl}/createSuppliers`, 
+        {
+            name: values.name,
+            address: values.address,
+            admin_id: admin_id
+        },
+        {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        return response;
+    }
+
+    catch(error){
+        throw error
+    }
+}
+
+const getSuppliers = useCallback(async (value) => {
+    try{
+        const response = await axios.get(`${apiUrl}/getSuppliers`, {
+            params: { search: value },
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        return response.data
+    }
+    catch(error){
+        throw error
+    }
+}, [apiUrl])
+
+const updateSuppliers = async(data,id, admin_id) => {
+    try{
+        const response = await axios.post(`${apiUrl}/updateSuppliers`,
+            {
+                name: data.name,
+                address: data.address,
+                id: id,
+                admin_id: admin_id
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+        });
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+const deleteSuppliers = async(selectedRowKeys) =>{
+    try{
+        const response = await axios.delete(`${apiUrl}/deleteSuppliers`,
+            {    data: { selectedRowKeys }, 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
     return{
         createAdmin,
         getAdmin,
@@ -315,6 +393,10 @@ const deleteCategories = async(selectedRowKeys) =>{
         updateCategory,
         deleteCategories,
         updateOrder,
-        orders
+        orders,
+        createSuppliers,
+        getSuppliers,
+        updateSuppliers,
+        deleteSuppliers
     }
 }

@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import AdminService from '../../services/AdminService'
-import { Button, Flex, Form, Input, message } from 'antd';
 import * as XLSX from 'xlsx';
+import AdminService from '../../services/AdminService';
+import AuthUser from '../../services/AuthUser';
+import { Button, Flex, Form, Input, message } from 'antd';
 import { CloseOutlined, DeleteOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons';
 import Search from 'antd/es/input/Search';
-import { WrapperModal, WrapperTable, WrapperToggle, WrapperToggleShow } from './Categories';
-import AuthUser from '../../services/AuthUser';
+import { WrapperModal, WrapperTable, WrapperToggle, WrapperToggleShow } from './Suppliers';
 
 const columns = [
 
@@ -15,6 +15,11 @@ const columns = [
       sorter: (a, b) => a.name.length - b.name.length,
       sortDirections: ['descend'],
     },
+
+    {
+        title: 'Address',
+        dataIndex: 'address',
+      },
     
     {
       title: 'Created_by_Admin',
@@ -58,38 +63,39 @@ const columns = [
   };
 
 
-const CategoriesPage = () => {
+const Suppliers = () => {
+
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showWrapperToggle, setShowWrapperToggle] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedSuppliers, setSelectedSuppliers] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const {createCategory, deleteCategories, getCategories, updateCategory} = AdminService()
+  const {createSuppliers, deleteSuppliers, getSuppliers, updateSuppliers} = AdminService()
   const {user} = AuthUser()
 
-  const fetchCategories = useCallback(async() => {
+  const fetchSuppliers = useCallback(async() => {
     try{
-        const dataCategories = await getCategories(searchTerm)
-        setCategories(dataCategories)
+        const dataSuppliers = await getSuppliers(searchTerm)
+        setSuppliers(dataSuppliers)
     }
     catch(error){
         throw error
     }
-}, [getCategories, searchTerm])
+}, [getSuppliers, searchTerm])
 
-useEffect(() => {
-  
-  fetchCategories();
-}, [fetchCategories])
-
-  const dataSource = categories.map((category) => ({
-    key: category.id,
-    name: category.name,
-    created_by_Admin: category.created_by.name, 
-    created_at: new Date(category.created_at).toISOString().slice(0, 19).replace('T', ' '), // Định dạng ngày
-    updated_at: new Date(category.updated_at).toISOString().slice(0, 19).replace('T', ' '), // Định dạng ngày
+    useEffect(() => {
+    
+    fetchSuppliers();
+    }, [fetchSuppliers])
+  const dataSource = suppliers.map((supplier) => ({
+    key: supplier.id,
+    name: supplier.name,
+    address: supplier.address,
+    created_by_Admin: supplier.created_by.name, 
+    created_at: new Date(supplier.created_at).toISOString().slice(0, 19).replace('T', ' '), // Định dạng ngày
+    updated_at: new Date(supplier.updated_at).toISOString().slice(0, 19).replace('T', ' '), // Định dạng ngày
   }));
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -122,10 +128,10 @@ useEffect(() => {
 
     // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Suppliers');
 
     // Export the workbook to an Excel file
-    XLSX.writeFile(workbook, 'categories_data.xlsx');
+    XLSX.writeFile(workbook, 'suppliers_data.xlsx');
   };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,16 +145,16 @@ const [form] = Form.useForm();
 const onFinish = (values) => {
   
   const admin_id = user.id
-  createCategory(values, admin_id)
+  createSuppliers(values, admin_id)
   .then((response) => {
     const data = response.data; // Lấy dữ liệu từ phản hồi
     if (data.message === 'already existed') {
-        message.error('Loại sản phẩm đã tồn tại');
+        message.error('Nhà cung cấp đã tồn tại');
         form.resetFields(); 
         setShowWrapperToggle(false);
     } else if (data.message === 'success') {
         message.success('Tạo mới thành công');
-        fetchCategories()
+        fetchSuppliers()
         form.resetFields(); 
         setShowWrapperToggle(false);
     } else {
@@ -167,16 +173,16 @@ const onSearch = (value) => {
   setSearchTerm(value)
 }
 
-const DeleteCategory = () => {
-  deleteCategories(selectedRowKeys)
+const DeleteSuppliers = () => {
+    deleteSuppliers(selectedRowKeys)
   .then((response) =>{
     if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
       setSelectedRowKeys([]);
-      message.success('Xóa loại sản phẩm thành công');
-      fetchCategories();
+      message.success('Xóa nhà cung cấp thành công');
+      fetchSuppliers();
      
     } else {
-        message.error('Xóa loại sản phẩm thất bại'); // Nếu có lỗi từ server
+        message.error('Xóa nhà cung cấp thất bại'); // Nếu có lỗi từ server
     }
   })
   .catch((error) => {
@@ -187,34 +193,37 @@ const DeleteCategory = () => {
 //////////////////////////////////////////
 
 const handleRowClick = (record) => {
-setSelectedCategory(record); // Lưu thông tin hàng đã chọn
-setIsModalOpen(true); // Mở Modal
+    setSelectedSuppliers(record); // Lưu thông tin hàng đã chọn
+    setIsModalOpen(true); // Mở Modal
 };
 
 
 const handleCancel = () => {
-setIsModalOpen(false)
+    setIsModalOpen(false)
 }
 
 const isClose = () => {
-setIsModalOpen(false);
+    setIsModalOpen(false);
 };
 
 
 const handleUpdate = () => {
-  const data = selectedCategory.name
-  const id = selectedCategory.key
+  const data = {
+    name : selectedSuppliers.name,
+    address: selectedSuppliers.address,
+  }
+  const id = selectedSuppliers.key
   const admin_id = user.id
-  updateCategory(data,id,admin_id)
+  updateSuppliers(data,id,admin_id)
   .then((response) => {
     if (response.data.message === 'already existed') {
-      message.error('Loại sản phẩm đã tồn tại');
+      message.error('Nhà cung cấp đã tồn tại');
       setShowWrapperToggle(false);
     }
     else if(response.data.message === 'success')
     {
       message.success('Thay đổi thành công')
-      fetchCategories()
+      fetchSuppliers()
       setIsModalOpen(false)
       
     }
@@ -229,9 +238,9 @@ const handleUpdate = () => {
   })
 };
 
-return (
+  return (
     <>
-    <h1>Categories Page</h1>
+    <h1>Suppliers Page</h1>
       <Flex gap="middle" vertical>
         <Flex align="center" gap="middle">
           <Button type="primary" onClick={start} disabled={!hasSelected} loading={loading}>
@@ -247,7 +256,7 @@ return (
           }
           {
             selectedRowKeys.length > 0 && (
-              <DeleteOutlined style={{cursor: 'pointer'}} onClick={DeleteCategory} />
+              <DeleteOutlined style={{cursor: 'pointer'}} onClick={DeleteSuppliers} />
             )
           }
           <Search  placeholder="input search text" onSearch={onSearch} style={{ width: 300, marginLeft:'700px', marginRight:'40px', position: 'absolute' }} />
@@ -274,10 +283,21 @@ return (
             >
               <Form.Item
                 name="name"
-                label="Category"
+                label="Suppliers"
                 rules={[
                   { required: true, message: 'Please input Category!', whitespace: true },
                   { max: 30, message: 'Category must be at most 30 characters.' },
+                ]}
+              >
+                <Input/>
+              </Form.Item>
+
+              <Form.Item
+                name="address"
+                label="Address"
+                rules={[
+                  { required: true, message: 'Please input address!', whitespace: true },
+                  { max: 30, message: 'Addresss must be at most 30 characters.' },
                 ]}
               >
                 <Input/>
@@ -295,7 +315,7 @@ return (
              
           </WrapperToggleShow>
       )}
-      
+    
       <WrapperModal title="Loại sản phẩm" maskClosable={isModalOpen} closable={false} onCancel={isClose} open={isModalOpen}  footer={[
         <Button key="update" type="primary" onClick={handleUpdate}>
         Cập nhật
@@ -305,8 +325,11 @@ return (
       </Button>
         
       ]} >
-        {selectedCategory ? (
-          <input type="text" name='name' value={selectedCategory.name || ''}  onChange={(e) => setSelectedCategory({ ...selectedCategory, name: e.target.value })} />
+        {selectedSuppliers ? (
+         <>
+             <input type="text" name='name' value={selectedSuppliers.name || ''}  onChange={(e) => setSelectedSuppliers({ ...selectedSuppliers, name: e.target.value })} />
+             <input type="text" name='address' value={selectedSuppliers.address || ''}  onChange={(e) => setSelectedSuppliers({ ...selectedSuppliers, address: e.target.value })} />
+         </>
         ) : null
         }
       </WrapperModal>
@@ -315,5 +338,4 @@ return (
 )
 }
 
-
-export default CategoriesPage
+export default Suppliers

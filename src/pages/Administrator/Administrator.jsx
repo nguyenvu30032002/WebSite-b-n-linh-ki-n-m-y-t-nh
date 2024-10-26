@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { Wrapper, WrapperBody, WrapperButton, WrapperHeader, WrapperNav, Wrappertable } from './style'
-import Header from '../../parts/Header/Header'
+import { WapperHeader, Wrapper, WrapperBody, WrapperButton, WrapperHeader, WrapperNav, Wrappertable } from './style'
 import { Dropdown, Space } from 'antd'
 import { DownCircleFilled } from '@ant-design/icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,51 +10,13 @@ import OrderPage from './OrderPage'
 import UserPage from './UserPage'
 import ProductPage from './ProductPage'
 import CategoriesPage from './CategoriesPage'
+import LogoComponent from '../../components/LogoComponent/LogoComponent'
+import InformationComponent from "../../components/InformationComponent/InformationComponent.tsx";
+import Suppliers from './Suppliers.jsx';
 
 const Administrator = () => {
   const [selectedPage, setSelectedPage] = useState('admin');
-    const items = [
-        {
-          label: 'Quản trị viên',
-          key: '1',
-          icon: <FontAwesomeIcon icon={faPeopleRoof} />,
-          onClick: () => setSelectedPage('admin'),
-        },
-        {
-          label: 'Người dùng',
-          key: '2',
-          icon:<FontAwesomeIcon icon={faUser} />,
-          onClick: () => setSelectedPage('user'),
-        },
-        {
-          label: 'Sản phẩm',
-          key: '3',
-          icon: <FontAwesomeIcon icon={faProductHunt} />,
-          onClick: () => setSelectedPage('product'),
-        },
-        {
-            label: 'Loại sản phẩm',
-            key: '4',
-            icon: <FontAwesomeIcon icon={faFilter} />,
-            onClick: () => setSelectedPage('category'),
-        },
-        {
-            label: 'Nhà cung cấp',
-            key: '5',
-            icon: <FontAwesomeIcon icon={faParachuteBox} /> ,
-            onClick: () => setSelectedPage('supplier'),
-        },
-        {
-          label: 'Đơn hàng',
-          key: '6',
-          icon:<FontAwesomeIcon icon={faTruck} />,
-          onClick: () => setSelectedPage('order'),
-        },
-      ];
-    const menuProps = {
-        items,
-      };
-
+   
       const renderContent = () => {
         switch (selectedPage) {
             case 'admin':
@@ -67,7 +28,7 @@ const Administrator = () => {
             case 'category':
                 return <CategoriesPage/>;
             case 'supplier':
-                return <div>Thông tin Nhà cung cấp</div>;
+                return <Suppliers/>;
             case 'order':
                 return <OrderPage/>;
             default:
@@ -77,18 +38,20 @@ const Administrator = () => {
   return (
     <Wrapper>
         <WrapperHeader>
-            <Header/>
+        <WapperHeader>
+            <LogoComponent/>
+            <InformationComponent/>
+        </WapperHeader>
         </WrapperHeader>
         <WrapperBody>
             <WrapperNav>
-              <Dropdown menu={menuProps}>
-                <WrapperButton>
-                  <Space>
-                    Quản lý
-                    <DownCircleFilled />
-                  </Space>
-                </WrapperButton>
-              </Dropdown>
+              <span onClick={() => setSelectedPage('admin')}><FontAwesomeIcon icon={faPeopleRoof} style={{margin: '0 15px 0 0'}} /> Quản trị viên</span>
+              <span onClick={() => setSelectedPage('user')}><FontAwesomeIcon icon={faUser} style={{margin: '0 15px 0 0'}} /> Người dùng</span>
+              <span onClick={() => setSelectedPage('product')}><FontAwesomeIcon icon={faProductHunt} style={{margin: '0 15px 0 0'}} /> Sản phẩm</span>
+              <span onClick={() => setSelectedPage('category')}><FontAwesomeIcon icon={faFilter} style={{margin: '0 15px 0 0'}} /> Loại sản phẩm</span>
+              <span onClick={() => setSelectedPage('supplier')}><FontAwesomeIcon icon={faParachuteBox} style={{margin: '0 15px 0 0'}} /> Nhà cung cấp</span>
+              <span onClick={() => setSelectedPage('order')}><FontAwesomeIcon icon={faTruck} style={{margin: '0 15px 0 0'}} /> Đơn hàng</span>
+              
             </WrapperNav>
             <Wrappertable>
                 {renderContent()}
