@@ -136,8 +136,7 @@ const toggleWrapper = () => {
 
 const [form] = Form.useForm();
 
-const onFinish = (values) => {
-  
+const onFinish = (values) => { 
   const admin_id = user.id
   createCategory(values, admin_id)
   .then((response) => {

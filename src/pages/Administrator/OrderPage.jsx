@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { Button, message, Table } from 'antd';
+import { Button, Flex, message, Table } from 'antd';
 import AdminService from '../../services/AdminService';
-import { WrapperModal } from './Order';
-import { CopyOutlined } from '@ant-design/icons';
+import { WrapperModal, WrapperTable } from './Order';
+import { CopyOutlined, DeleteOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons';
+import Search from 'antd/es/input/Search';
+import * as XLSX from 'xlsx';
 
 const columns = [
   {
@@ -38,6 +40,8 @@ const columns = [
 
 
 const OrderPage = () => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [loading, setLoading] = useState(false);
   const {updateOrder, orders} = AdminService();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -80,48 +84,70 @@ const OrderPage = () => {
     ),
   }));
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // const onSelectChange = (newSelectedRowKeys) => {
+  //   console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+  //   setSelectedRowKeys(newSelectedRowKeys);
+  // };
+
+  const start = () => {
+    setLoading(true);
+    // ajax request after empty completing
+    setTimeout(() => {
+      setSelectedRowKeys([]);
+      setLoading(false);
+    }, 1000);
+  };
+
   const onSelectChange = (newSelectedRowKeys) => {
-    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
+
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
-    selections: [
-      Table.SELECTION_ALL,
-      Table.SELECTION_INVERT,
-      Table.SELECTION_NONE,
-      {
-        key: 'odd',
-        text: 'Select Odd Row',
-        onSelect: (changeableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return false;
-            }
-            return true;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-      {
-        key: 'even',
-        text: 'Select Even Row',
-        onSelect: (changeableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return true;
-            }
-            return false;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-    ],
+   
   };
+
+  const hasSelected = selectedRowKeys.length > 0;
+
+//////////////////////////////////////////////////////////////
+
+const exportToExcel = () => {
+  // Create a new array of data excluding the checkbox
+  const dataToExport = dataSource.map(({ key,imgProduct, ...rest }) => rest); // Exclude the 'key' property if not needed
+
+  // Create a worksheet from the data
+  const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+
+  // Create a new workbook and append the worksheet
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Orders');
+
+  // Export the workbook to an Excel file
+  XLSX.writeFile(workbook, 'orders_data.xlsx');
+};
+
+////////////////////////////////////////////////////////////////////////
+
+const onSearch = (value) => {
+  // setSearchTerm(value)
+}
+
+const DeleteUser = () => {
+  // deleteAdmin(selectedRowKeys)
+  // .then((response) =>{
+  //   if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
+  //     message.success('Xóa người dùng thành công');
+  //   } else {
+  //       message.error('Xóa người dùng thất bại'); // Nếu có lỗi từ server
+  //   }
+  // })
+  // .catch((error) => {
+  //   message.error('Có lỗi xảy ra, vui lòng thử lại!')
+  // })
+};
+
 ////////////////////////////////////////////////////
   const handleRowClick = (record,event) => {
     if (event.target.closest('.options-column')) {
@@ -148,10 +174,27 @@ function copyToClipboard(text) {
   return (
     <>
     <h1>Order</h1>
-    <Table rowSelection={rowSelection} columns={columns} dataSource={dataSource} pagination={{ pageSize: 7 }}  onRow={(record) => ({
+    <Flex gap="middle" vertical>
+          <Flex align="center" gap="middle">
+            <Button type="primary" onClick={start} disabled={!hasSelected} loading={loading}>
+              Reload
+            </Button>
+            {hasSelected ? `Selected ${selectedRowKeys.length} items` : null}
+            
+            {
+              selectedRowKeys.length > 0 && (
+                <DeleteOutlined style={{cursor: 'pointer'}} onClick={DeleteUser} />
+              )
+            }
+            <Search  placeholder="input search text" onSearch={onSearch} style={{ width: 300, marginLeft:'700px', marginRight:'40px', position: 'absolute' }} />
+            <PrinterOutlined  onClick={exportToExcel} style={{cursor:'pointer', marginLeft:'1070px', marginRight:'40px', position: 'absolute'}} />
+          </Flex>
+          <WrapperTable rowSelection={rowSelection} columns={columns} dataSource={dataSource} pagination={{ pageSize: 7 }}  onRow={(record) => ({
           onClick: (event) => handleRowClick(record, event),
           style: { cursor: 'pointer' }, // Gọi hàm khi click vào hàng
         })} />;
+        </Flex>
+    
     <WrapperModal title="Basic Modal" open={isModalOpen} onCancel={isClose} footer={[]} >
     {selectedOrder ? ( // Kiểm tra xem selectedOrder không phải là null
        <>

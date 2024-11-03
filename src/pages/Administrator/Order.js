@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Modal } from 'antd'
+import { Modal, Table } from 'antd'
 
 
 export const WrapperModal = styled(Modal)`
@@ -48,4 +48,19 @@ export const WrapperModal = styled(Modal)`
           font-weight: 500;
     }
   }
+`
+
+
+export const WrapperTable = styled(Table)`
+    table-layout: none;
+    margin-bottom: 20px;
+    & .ant-table{
+        width: 1100px;
+        height: 440px;
+        border: 1px solid #ccc;
+    } 
+    /* & tbody{
+      width: 1100px;
+        height: 420px;
+    } */
 `

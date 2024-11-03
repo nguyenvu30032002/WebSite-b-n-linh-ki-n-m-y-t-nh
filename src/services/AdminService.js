@@ -7,7 +7,6 @@ export default function AdminService(){
     const apiUrl = process.env.REACT_APP_API_URL_ADMIN;
     const {token} = AuthUser();
     const [orders, setOrders] = useState([]);
-    const [products, setProducts] = useState([]);
 
 
 ///////////// ADMIN ///////////////////////////////////////
@@ -139,14 +138,43 @@ const deleteUser = async(selectedRowKeys) =>{
 
 ////////////////////// PRODUCT ///////////////////////////////
 
-const getProduct = useCallback(async () => {
+const createProduct = async(formData) => {
     try{
-        const response = await axios.get(`${apiUrl}/getProduct`, {
+        const response = await axios.post(`${apiUrl}/createProduct`, 
+        {
+               nameProduct: formData.nameProduct,
+               brand: formData.brand,
+               description: formData.description,
+               discount: formData.discount,
+               image: formData.img,
+               inventory: formData.inventory,
+               origin: formData.origin,
+               price: formData.price,
+               productType: formData.productType,
+               variant: formData.variant,
+              
+        },
+        {
             headers: {
                 "Content-Type": "application/json",
             },
         })
-        setProducts(response.data)
+        return response;
+    }
+
+    catch(error){
+        throw error
+    }
+}
+
+const getProduct = useCallback(async (value) => {
+    try{
+        const response = await axios.get(`${apiUrl}/getProduct`, {
+            params: { search: value },
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
         return response.data
     }
     catch(error){
@@ -154,19 +182,22 @@ const getProduct = useCallback(async () => {
     }
 }, [apiUrl])
 
-
-useEffect(() => {
-    const fetchProduct = async() => {
-        try{
-            const dataProduct = await getProduct()
-            setProducts(dataProduct)
-        }
-        catch(error){
-            throw error
-        }
+const deleteProduct = async(selectedRowKeys) =>{
+    try{
+        const response = await axios.delete(`${apiUrl}/deleteProduct`,
+            {    data: { selectedRowKeys }, 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response
     }
-    fetchProduct()
-}, [getProduct])
+    catch(error){
+        throw error
+    }
+}
+
 
 
 ////////////////////////// CATWGORIES ////////////////////
@@ -378,6 +409,82 @@ const deleteSuppliers = async(selectedRowKeys) =>{
     }
 }
 
+//////////////////////////////// VARIANTS /////////////////////////////////////////////
+
+const createVariants = async(values, admin_id) => {
+    try{
+        const response = await axios.post(`${apiUrl}/createVariants`, 
+        {
+            name: values.name,
+            categories_id: values.categories_id,
+            admin_id: admin_id
+        },
+        {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        return response;
+    }
+
+    catch(error){
+        throw error
+    }
+}
+
+const getVariants = useCallback(async (value) => {
+    try{
+        const response = await axios.get(`${apiUrl}/getVariants`, {
+            params: { search: value },
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        return response.data
+    }
+    catch(error){
+        throw error
+    }
+}, [apiUrl])
+
+const updateVariants= async(data, admin_id) => {
+    try{
+        console.log(data)
+        // const response = await axios.post(`${apiUrl}/updateVariants`,
+        //     {
+        //         id: data.key,
+        //         name: data.name,
+        //         categories_id: data.created_by_Category,
+        //         admin_id: admin_id
+        //     },
+        //     {
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        // });
+        // return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+const deleteVariants = async(selectedRowKeys) =>{
+    try{
+        const response = await axios.delete(`${apiUrl}/deleteVariants`,
+            {    data: { selectedRowKeys }, 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
 
     return{
         createAdmin,
@@ -387,7 +494,9 @@ const deleteSuppliers = async(selectedRowKeys) =>{
         getUser,
         updateUser,
         deleteUser,
-        products,
+        createProduct,
+        getProduct,
+        deleteProduct,
         createCategory,
         getCategories,
         updateCategory,
@@ -397,6 +506,10 @@ const deleteSuppliers = async(selectedRowKeys) =>{
         createSuppliers,
         getSuppliers,
         updateSuppliers,
-        deleteSuppliers
+        deleteSuppliers,
+        createVariants,
+        getVariants,
+        updateVariants,
+        deleteVariants
     }
 }

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Home from './pages/Home/Home';
 import Information from './pages/Information/Information';
@@ -28,31 +28,30 @@ const AuthUserWrapper = () => {
     const navigate = useNavigate();
     useEffect(() => {
         if (user) {
-            // Nếu có user, điều hướng về trang chính
-           
+          
         }
     }, [user, navigate]);
     return (
         <Routes>
             <>
                 {/* Các route không yêu cầu đăng nhập */}
-                        <Route path='/login' element={<Login />} />
+                <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />
                 <Route path='/forgotpassword' element={<ForgotPassword />} />
-
+                <Route path='/' element={<Home />} />
                 {/* Render Home chỉ nếu người dùng không phải là Admin */}
-                {(!user || user.role !== 'Admin') ? (
+                {/* {(!user || user.role !== 'Admin') ? (
                     <Route path='/' element={<Home />} />
                 ) : (
                     <Route path='/administrator' element={<Administrator />} />
-                )}
+                )} */}
             </>
 
             {/* Các route chỉ cho phép người dùng đã đăng nhập */}
             {getToken() !== null && (
                 <>
                     {/* Các route chỉ dành cho Admin */}
-                    {user && user.role === 'Admin' && (
+                    {user?.role === 'Admin' && (
                         <Route path='/administrator' element={<Administrator />} />
                     )}
 

@@ -89,6 +89,7 @@ const Suppliers = () => {
     
     fetchSuppliers();
     }, [fetchSuppliers])
+    
   const dataSource = suppliers.map((supplier) => ({
     key: supplier.id,
     name: supplier.name,
