@@ -1,7 +1,6 @@
 import React from 'react'
-import { Wrapper, WrapperCategories, WrapperIcon, WrapperList } from './style'
-
-import { faArrowRight, faList} from '@fortawesome/free-solid-svg-icons';
+import { Wrapper, WrapperCategories, WrapperList } from './style'
+import { faList} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProductService from '../../services/ProductService';
 
@@ -23,7 +22,6 @@ const NavListComponent = () => {
         {
            categories.map(category => (
             <li key={category.id} onClick={handlesubmit}>
-              <WrapperIcon icon={faArrowRight} />
               <span>{category.name}</span>
             </li>
           ))

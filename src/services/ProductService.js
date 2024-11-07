@@ -21,38 +21,20 @@ export default function ProductService() {
 
     const getAllProduct = useCallback(async (data) => {
         try {
-            
+            console.log('afss', data)
             const response = await axios.get(`${apiUrl}/product/getAll`, {
                 params: { search: data }, // Truyền tham số tìm kiếm
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
-            setProducts(response.data); // Cập nhật danh sách sản phẩm
+             // Cập nhật danh sách sản phẩm
+             console.log(response.data)
             return response.data;
         } catch (error) {
             throw error;
         }
     }, [apiUrl]); 
-    
-
-    // useEffect(() => {
-    //     const fetchProducts = async() => {
-    //         try{
-    //             const data = await getAllProduct()
-    //             setProducts(data)
-    //         }
-    //         catch(error)
-    //         {
-    //             throw error
-    //         }
-    //     }
-    //     fetchProducts()
-    // }, [getAllProduct])
-
-    useEffect(() => {
-        getAllProduct(); // Gọi hàm để lấy sản phẩm
-    }, [getAllProduct]);
 
     /////////////////////////////////////////////////////////
     

@@ -56,7 +56,7 @@ export const WrapperTable = styled(Table)`
     margin-bottom: 20px;
     & .ant-table{
         width: 1100px;
-        height: 440px;
+        height: 460px;
         border: 1px solid #ccc;
     } 
     /* & tbody{

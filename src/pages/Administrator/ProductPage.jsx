@@ -1,7 +1,7 @@
 import { Button, Checkbox, Flex, Form, Image, Input, message, Select, Upload } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react'
 import AdminService from '../../services/AdminService'
-import { WrapperTable, WrapperToggle, WrapperToggleShow } from './Product';
+import { WrapperModal, WrapperTable, WrapperToggle, WrapperToggleShow } from './Product';
 import * as XLSX from 'xlsx';
 import { CloseOutlined, DeleteOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons';
 import Search from 'antd/es/input/Search';
@@ -15,7 +15,7 @@ const columns = [
     },
     {
       title: 'Type',
-      dataIndex: 'type',
+      dataIndex: 'productType',
     },
     {
       title: 'Inventory',
@@ -66,15 +66,18 @@ const ProductPage = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showWrapperToggle, setShowWrapperToggle] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
+    const [updateImage, setUpdateImage] = useState(null);
     const [categories, setCategories] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [variants, setVariants] = useState([]);
     const [products, setProducts] = useState([]);
     const [isChecked, setIsChecked] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const {createProduct, getProduct, deleteProduct, getCategories, getSuppliers, getVariants} = AdminService()
+    const [selectedProduct, setSelectedProduct] = useState('')
+    const {createProduct, getProduct, updateProduct, deleteProduct, getCategories, getSuppliers, getVariants} = AdminService()
 
     const fetchProduct = useCallback(async() =>{
           try{
@@ -138,9 +141,16 @@ const ProductPage = () => {
     const dataSource = products.map((product) => ({
       key: product.id,
       name: product.name,
-      type: product.productType,
+      productType: product.productType,
+      description: product.description,
+      price: product.price,
       inventory: product.inventory,
-      brand: product.brand
+      origin: product.origin,
+      brand: product.brand,
+      image: product.image,
+      sold: product.sold,
+      discount: product.discount,
+      variant: product.variant,
     }));
 
     const start = () => {
@@ -210,6 +220,12 @@ const uploadButton = (
   </button>
 );
 
+const handleUpload = (file) => {
+  // Ngăn không cho tự động tải file lên
+  setFileList([...fileList, file]); // Thêm file vào danh sách file
+  return false; // Trả về false để ngăn tải lên tự động
+};
+
 const toggleWrapper = () => {
   setShowWrapperToggle(!showWrapperToggle);
   setIsChecked(false)
@@ -274,8 +290,8 @@ const DeleteProduct = () => {
 ///////////////////////////////////////////////////////////////
 
 const handleRowClick = (record) => {
-  // setSelectedCategory(record); // Lưu thông tin hàng đã chọn
-  // setIsModalOpen(true); // Mở Modal
+  setSelectedProduct(record); // Lưu thông tin hàng đã chọn
+  setIsModalOpen(true); // Mở Modal
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -304,11 +320,73 @@ const handleCheckboxChange = (e) => {
   
 };
 
-const handleUpload = (file) => {
-  // Ngăn không cho tự động tải file lên
-  setFileList([...fileList, file]); // Thêm file vào danh sách file
-  return false; // Trả về false để ngăn tải lên tự động
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+const handleCancel = () => {
+  setIsModalOpen(false)
+  setUpdateImage([null])
+}
+
+const isClose = () => {
+  setIsModalOpen(false);
+  setUpdateImage([null])
 };
+
+const combinedOptions = [
+  ...optionVariant, // Các tùy chọn ban đầu
+  { label: 'Not Variant', value: 'not_variant' } // Thêm tùy chọn "Not Variant"
+];
+
+const onUpdate = (e) => {
+  const { name, type } = e.target; // Lấy tên và loại của input
+  if (type === 'file') {
+    const file = e.target.files[0];
+    const value = e.target.value; 
+    setUpdateImage(file) 
+    if (file) {
+  
+      setSelectedProduct((prevState) => ({
+          ...prevState,
+          [name]: value,
+          image: file.name // Cập nhật tên file
+      }));
+    }
+  } else {
+    const value = e.target.value; 
+    setSelectedProduct((prevState) => ({
+        ...prevState,
+        [name]: value, 
+    }));
+  }
+} 
+
+const onUpdateSelect = (fieldName, value) => {
+  setSelectedProduct((prevState) => ({
+    ...prevState,
+    [fieldName]: value, // Cập nhật trường được chỉ định với giá trị chọn
+  }));
+};
+const updateProducts = () => {
+  updateProduct(selectedProduct)
+  .then((response) => {
+    if(response.data.message === 'success')
+    {
+      message.success('Thay đổi thành công')
+      fetchProduct()
+      setIsModalOpen(false)
+      
+    }
+    else{
+      message.error('Thay đổi thất bại')
+      setIsModalOpen(false);
+    }
+  })
+  .catch((error) => {
+    message.error('Có lỗi xảy ra, vui lòng thử lại!')
+    setIsModalOpen(false);
+  })
+}
 
   return (
     <>
@@ -516,6 +594,87 @@ const handleUpload = (file) => {
              
           </WrapperToggleShow>
       )}
+
+<WrapperModal title="Thông tin sản phẩm" maskClosable={isModalOpen} closable={false} onCancel={isClose} open={isModalOpen}  footer={[
+          <Button key="update" type="primary" onClick={updateProducts}>
+          Cập nhật
+        </Button>,
+        <Button key="cancel" onClick={handleCancel}>
+          Hủy
+        </Button>
+        ]} >
+              <div className='product'>
+                  <div className='image'>
+                    <img src={ updateImage && updateImage.name ? updateImage.name : `http://localhost:3000/${selectedProduct.image}`} alt={selectedProduct.name} />
+                    <Input type="file" accept="image/*" onChange={onUpdate}/>
+                  </div>
+                   
+                
+                  <div className='informationProduct'>
+                     <Input name="nameProduct" onChange={(e) => setSelectedProduct({...selectedProduct, name: e.target.value})}  value={selectedProduct.name} style={{width: '350px'}} placeholder='Tên sản phẩm' />
+                    <div className='select'>
+                        <Select
+                          placeholder="Loại sản phẩm"
+                          options={optionsType}
+                          style={{width:'150px'}}
+                          name='productType'
+                          value={selectedProduct.productType}
+                          onChange={(value) => onUpdateSelect('productType', value)}
+                        />
+                        <Select
+                          placeholder="Nhà cung cấp"
+                          options={optionsBrand}
+                          style={{width:'150px'}}
+                          name='brand'
+                          value={selectedProduct.brand}
+                          onChange={(value) => onUpdateSelect('brand', value)}
+                        />
+                    </div>
+
+                    <div className='payment'>
+                      <Input name="price" onChange={onUpdate}  value={selectedProduct.price} style={{width: '150px'}} placeholder='Giá sản phẩm' />
+                      <Input name="inventory" onChange={onUpdate}  value={selectedProduct.inventory} style={{width: '150px'}} placeholder='Nhập kho' />
+
+                    </div>
+
+                    <div className='inventory'>
+                      <Input name="discount" onChange={onUpdate}  value={selectedProduct.discount} style={{width: '150px'}} placeholder='Giảm giá' />
+
+                      <Input name="origin" onChange={onUpdate}  value={selectedProduct.origin} placeholder="Xuất xứ" style={{width: '150px'}}/>
+                    </div>
+                      <TextArea name='description' onChange={onUpdate}  value={selectedProduct.description} placeholder="Mô tả sản phẩm" rows={5} style={{ width: '350px', height: '100px',margin: '0 0 20px 0' }} />
+                      {
+                        selectedProduct.variant !== null ? (
+                          <Select
+                          placeholder="Biến thể"
+                          options={combinedOptions}
+                          style={{width:'150px', margin: '0 0 10px 0'}}
+                          name='variant'
+                          value={selectedProduct.variant}
+                          onChange={(value) => onUpdateSelect('variant', value)}
+                        />
+                        ) : (
+                          <div className='checkbox'>
+                            <Checkbox checked={isChecked} onChange={handleCheckboxChange} >Variants </Checkbox>
+                          </div>
+                          
+                        )
+                      }
+                       {
+                            isChecked === true && (
+ 
+                                  <Select
+                                    placeholder="Biến thể"
+                                    options={optionVariant}
+                                    style={{width:'150px'}}
+                                    name='variant'
+                                    onChange={(value) => onUpdateSelect('variant', value)}
+                                  />
+                            )  
+                          }
+                  </div>
+                </div>
+        </WrapperModal>
     </>
   )
 }

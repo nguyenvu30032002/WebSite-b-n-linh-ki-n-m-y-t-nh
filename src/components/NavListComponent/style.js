@@ -4,9 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export const Wrapper = styled.div`
     display: flex ;
     flex-direction: column;
-    height: 100%;
+    max-height: 500px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: hidden; 
+    
 `
 export const WrapperCategories = styled.div`
     display: flex;
@@ -23,11 +24,6 @@ export const WrapperCategories = styled.div`
     }
 
 `
-export const WrapperIcon = styled(FontAwesomeIcon)`
-    margin: 5px 10px 0 0;
-    font-size: 15px;
-    display: none;
-`
 
 export const WrapperList = styled.div`
     width: 95%;
@@ -36,19 +32,19 @@ export const WrapperList = styled.div`
     & ul{
         list-style-type: none;
         & li{
-           width: 120px;
+           width: 150px;
+           height: 25px;
            position: relative;
            display: flex;
            margin: 25px 10px;
-           font-size: 17px;
+           font-size: 15px;
            transition:  right linear 0.2s;
            cursor: pointer;
            right: 0;
-           font-weight: 400;
-           text-transform: uppercase;
-           &:hover ${WrapperIcon} {
-                display: inline; 
-            }
+           font-weight: 500;
+           text-transform: capitalize;
+           border-bottom: 1px solid #ccc;
+           transition: transform 0.3s ease, color 0.3s ease; 
             & span {
                 overflow: hidden; /* Ẩn nội dung vượt quá chiều rộng */
                 white-space: nowrap; /* Ngăn chặn xuống dòng */
@@ -56,7 +52,7 @@ export const WrapperList = styled.div`
             }
         }
         & li:hover{
-            right: -15px;
+            transform: translateY(0px) translateX(20px) ;
             color: #fc5b31;
         }
     }

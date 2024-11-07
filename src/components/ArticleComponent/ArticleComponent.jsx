@@ -1,18 +1,36 @@
-import React, { useState } from 'react';
-import { Product, ProductOutOfStock, Wrapper, WrapperArrange, WrapperCondition, WrapperConditionOutOfStock, WrapperOrigin, WrapperOriginOutOfStock, WrapperPaginate, WrapperPrice, WrapperPriceOutOfStock, WrapperProduct } from './style';
-import { Button, Pagination } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Product, ProductOutOfStock, Wrapper, WrapperArrange, WrapperCondition, WrapperConditionOutOfStock, WrapperOrigin, WrapperOriginOutOfStock, WrapperPaginate, WrapperPrice, WrapperPriceOutOfStock, WrapperProduct, WrapperRate, WrapperRateOutOfStock } from './style';
+import { Button, Pagination, Rate } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDownWideShort, faArrowUpWideShort, faPercent } from '@fortawesome/free-solid-svg-icons';
 import AuthUser from '../../services/AuthUser';
 import ProductService from '../../services/ProductService';
+import { HeartOutlined } from '@ant-design/icons';
 
-const ArticleComponent = () => {
+const ArticleComponent = ({search}) => {
   const {getToken} = AuthUser();
-  const {products,getAllProduct} = ProductService();
+  const [products, setProducts] = useState([]);
+  const {getAllProduct} = ProductService();
   // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+
+  const fetchProducts = useCallback(async() => {
+    try{
+        const data = await getAllProduct()
+        setProducts(data)
+    }
+    catch(error)
+    {
+        throw error
+    }
+}, [getAllProduct])
+
+useEffect(() => {
+fetchProducts(); // Gọi hàm để lấy sản phẩm
+}, [fetchProducts]);
+
   // Tính toán các sản phẩm hiển thị trên trang hiện tại
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -34,12 +52,10 @@ const ArticleComponent = () => {
 
   ////////////////////////////////////
 
-   // State để lưu trạng thái của nút đang được nhấn
    const [selectedSort, setSelectedSort] = useState(null);
-   // Hàm xử lý khi người dùng nhấn vào một nút
   const handleSortClick = (sortType) => {
-    setSelectedSort(sortType);
-    // Logic khác khi nhấn vào nút (ví dụ: gọi API để lấy sản phẩm sắp xếp)
+    setSelectedSort((prevSortType) => (prevSortType === sortType ? null : sortType));
+ 
   };
   return (
     <Wrapper>
@@ -70,91 +86,70 @@ const ArticleComponent = () => {
         {currentItems.map(product => (
           product.inventory !== 0 ? (
             <Product onClick={() => handleClick(product)} key={product.id}>
-              {
-                product.discount !== 0 ? (
+              
+                {product.discount !== 0 ? (
                   <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
-                ) : null
-              }
-              <img src={product.image} alt={product.name} />
-              <p className='nameProduct'>{product.name}</p>
-              <WrapperOrigin>
-                <p>{product.origin}</p>
-                <p>{product.brand}</p>
-              </WrapperOrigin>
-              <WrapperPrice>
-                {
-                  product.discount === 0 ? (
+                ) : null}
+                <img src={product.image} alt={product.name} />
+                <p className='nameProduct' style={{WebkitLineClamp: product.discount !== 0 ? 2 : 3,}}>{product.name}</p>
+                <WrapperPrice>
+                  {product.discount !== 0 ? (
+                    <div className='oldPrice'>
+                      <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                      <p>đ</p>
+                    </div>
+                  ) : null}
+                  {product.discount === 0 ? (
                     <div className='Price'>
                       <p>{Number(product.price).toLocaleString('vi-VN')}</p>
                       <p>đ</p>
                     </div>
                   ) : (
-                      <div className='newPrice'>
-                        <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
-                        <p>đ</p>
-                      </div>
-                  )
-                }
-
-{
-                  product.discount !== 0 ? (
-                    <div className='oldPrice'>
-                      <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                    <div className='newPrice'>
+                      <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
                       <p>đ</p>
                     </div>
-                  ) : null 
-                }
-        
-              </WrapperPrice>
-        
-              <WrapperCondition>
-                <div className="soldProduct">
-                  <p>Đã bán:</p>
-                  <p>{product.sold}</p>
-                </div>
-                <div className="inventoryProduct">
-                  <p>Kho:</p>
-                  <p>{product.inventory}</p>
-                </div>
-              </WrapperCondition>
+                  )}
+                </WrapperPrice>
+                 <WrapperCondition>
+                  <div className="soldProduct">
+                    <p>Đã bán:</p>
+                    <p>{product.sold}</p>
+                  </div>
+                </WrapperCondition>
+                <WrapperRate>
+                  <Rate disabled allowHalf defaultValue={1.5} />
+                  <HeartOutlined />
+                </WrapperRate>
             </Product>
           ) : (
             <ProductOutOfStock key={product.id}>
                 <p className='OutOfStock'>Hết hàng</p>
                 {
-                  product.discount !== 0 ? (
-                    <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
-                  ) : null
+                product.discount !== 0 ? (
+                  <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
+                ) : null
                 }
                 <img src={product.image} alt={product.name} />
-                <p className='nameProduct'>{product.name}</p>
-              <WrapperOriginOutOfStock>
-                <p>{product.origin}</p>
-                <p>{product.brand}</p>
-              </WrapperOriginOutOfStock>
+                <p className='nameProduct' style={{WebkitLineClamp: product.discount !== 0 ? 2 : 3,}}>{product.name}</p>
               <WrapperPriceOutOfStock>
-              {
-                  product.discount === 0 ? (
+                {product.discount !== 0 ? (
+                    <div className='oldPrice'>
+                      <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                      <p>đ</p>
+                    </div>
+                  ) : null}
+                  {product.discount === 0 ? (
                     <div className='Price'>
                       <p>{Number(product.price).toLocaleString('vi-VN')}</p>
                       <p>đ</p>
                     </div>
                   ) : (
-                      <div className='newPrice'>
-                        <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
-                        <p>đ</p>
-                      </div>
-                  )
-                }
-
-{
-                  product.discount !== 0 ? (
-                    <div className='oldPrice'>
-                      <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                    <div className='newPrice'>
+                      <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
                       <p>đ</p>
                     </div>
-                  ) : null 
-                }
+                  )}
               </WrapperPriceOutOfStock>
         
               <WrapperConditionOutOfStock>
@@ -162,11 +157,11 @@ const ArticleComponent = () => {
                   <p>Đã bán:</p>
                   <p>{product.sold}</p>
                 </div>
-                <div className="inventoryProduct">
-                  <p>Kho:</p>
-                  <p>{product.inventory}</p>
-                </div>
               </WrapperConditionOutOfStock>
+              <WrapperRateOutOfStock>
+                <Rate disabled allowHalf defaultValue={1.5} />
+                <HeartOutlined />
+              </WrapperRateOutOfStock>
             </ProductOutOfStock>
           )
         ))}

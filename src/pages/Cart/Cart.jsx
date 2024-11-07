@@ -6,6 +6,7 @@ import { Button, Checkbox, InputNumber, message, Radio } from 'antd';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import UserService from '../../services/UserService';
 import AuthUser from '../../services/AuthUser';
+import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 const Cart = () => {
   const {carts, updateCart, orderCart, deleteCart} = UserService();
@@ -62,12 +63,8 @@ const Cart = () => {
   // // Hàm xử lý khi nhấn nút "Đặt hàng"
   const handleOrder = () => {
     
-   
     if(user.phone === null) {
       message.error('Vui lòng thêm số điện thoại')
-    }
-    else if(value === null){
-      message.error('Vui lòng chọn phương thức thanh toán')
     }
     else if(user.address === null){
       message.error('Vui lòng điền thêm địa chỉ nhận hàng')
@@ -198,7 +195,57 @@ const Cart = () => {
             {checkedList.length > 0 && value === "Chưa thanh toán" && (
               <Button type="primary" onClick={handleOrder}>Đặt hàng</Button>
             )}
-           
+            {checkedList.length > 0 && value === "Đã thanh toán" && (
+              <div className='submitData'>
+                <PayPalScriptProvider options={{ "client-id": "AfB9WXP0WczD-_mnfInE8yKoZf2Qy_BqrsB83l4O1AeW2iauLKLXNV29i0cNbTpZg_bQsd0V_sySxFnI" }}>
+                  <PayPalButtons
+                    style={{ layout: "vertical" }}
+                    createOrder={(data, actions) => {
+                      return actions.order.create({
+                        purchase_units: [{
+                          amount: { value:((totalPrice) / 23000).toFixed(2) }
+                        }]
+                      });
+                    }}
+                    onApprove={async (data, actions) => {
+                      try{
+                        const details = await actions.order.capture();
+                        if(user.phone === null) {
+                          message.error('Vui lòng thêm số điện thoại')
+                        }
+                        else if(user.address === null){
+                          message.error('Vui lòng điền thêm địa chỉ nhận hàng')
+                        }
+                        else{
+                          // const selectedCarts = carts.filter(cart => checkedList.includes(cart.id));
+                          const orders = selectedCarts.map((cart) => ({
+                            user_id: user.id,
+                            userName: user.name,
+                            address: user.address,
+                            phone: user.phone,
+                            status: value,
+                            product_id: cart.product_id,
+                            imgProduct: cart.imgProduct,
+                            nameProduct: cart.nameProduct,
+                            amount: cart.amount,
+                            totalMoney: cart.totalPrice,
+                            origin: cart.origin,
+                            id_cart: cart.id
+                          }));
+                          orderCart(orders).then(() => {
+                            // Reset checkedList và thông báo thành công
+                            setCheckedList([]);
+                          })
+                        }
+                      }
+                      catch(error){
+                        message.error("Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.");
+                      }
+                    }}
+                  />
+                </PayPalScriptProvider>
+              </div>
+            )}
           </div>
         </WrapperPay>
       </WrapperBody>

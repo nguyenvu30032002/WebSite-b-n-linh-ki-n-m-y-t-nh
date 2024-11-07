@@ -283,10 +283,13 @@ export const WrapperModal = styled(Modal)`
     }
 
     & .paypal{
-        width: 200px;
-        height: 200px;
+        width: 300px;
+        height: 100px;
         display: flex;
-        margin: 10px 0 0 200px;
+        margin: 20px 0 0 200px;
+        /* background-color: red; */
+        display: flex;
+        justify-content: center;
     }
 
 `

@@ -327,9 +327,9 @@ const handleUpdate = () => {
         
       ]} >
         {selectedSuppliers ? (
-         <>
-             <input type="text" name='name' value={selectedSuppliers.name || ''}  onChange={(e) => setSelectedSuppliers({ ...selectedSuppliers, name: e.target.value })} />
-             <input type="text" name='address' value={selectedSuppliers.address || ''}  onChange={(e) => setSelectedSuppliers({ ...selectedSuppliers, address: e.target.value })} />
+         <>   
+             <input type="text" placeholder='Nhà cung cấp' name='name' value={selectedSuppliers.name || ''}  onChange={(e) => setSelectedSuppliers({ ...selectedSuppliers, name: e.target.value })} />
+             <input type="text" placeholder='Địa chỉ' name='address' value={selectedSuppliers.address || ''}  onChange={(e) => setSelectedSuppliers({ ...selectedSuppliers, address: e.target.value })} />
          </>
         ) : null
         }

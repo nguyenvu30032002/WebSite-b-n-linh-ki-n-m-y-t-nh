@@ -137,7 +137,7 @@ export const WrapperPay = styled.div`
     justify-content: center;
     border-left: 1px solid #ccc;
     padding: 0 30px 0 10px;
-    margin: -90px 0 0 0;
+    margin: 0px 0 0 0;
     & .address{
         width: 100%;
         height: 30px;
@@ -196,26 +196,23 @@ export const WrapperPay = styled.div`
     & .submitData{
        
         width: 100%;
-        height: 60px;
+        max-height: 200px;
         display: flex;
-        justify-content: start;
+        justify-content: center;
         align-items: center;
-        /* margin-bottom: 60px; */
+        margin: 10px 0 0 0 ;
         & button{
             width: 100%;
             height: 50px;
             font-size: 20px;
             font-weight: 500;
         }
-        & div{
-            width: 120px;
-          
-        }
+       
     }
 
     & .select{
         height: 80px;
-        margin: 0 0 80px 0;
+        margin: 0 0 0px 0;
         & .ant-radio-wrapper{
             margin: 10px ;
             float: left;

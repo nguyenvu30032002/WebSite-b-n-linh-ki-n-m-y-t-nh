@@ -8,6 +8,7 @@ import { faArrowRight, faCartShopping, faMinus, faPlus } from '@fortawesome/free
 import { Button, message, Radio} from 'antd';
 import AuthUser from '../../services/AuthUser';
 import UserService from '../../services/UserService';
+import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 
 const Product = () => {
@@ -249,9 +250,60 @@ const Product = () => {
                 <Radio value="Chưa thanh toán">Thanh toán bằng tiền mặt</Radio>
                 <Radio value="Đã thanh toán">Thanh toán bằng tài khoản ngân hàng</Radio>
               </Radio.Group>
-              <div className='paypal'>
+              {
+                valueRadio === 'Đã thanh toán' && (
+                <div className='paypal'>
+                <PayPalScriptProvider options={{ "client-id": "AfB9WXP0WczD-_mnfInE8yKoZf2Qy_BqrsB83l4O1AeW2iauLKLXNV29i0cNbTpZg_bQsd0V_sySxFnI" }}>
+                    <PayPalButtons
+                      style={{ layout: "vertical" }}
+                      createOrder={(data, actions) => {
+                        return actions.order.create({
+                          purchase_units: [{
+                            amount: { value:((((product.price) - (product.price * (product.discount / 100)))*amount) / 23000).toFixed(2) }
+                          }]
+                        });
+                      }}
+                      onApprove={async (data, actions) => {
+                        try{
+                          const details = await actions.order.capture();
+                          const data =
+                        {
+                         user_id: getUser().id,
+                         userName: getUser().name,
+                         address: getUser().address,
+                         phone: getUser().phone,
+                         status: valueRadio,
+                         product_id: product.id,
+                         imgProduct: product.image,
+                         nameProduct: product.name,
+                         amount: amount,
+                         totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
+                         origin: product.origin,
+                        };
+                 
+                       if(getUser().address === null){
+                         message.error('Vui lòng điền địa chỉ nhận hàng')
+                         setIsModalOpen(true);
+                       }
+                       else if(getUser().phone === null){
+                         message.error('Vui lòng thêm số điện thoại');
+                         setIsModalOpen(true);
+                       }
+                       else{
+                         userOrder(data);
+                         setIsModalOpen(false);
+                       }
+                        }
+                        catch(error){
+                          message.error("Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.");
+                        }
+                      }}
+                    />
+                  </PayPalScriptProvider>
+                </div>
+                )
+              }
               
-              </div>
             </WrapperModal>
         </Wrapper>
         

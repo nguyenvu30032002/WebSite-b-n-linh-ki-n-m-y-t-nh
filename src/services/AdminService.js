@@ -182,6 +182,34 @@ const getProduct = useCallback(async (value) => {
     }
 }, [apiUrl])
 
+const updateProduct = async(selectedProduct) => {
+    try{
+        const response = await axios.post(`${apiUrl}/updateProduct`,
+            {
+                id: selectedProduct.key,
+                name: selectedProduct.name,
+                productType: selectedProduct.productType,
+                description: selectedProduct.description,
+                price: selectedProduct.price,
+                inventory: selectedProduct.inventory,
+                origin: selectedProduct.origin,
+                brand: selectedProduct.brand,
+                image: selectedProduct.image,
+                discount: selectedProduct.discount,
+                variant: selectedProduct.variant
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+        });
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
 const deleteProduct = async(selectedRowKeys) =>{
     try{
         const response = await axios.delete(`${apiUrl}/deleteProduct`,
@@ -496,6 +524,7 @@ const deleteVariants = async(selectedRowKeys) =>{
         deleteUser,
         createProduct,
         getProduct,
+        updateProduct,
         deleteProduct,
         createCategory,
         getCategories,

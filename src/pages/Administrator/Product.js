@@ -130,3 +130,48 @@ export const WrapperToggleShow = styled.div`
     border-bottom-left-radius: 15npx;
     
 `
+
+export const WrapperModal = styled(Modal)`
+  width: 680px !important;
+  height: 550px !important;
+  & .product{
+    display: flex;
+    & .ant-upload {
+      width: 150px !important;
+      height: 50px !important;
+      display: flex;
+      justify-content: center;
+    }
+    & img{
+      width: 200px;
+      height: 200px;
+    }
+    /* & .ant-upload-list-item-container{
+      width: 200px !important;
+      height: 200px !important;
+    } */
+    & .informationProduct{
+      margin: 0 0 0 20px;
+      & .select{
+          display: flex;
+          justify-content: space-between;
+          margin: 20px 0 20px 0;
+        }
+        & .payment{
+          display: flex;
+          justify-content: space-between;
+          margin: 0px 0 20px 0;
+        }
+        & .inventory{
+          display: flex;
+          justify-content: space-between;
+          margin: 0px 0 20px 0;
+        }
+        & .checkbox{
+          display: flex;
+          justify-content: end;
+          margin: 0 0 10px 0;
+        }
+    }
+  }
+`

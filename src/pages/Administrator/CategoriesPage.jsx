@@ -305,7 +305,7 @@ return (
         
       ]} >
         {selectedCategory ? (
-          <input type="text" name='name' value={selectedCategory.name || ''}  onChange={(e) => setSelectedCategory({ ...selectedCategory, name: e.target.value })} />
+          <input type="text" placeholder='Loại sản phẩm' name='name' value={selectedCategory.name || ''}  onChange={(e) => setSelectedCategory({ ...selectedCategory, name: e.target.value })} />
         ) : null
         }
       </WrapperModal>

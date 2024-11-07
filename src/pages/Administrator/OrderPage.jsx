@@ -16,10 +16,6 @@ const columns = [
     dataIndex: 'phone',
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-  },
-  {
     title: 'Product',
     dataIndex: 'nameProduct',
   },
@@ -202,7 +198,11 @@ function copyToClipboard(text) {
             <img src={selectedOrder.imgProduct} alt={selectedOrder.nameProduct} />
             <div>
                 <p>{selectedOrder.nameProduct} </p>
+                {
+                  selectedOrder.condition === 'Đã giao' ?(
                 <p>Mã vận đơn: {selectedOrder.bill_of_lading_code}<CopyOutlined onClick={() => copyToClipboard(selectedOrder.bill_of_lading_code)} style={{margin: '0 0 0 20px', cursor:'pointer'}}/></p>
+                  ) : null
+                }
                 <p>Tổng tiền: <span style={{color:'#d70018'}}>{Number(selectedOrder.totalMoney).toLocaleString('vi-VN')} đ</span></p>
                 <p>Số lượng: <span style={{color:'#d70018'}}>x{selectedOrder.amount}</span></p>
                 <p>Tình trạng: <span style={{color:'#d70018'}}>{selectedOrder.status}</span></p>
