@@ -19,7 +19,7 @@ export const WrapperBody = styled.div`
     width: 1500px; // Chiếm toàn bộ chiều rộng của container cha
     margin: 0 auto; // Căn giữa theo chiều ngang
     display: flex;
-    height: 600px;
+    height: 800px;
     justify-content: center;
 `
 
@@ -58,7 +58,7 @@ export const WrapperProduct = styled.div`
 
 export const WrapperProductName = styled.div`
     width: 100%;
-    margin: 30px 0 -10px 0;
+    margin: 30px 0 -15px 0;
     & p{
         font-size: 30px;
         text-align: start;
@@ -70,10 +70,32 @@ export const WrapperProductName = styled.div`
     }
 `
 
+export const WrapperRate = styled.div`
+    /* background-color: red; */
+    height: 50px;
+    margin: 0 0 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    & .rate{
+        margin: 0 0 0 15px;
+        font-size: 40px;
+    }
+    & .favourite{
+        font-size: 40px;
+        cursor: pointer;
+        & .heart{
+            color: red;
+        }
+    }
+    
+`
+
 export const WrapperVariants = styled.div`
     width: 100%;
     height: 30px;
     display: flex;
+    margin: 0 0 20px 0;
     & button{
         width: 50px;
         height: 30px;
@@ -123,7 +145,7 @@ export const WrapperPrice = styled.div`
     align-items: center;
     margin: 0 0 30px 0;
     & .newPrice{
-        width: 40%;
+        max-width: 40%;
         height: 50px;
         display: flex;
         justify-content: start;
@@ -152,7 +174,7 @@ export const WrapperPrice = styled.div`
         
     }
     & .oldPrice{
-        width:  40%;
+        max-width:  40%;
         height: 50px;
         display: flex;
         justify-content: start;

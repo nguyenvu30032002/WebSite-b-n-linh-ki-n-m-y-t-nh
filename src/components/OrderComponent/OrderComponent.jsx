@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wrapper, WrapperInformation, WrapperSelect } from './style';
+import { Wrapper, WrapperInformation, WrapperSelect, WrapperUser } from './style';
 import UserService from '../../services/UserService';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,34 +18,47 @@ const OrderComponent = ({ selectedOrderStatus }) => {
             <div className='imgProduct'>
               <img src={order.imgProduct} alt="product" />
             </div>
-            <div className='nameProduct'>
-              <p>{order.nameProduct}</p>
-            </div>
-            <div className='amountProduct'>
-                <div className='quantityProduct'>
-                    <p>Số lượng:</p>
-                    <p>{order.amount}</p>
-                </div>
-                <div className='originProduct'>
-                    <p>Xuất xứ:</p>
-                    <p>{order.origin}</p>
-                </div>
-            </div>
-            <div className='totalMoney'>
-              <p>Thành giá:</p>
-              <p>{Number(order.totalMoney).toLocaleString('vi-VN')}VND</p>
             
+            <div className='informationProduct'>
+              {/* <div className='condition'>
+                <p>Trạng thái:</p>
+                <p>{order.condition}</p>
+              </div>  */}
+              
+              <div className='nameProduct'>
+                <p>{order.nameProduct}</p>
+              </div>
+              {
+                order.bill_of_lading_code !== null ? (
+                  <div className='orderCode'>
+                    <span>Mã vận đơn: </span>
+                    <span>{order.bill_of_lading_code}</span>
+                  </div>
+                ) : null
+              }
+              <div className='amount'>
+                <span>x <span style={{fontWeight: '500'}}>{order.amount}</span></span>
+                <div className='price'>
+                    <p className='newPrice'>1.500.000đ</p>
+                    <p className='oldPrice'>1.700.000đ</p>
+                </div>
+              </div>
+              <div className='totalMoney'>
+                <p>Thành tiền: <span style={{color:'red', fontWeight:'500'}}>{Number(order.totalMoney).toLocaleString('vi-VN')}</span> VND(<span>{order.status}</span>)</p>
+              </div>
             </div>
-            <div className='condition'>
-              <p>Trạng thái:</p>
-              <p>{order.status}</p>
-            </div> 
-            
           </WrapperInformation>
+          <WrapperUser>
+                <div>
+                  <p className='name'>Tới:<span>dsuifdsgfuafsssssssssafs</span></p>
+                  <p>Số điện thoại:<span>004359334508477</span></p>
+                </div>
+                <p className='address'>Địa chỉ: <span> xom 3 thon lang trung xa trung an huyen vu thu tinh thai binh</span></p>
+            </WrapperUser>
           {
             order.condition === 'Chờ xác nhận' ? (
                 <WrapperSelect>
-                  <button onClick={() => {
+                  <button className='cancel' onClick={() => {
                       const condition = "Hủy";
                       const idOrder = order.id
                       
@@ -57,14 +70,14 @@ const OrderComponent = ({ selectedOrderStatus }) => {
               <WrapperSelect>
                 {order.condition === 'Đã giao' ? (
                     <>
-                    <button onClick={() => {
+                    <button className='confirm' onClick={() => {
                       const condition = "Xác nhận";
                       const idOrder = order.id
                       const product_id = order.product_id
                       updateCondition(condition,idOrder,product_id)
                       }}>Xác nhận
                     </button>
-                    <button onClick={() => {
+                    <button className='cancel' onClick={() => {
                       const condition = "Hủy";
                       const idOrder = order.id
                       updateCondition(condition,idOrder)
@@ -72,7 +85,7 @@ const OrderComponent = ({ selectedOrderStatus }) => {
                     </button>
                     </>
                 ) : (
-                  <button onClick={() => {
+                  <button className=' acquisition' onClick={() => {
                     navigate('/cart');
                 }}>
                     Mua lại

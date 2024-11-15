@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Product, ProductOutOfStock, Wrapper, WrapperArrange, WrapperCondition, WrapperConditionOutOfStock, WrapperOrigin, WrapperOriginOutOfStock, WrapperPaginate, WrapperPrice, WrapperPriceOutOfStock, WrapperProduct, WrapperRate, WrapperRateOutOfStock } from './style';
+import { Product, ProductOutOfStock, Wrapper, WrapperArrange, WrapperCondition, WrapperConditionOutOfStock, WrapperPaginate, WrapperPrice, WrapperPriceOutOfStock, WrapperProduct, WrapperRate, WrapperRateOutOfStock } from './style';
 import { Button, Pagination, Rate } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDownWideShort, faArrowUpWideShort, faPercent } from '@fortawesome/free-solid-svg-icons';
 import AuthUser from '../../services/AuthUser';
 import ProductService from '../../services/ProductService';
-import { HeartOutlined } from '@ant-design/icons';
+import { HeartFilled } from '@ant-design/icons';
 
 const ArticleComponent = ({search}) => {
   const {getToken} = AuthUser();
@@ -85,14 +85,14 @@ fetchProducts(); // Gọi hàm để lấy sản phẩm
       <WrapperProduct>
         {currentItems.map(product => (
           product.inventory !== 0 ? (
-            <Product onClick={() => handleClick(product)} key={product.id}>
+            <Product key={product.id}>
               
                 {product.discount !== 0 ? (
                   <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
                 ) : null}
-                <img src={product.image} alt={product.name} />
-                <p className='nameProduct' style={{WebkitLineClamp: product.discount !== 0 ? 2 : 3,}}>{product.name}</p>
-                <WrapperPrice>
+                <img onClick={() => handleClick(product)} src={product.image} alt={product.name} />
+                <p onClick={() => handleClick(product)} className='nameProduct' style={{WebkitLineClamp: product.discount !== 0 ? 2 : 3,}}>{product.name}</p>
+                <WrapperPrice onClick={() => handleClick(product)}>
                   {product.discount !== 0 ? (
                     <div className='oldPrice'>
                       <p>{Number(product.price).toLocaleString('vi-VN')}</p>
@@ -111,7 +111,7 @@ fetchProducts(); // Gọi hàm để lấy sản phẩm
                     </div>
                   )}
                 </WrapperPrice>
-                 <WrapperCondition>
+                 <WrapperCondition onClick={() => handleClick(product)}>
                   <div className="soldProduct">
                     <p>Đã bán:</p>
                     <p>{product.sold}</p>
@@ -119,7 +119,7 @@ fetchProducts(); // Gọi hàm để lấy sản phẩm
                 </WrapperCondition>
                 <WrapperRate>
                   <Rate disabled allowHalf defaultValue={1.5} />
-                  <HeartOutlined />
+                  <HeartFilled />
                 </WrapperRate>
             </Product>
           ) : (
@@ -160,7 +160,7 @@ fetchProducts(); // Gọi hàm để lấy sản phẩm
               </WrapperConditionOutOfStock>
               <WrapperRateOutOfStock>
                 <Rate disabled allowHalf defaultValue={1.5} />
-                <HeartOutlined />
+                <HeartFilled />
               </WrapperRateOutOfStock>
             </ProductOutOfStock>
           )

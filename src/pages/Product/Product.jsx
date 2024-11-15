@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
 import Header from "../../parts/Header/Header";
-import { Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPrice, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperVariants } from "./style";
+import { Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPrice, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperVariants } from "./style";
 import Footer from "../../parts/Footer/Footer";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCartShopping, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Button, message, Radio} from 'antd';
+import { Button, message, Radio, Rate} from 'antd';
 import AuthUser from '../../services/AuthUser';
 import UserService from '../../services/UserService';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
+import { HeartFilled } from '@ant-design/icons';
 
 
 const Product = () => {
@@ -116,9 +117,12 @@ const Product = () => {
                             {product.name}
                          </p>
                       </WrapperProductName>
-                      
+                      <WrapperRate>
+                        <Rate className='rate' disabled allowHalf defaultValue={1.5} />
+                        <span className='favourite'>Yêu thích <HeartFilled className='heart' /></span>
+                      </WrapperRate>
                       {
-                        product.id && product.variants === true ? (
+                        product.id && product.variants !== null ? (
                           <WrapperVariants>
                           <Button>8gb</Button>
                           <Button>16gb</Button>
