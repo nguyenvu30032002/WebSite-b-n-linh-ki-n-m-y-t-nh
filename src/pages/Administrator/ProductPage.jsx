@@ -205,7 +205,7 @@ const uploadButton = (
   <button
     style={{
       border: 0,
-      background: 'none',
+      background: 'none',                                                         
     }}
     type="button"
   >
@@ -644,7 +644,7 @@ const updateProducts = () => {
                     </div>
                       <TextArea name='description' onChange={onUpdate}  value={selectedProduct.description} placeholder="Mô tả sản phẩm" rows={5} style={{ width: '350px', height: '100px',margin: '0 0 20px 0' }} />
                       {
-                        selectedProduct.variant !== null ? (
+                        selectedProduct.variant !== null && isChecked === false ? (
                           <Select
                           placeholder="Biến thể"
                           options={combinedOptions}
@@ -652,7 +652,7 @@ const updateProducts = () => {
                           name='variant'
                           value={selectedProduct.variant}
                           onChange={(value) => onUpdateSelect('variant', value)}
-                        />
+                          />
                         ) : (
                           <div className='checkbox'>
                             <Checkbox checked={isChecked} onChange={handleCheckboxChange} >Variants </Checkbox>

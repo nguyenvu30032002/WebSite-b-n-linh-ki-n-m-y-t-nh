@@ -1,18 +1,19 @@
 import React, { useState } from 'react'
 import Header from "../../parts/Header/Header";
-import { Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPrice, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperVariants } from "./style";
+import { ProductSimilar, Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperComment, WrapperConditionSimilar, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPrice, WrapperPriceSimilar, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperRateSimilar, WrapperSimilar, WrapperVariants } from "./style";
 import Footer from "../../parts/Footer/Footer";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCartShopping, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Button, message, Radio, Rate} from 'antd';
+import { Button, Image, Input, message, Radio, Rate, Upload} from 'antd';
 import AuthUser from '../../services/AuthUser';
 import UserService from '../../services/UserService';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
-import { HeartFilled } from '@ant-design/icons';
+import { CameraOutlined, HeartFilled, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 
 
 const Product = () => {
+    const [zoom, setZoom] = useState(false) 
     const location = useLocation();
     const product = location.state?.product;
     const {getUser} = AuthUser();
@@ -26,6 +27,15 @@ const Product = () => {
     }
     const handleMinus = () =>{
       setAmount(() => amount - 1)
+    }
+    const handleZoom = () => {
+      setZoom(true);
+    }
+    const handlePreviewClose = (visible) => {
+      setZoom(visible); // Cập nhật trạng thái khi preview đóng
+    };
+    const handleClick = (product) => {
+        // navigate(`/product/id/${product.id}/name/${encodeURIComponent(product.name)}`, { state: { product } });
     }
 /////////////////////////////////////////////////////////////////////////////
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -95,8 +105,50 @@ const Product = () => {
        userCart(data)
 
     }
+///////////////////////////////////////////////////  Comment   /////////////////////////////////////////////////
+const [comment, setComment] = useState("");
+  const [rating, setRating] = useState(0);
+  const [fileList, setFileList] = useState([]);
+  const [previewImage, setPreviewImage] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
 
-  return (
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
+  };
+
+  const handleRateChange = (value) => {
+    setRating(value);
+  };
+
+  const handleUploadChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };  
+  const uploadButton = (
+    <button
+      style={{
+        border: 0,
+        background: 'none',
+        cursor: 'pointer',
+      }}
+      type="button"
+    >
+      <CameraOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </button>
+  );
+  const handleSubmit = () => {
+    console.log("Comment:", comment);
+    console.log("Rating:", rating);
+    console.log("Uploaded Images:", fileList.map((file) => file.name));
+    // Xử lý gửi dữ liệu đến server
+  };
+return (
     <Wrapper>
             <WrapperHeader>
                 <Header/>
@@ -106,7 +158,7 @@ const Product = () => {
                   <WrapperImg>
                     <WrapperCarousel arrows infinite={false}>
                       <div>
-                      <img src={`http://localhost:3000/${product.image}`} alt={product.name} />
+                      <Image className='img' onClick={handleZoom}  preview={{ visible: zoom , onVisibleChange:handlePreviewClose }} src={`http://localhost:3000/${product.image}`} alt={product.name} />
                       {/* <img src={product.image} alt={product.name} onError={() => console.error('Error loading image')} /> */}
                       </div>
                     </WrapperCarousel>
@@ -119,9 +171,9 @@ const Product = () => {
                       </WrapperProductName>
                       <WrapperRate>
                         <Rate className='rate' disabled allowHalf defaultValue={1.5} />
-                        <span className='favourite'>Yêu thích <HeartFilled className='heart' /></span>
+                        <HeartFilled className='heart' />
                       </WrapperRate>
-                      {
+                      {/* {
                         product.id && product.variants !== null ? (
                           <WrapperVariants>
                           <Button>8gb</Button>
@@ -129,7 +181,7 @@ const Product = () => {
                           <Button>32gb</Button>
                         </WrapperVariants>
                         ) : null
-                      }
+                      } */}
                       {
                         product.description !== null ? (
                           <WrapperDescription>
@@ -199,6 +251,160 @@ const Product = () => {
                         </WrapperOrder>
                   </WrapperProduct>
               </WrapperProductInformation>
+              <WrapperSimilar>
+                <span className='similar'>SẢN PHẨM TƯƠNG TỰ</span>
+                <div>
+                <ProductSimilar key={product.id}>
+                      {product.discount !== 0 ? (
+                        <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
+                      ) : null}
+                      <img onClick={() => handleClick(product)} src="/cpu-intel-core-i7-12700f.webp"  alt={product.name} />
+                      <p onClick={() => handleClick(product)} className='nameProduct' style={{WebkitLineClamp: product.discount !== 0 ? 2 : 3,}}>{product.name}</p>
+                      <WrapperPriceSimilar onClick={() => handleClick(product)}>
+                        {product.discount !== 0 ? (
+                          <div className='oldPrice'>
+                            <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                            <p>đ</p>
+                          </div>
+                        ) : null}
+                        {product.discount === 0 ? (
+                          <div className='Price'>
+                            <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                            <p>đ</p>
+                          </div>
+                        ) : (
+                          <div className='newPrice'>
+                            <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                            <p>đ</p>
+                          </div>
+                        )}
+                      </WrapperPriceSimilar>
+                      <WrapperConditionSimilar onClick={() => handleClick(product)}>
+                        <div className="soldProduct">
+                          <p>Đã bán:</p>
+                          <p>{product.sold}</p>
+                        </div>
+                      </WrapperConditionSimilar>
+                      <WrapperRateSimilar>
+                        <Rate disabled allowHalf defaultValue={1.5} />
+                        <HeartFilled />
+                      </WrapperRateSimilar>
+                </ProductSimilar>
+           
+                </div>
+              </WrapperSimilar>
+              <WrapperComment>
+                <div className='formComment'>
+                 <span className='title'>Đánh giá & nhận xét {product.name}</span>
+                 <div className='comment' >
+                    <div className='rateComment'>
+                      <span>Chọn đánh giá của bạn: </span>
+                      <Rate onChange={handleRateChange} />                    
+                    </div>
+                    <div className='imgComment'>
+                    <p>Đính kèm ảnh:</p>
+                    <Upload
+                      listType="picture-card"
+                      fileList={fileList} // Danh sách ảnh đã chọn
+                      onChange={handleUploadChange} // Xử lý thay đổi danh sách file
+                      beforeUpload={() => false} // Ngăn không upload ngay, chỉ lưu tạm
+                    >
+                      {fileList.length >= 3 ? null : uploadButton}
+                    </Upload>
+                    {previewImage && (
+                      <Image
+                        wrapperStyle={{
+                          display: 'none',
+                        }}
+                        preview={{
+                          visible: previewOpen,
+                          onVisibleChange: (visible) => setPreviewOpen(visible),
+                          afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                        }}
+                        src={previewImage}
+                      />
+                    )}
+                    </div>
+                    <Input.TextArea 
+                      rows={4} 
+                      // style={{width: '600px'}}
+                      placeholder="Nhập bình luận của bạn..." 
+                      value={comment} 
+                      onChange={handleCommentChange} 
+                      style={{ width: '550px', float: 'left', maxHeight: '150px'}}
+                      maxLength={100}
+                      showCount 
+                    />
+
+                    <div style={{ marginTop: 30 }}>
+                      <Button type="primary" onClick={handleSubmit}>Gửi bình luận</Button>
+                    </div>
+                  </div>
+                  <div className='userComment'>
+                    <div className='commentUser' key={1}>
+                      <div className='profileUser'>
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                          
+                          <div className='profile'>
+                            <span style={{ fontSize: 15, color: 'rgba(0,0,0,.87)'}}>sadada</span>
+                            <Rate disabled defaultValue={2} />
+                            <span style={{color: 'rgba(0,0,0,.54)'}}>2022-2-20</span>
+                          </div>
+                      </div>
+                      <span className='comment'>
+                          aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaa aaaaaa aaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                      </span>
+                      <div className='commentImg'>
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                      </div>
+                    </div>
+
+                    <div className='commentUser' key={1}>
+                      <div className='profileUser'>
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                          
+                          <div className='profile'>
+                            <span style={{ fontSize: 15, color: 'rgba(0,0,0,.87)'}}>sadada</span>
+                            <Rate disabled defaultValue={2} />
+                            <span style={{color: 'rgba(0,0,0,.54)'}}>2022-2-20</span>
+                          </div>
+                      </div>
+                      <span className='comment'>
+                          aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaa aaaaaa aaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                      </span>
+                      <div className='commentImg'>
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                      </div>
+                    </div>
+
+                    <div className='commentUser' key={1}>
+                      <div className='profileUser'>
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                          
+                          <div className='profile'>
+                            <span style={{ fontSize: 15, color: 'rgba(0,0,0,.87)'}}>sadada</span>
+                            <Rate disabled defaultValue={2} />
+                            <span style={{color: 'rgba(0,0,0,.54)'}}>2022-2-20</span>
+                          </div>
+                      </div>
+                      <span className='comment'>
+                          aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaa aaaaaa aaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                      </span>
+                      <div className='commentImg'>
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+                
+              </WrapperComment>
             </WrapperBody>
             <Footer/>
             <WrapperModal title="Thông tin đơn hàng" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okText="Mua"  
@@ -307,8 +513,8 @@ const Product = () => {
                 </div>
                 )
               }
-              
             </WrapperModal>
+           
         </Wrapper>
         
   )
