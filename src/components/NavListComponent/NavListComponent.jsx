@@ -3,13 +3,15 @@ import { Wrapper, WrapperCategories, WrapperList } from './style'
 import { faList} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProductService from '../../services/ProductService';
+import { useDispatch } from 'react-redux';
+import { setSearchTerm } from '../../store/Action';
 
 const NavListComponent = () => {
   const {categories} = ProductService();
-  const {getAllProduct} = ProductService();
+  const dispatch = useDispatch();
   const handlesubmit = (e) => {
       const name = e.target.innerText;
-      getAllProduct(name)
+      dispatch(setSearchTerm(name));
   }
   return (
     <Wrapper>

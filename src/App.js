@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Home from './pages/Home/Home';
 import Information from './pages/Information/Information';
@@ -12,13 +12,17 @@ import Register from './pages/Register/Register';
 import AuthUser from './services/AuthUser';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import { useEffect } from 'react';
+import { Provider } from 'react-redux';
+import store from './store/Store';
 
 function App() {
     return (
         <div className="App">
-            <BrowserRouter>
-                <AuthUserWrapper />
-            </BrowserRouter>
+            <Provider store={store}>  {/* Bọc ứng dụng trong Provider */}
+                <BrowserRouter>
+                    <AuthUserWrapper />
+                </BrowserRouter>
+            </Provider>
         </div>
     );
 }
@@ -32,6 +36,7 @@ const AuthUserWrapper = () => {
         }
     }, [user, navigate]);
     return (
+        
         <Routes>
             <>
                 {/* Các route không yêu cầu đăng nhập */}
@@ -39,6 +44,7 @@ const AuthUserWrapper = () => {
                 <Route path='/register' element={<Register />} />
                 <Route path='/forgotpassword' element={<ForgotPassword />} />
                 <Route path='/' element={<Home />} />
+                
                 {/* Render Home chỉ nếu người dùng không phải là Admin */}
                 {/* {(!user || user.role !== 'Admin') ? (
                     <Route path='/' element={<Home />} />

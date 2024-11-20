@@ -7,25 +7,29 @@ import { faArrowDownWideShort, faArrowUpWideShort, faPercent } from '@fortawesom
 import AuthUser from '../../services/AuthUser';
 import ProductService from '../../services/ProductService';
 import { HeartFilled } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSearchTerm } from '../../store/Action';
 
-const ArticleComponent = ({search}) => {
+const ArticleComponent = () => {
+  const dispatch = useDispatch();
   const {getToken} = AuthUser();
   const [products, setProducts] = useState([]);
   const {getAllProduct} = ProductService();
   // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-
+  const searchTerm = useSelector((state) => state.searchTerm);  
   const fetchProducts = useCallback(async() => {
     try{
-        const data = await getAllProduct()
+      console.log( ' Case máy tính',searchTerm)
+        const data = await getAllProduct(searchTerm)
         setProducts(data)
     }
     catch(error)
     {
         throw error
     }
-}, [getAllProduct])
+}, [getAllProduct,searchTerm])
 
 useEffect(() => {
 fetchProducts(); // Gọi hàm để lấy sản phẩm
@@ -55,7 +59,7 @@ fetchProducts(); // Gọi hàm để lấy sản phẩm
    const [selectedSort, setSelectedSort] = useState(null);
   const handleSortClick = (sortType) => {
     setSelectedSort((prevSortType) => (prevSortType === sortType ? null : sortType));
- 
+    dispatch(setSearchTerm(sortType));
   };
   return (
     <Wrapper>
