@@ -1,7 +1,7 @@
 import React from 'react'
 import { Wrapper, WrapperForm } from './style'
 import { Button, Form, Input } from 'antd'
-import { UserOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, UserOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const tailFormItemLayout = {
@@ -20,7 +20,7 @@ const ForgotPassword = () => {
       };
   return (
     <Wrapper>
-      <h1>FORGOT PASSWORD</h1>
+      
       <WrapperForm
         name="forgotpassword"
         initialValues={{
@@ -31,6 +31,10 @@ const ForgotPassword = () => {
         }}
         onFinish={onFinish}
       >
+        <div className='tittle'>
+          <ArrowLeftOutlined  onClick={() => navigate('/login')}/>
+          <h3>FORGOT PASSWORD</h3>
+        </div>
         <Form.Item
           name="email"
           rules={[
@@ -45,15 +49,13 @@ const ForgotPassword = () => {
             prefix={<UserOutlined />}
             placeholder="Email"
             autoComplete="Email" // Added autocomplete attribute
+            style={{width: '380px', height: '42px'}}
           />
         </Form.Item>
 
         <Form.Item {...tailFormItemLayout} >
           <Button type="primary" htmlType="submit">
             Submit
-          </Button>
-          <Button type="primary" onClick={() => navigate('/login')}>
-            Back
           </Button>
         </Form.Item>
       </WrapperForm>

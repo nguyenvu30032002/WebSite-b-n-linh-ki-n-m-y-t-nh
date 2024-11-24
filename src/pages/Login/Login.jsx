@@ -9,6 +9,7 @@ import { Bounce, toast, ToastContainer } from 'react-toastify';
 
 const Login = () => {
     const  {http, setToken, setExpires_in, setUser} = AuthUser();
+    const [form] = Form.useForm();
     const onFinish = (values) => {
       // api call
       http.post('/login', {email:values.email, password:values.password})
@@ -20,6 +21,7 @@ const Login = () => {
         setUser(res.data.user)
       })
       .catch((err)=>{
+        form.resetFields(['password']);
         toast.error(
           <div>
             Sai tài khoản hoặc mật khẩu <br />
@@ -28,6 +30,7 @@ const Login = () => {
         
       })
     };
+    
   return (
     <Wrapper>
       <ToastContainer
@@ -45,6 +48,7 @@ const Login = () => {
         />
       <h1>LOGIN</h1>
       <WrapperForm
+        form={form}
         name="login"
         initialValues={{
           remember: false,
@@ -100,10 +104,10 @@ const Login = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button block type="primary" htmlType="submit">
+          <Button block type="primary" htmlType="submit" style={{margin: '0 0 10px 0'}}>
             Log in
           </Button>
-          or <a  href="/register">Register now!</a>
+          or <a href="/register" >Register now!</a>
         </Form.Item>
       </WrapperForm>
     </Wrapper>

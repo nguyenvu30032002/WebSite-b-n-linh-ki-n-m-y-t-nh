@@ -4,7 +4,17 @@ export const Wrapper = styled.div`
     width: 920px;
     margin: 30px 0 30px 50px;
     /* border-radius: 30px; */
-   
+`
+
+export const ToolTipSpan = styled.span`
+  color: black;
+  max-width: 150px;
+  font-size: 17px;
+  cursor: pointer;
+  margin: 0 15px 10px 0;
+  &:hover {
+    color: #ee4d2d;
+  }
 `
 
 export const WrapperArrange = styled.div`
@@ -14,6 +24,12 @@ export const WrapperArrange = styled.div`
     display: flex;
     justify-content: start;
     align-items: center;
+   
+    & .anticon {
+        font-size: 25px;
+        margin:  0 5px 0 5px;
+        cursor: pointer;
+    }
     & button{
         margin: 0 10px 0 10px;
     }
@@ -362,3 +378,4 @@ export const WrapperRateOutOfStock = styled.div`
         font-size: 15px;
     }
 `
+

@@ -1,5 +1,8 @@
+
 const initialState = {
     searchTerm: '',  // Khai báo giá trị mặc định cho searchTerm
+    // carts: [],
+    product: '',
 };
 
 // Reducer để xử lý các hành động
@@ -10,8 +13,18 @@ const searchReducer = (state = initialState, action) => {
                 ...state,          // Giữ nguyên state cũ
                 searchTerm: action.payload,   // Cập nhật giá trị tìm kiếm với payload từ action
             };
+        // case 'SET_CARTS':  
+        //     return {
+        //         ...state,
+        //         carts: action.payload,
+        // }; 
+        case 'ID_PRODUCT':
+            return{
+                ...state,
+                product:action.payload
+            }   
         default:
-            return state;  // Nếu không phải 'SET_SEARCH_TERM', trả về state không thay đổi
+            return state;
     }
 };
 

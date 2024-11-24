@@ -1,27 +1,25 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Product, ProductOutOfStock, Wrapper, WrapperArrange, WrapperCondition, WrapperConditionOutOfStock, WrapperPaginate, WrapperPrice, WrapperPriceOutOfStock, WrapperProduct, WrapperRate, WrapperRateOutOfStock } from './style';
-import { Button, Pagination, Rate } from 'antd';
+import { Product, ProductOutOfStock, ToolTipSpan, Wrapper, WrapperArrange, WrapperCondition, WrapperConditionOutOfStock, WrapperPaginate, WrapperPrice, WrapperPriceOutOfStock, WrapperProduct, WrapperRate, WrapperRateOutOfStock } from './style';
+import { Button, Pagination, Rate, Tooltip } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDownWideShort, faArrowUpWideShort, faPercent } from '@fortawesome/free-solid-svg-icons';
-import AuthUser from '../../services/AuthUser';
 import ProductService from '../../services/ProductService';
-import { HeartFilled } from '@ant-design/icons';
+import { FilterOutlined, HeartFilled } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchTerm } from '../../store/Action';
 
 const ArticleComponent = () => {
   const dispatch = useDispatch();
-  const {getToken} = AuthUser();
   const [products, setProducts] = useState([]);
   const {getAllProduct} = ProductService();
+
   // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const searchTerm = useSelector((state) => state.searchTerm);  
   const fetchProducts = useCallback(async() => {
     try{
-      console.log( ' Case máy tính',searchTerm)
         const data = await getAllProduct(searchTerm)
         setProducts(data)
     }
@@ -44,47 +42,85 @@ fetchProducts(); // Gọi hàm để lấy sản phẩm
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
+
   const navigate = useNavigate();
   const handleClick = (product) => {
-    if(getToken()){
       navigate(`/product/id/${product.id}/name/${encodeURIComponent(product.name)}`, { state: { product } });
-    }
-    else{
-      navigate('/login')
-    }
+      
   }
 
-  ////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
    const [selectedSort, setSelectedSort] = useState(null);
-  const handleSortClick = (sortType) => {
-    setSelectedSort((prevSortType) => (prevSortType === sortType ? null : sortType));
-    dispatch(setSearchTerm(sortType));
+   const handleSortClick = (sortType) => {
+    setSelectedSort((prevSortType) => {
+        const newSortType = prevSortType === sortType ? null : sortType;
+        if (newSortType) {
+            dispatch(setSearchTerm(newSortType));
+        } else {
+            dispatch(setSearchTerm(''));
+        }
+
+        return newSortType;
+    });
+};
+  const { getAllCategories} = ProductService();
+  const [categories, setCategories] = useState([])
+  const fetchCategories = useCallback(async() => {
+    try{
+        const categories = await getAllCategories()
+        setCategories(categories)
+    }
+    catch(error){
+        throw error
+    }
+  },[getAllCategories])
+
+  useEffect(() => {
+    fetchCategories()
+  },[fetchCategories]) 
+
+  const text = () => {
+    return categories.map((category) => 
+      category.variants.map((variant) => (
+        <ToolTipSpan onClick={handleVariants} key={variant.id}>{variant.name}</ToolTipSpan>
+      ))
+    );
   };
+
+  const handleVariants = (e) => {
+    dispatch(setSearchTerm(e.target.innerText));
+  }
+
   return (
     <Wrapper>
       <WrapperArrange>
+        <Tooltip trigger={'click'} color='white' placement="bottom" title={text}>
+          <FilterOutlined />
+        </Tooltip>
          Sắp xếp theo:      
          <Button
-        onClick={() => handleSortClick('desc')}
-        className={selectedSort === 'desc' ? 'active' : ''}
-      >
-        <FontAwesomeIcon icon={faArrowDownWideShort} /> Cao đến thấp
-      </Button>
+          onClick={() => handleSortClick('desc')}
+          className={selectedSort === 'desc' ? 'active' : ''}
+          >
+          <FontAwesomeIcon icon={faArrowDownWideShort} /> Cao đến thấp
+         </Button>
 
-      <Button
-        onClick={() => handleSortClick('asc')}
-        className={selectedSort === 'asc' ? 'active' : ''}
-      >
-        <FontAwesomeIcon icon={faArrowUpWideShort} /> Thấp đến cao
-      </Button>
+         <Button
+            onClick={() => handleSortClick('asc')}
+            className={selectedSort === 'asc' ? 'active' : ''}
+         >
+          <FontAwesomeIcon icon={faArrowUpWideShort} /> Thấp đến cao
+         </Button>
 
-      <Button
-        onClick={() => handleSortClick('discount')}
-        className={selectedSort === 'discount' ? 'active' : ''}
-      >
-        <FontAwesomeIcon icon={faPercent} /> Khuyến mại hót
-      </Button>
+         <Button
+          onClick={() => handleSortClick('discount')}
+          className={selectedSort === 'discount' ? 'active' : ''}
+         >
+          <FontAwesomeIcon icon={faPercent} /> Khuyến mại hót
+         </Button>
       </WrapperArrange>
       <WrapperProduct>
         {currentItems.map(product => (

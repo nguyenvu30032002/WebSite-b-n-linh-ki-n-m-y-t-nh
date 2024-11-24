@@ -44,7 +44,7 @@ const AuthUserWrapper = () => {
                 <Route path='/register' element={<Register />} />
                 <Route path='/forgotpassword' element={<ForgotPassword />} />
                 <Route path='/' element={<Home />} />
-                
+                <Route path='/product/id/:id/name/:name' element={<Product />} />
                 {/* Render Home chỉ nếu người dùng không phải là Admin */}
                 {/* {(!user || user.role !== 'Admin') ? (
                     <Route path='/' element={<Home />} />
@@ -65,7 +65,6 @@ const AuthUserWrapper = () => {
                     <Route path='/information' element={<Information />} />
                     <Route path='/order' element={<Order />} />
                     <Route path='/changePassword' element={<ChangPassword />} />
-                    <Route path='/product/id/:id/name/:name' element={<Product />} />
                     <Route path='/cart' element={<Cart />} />
                 </>
             )}

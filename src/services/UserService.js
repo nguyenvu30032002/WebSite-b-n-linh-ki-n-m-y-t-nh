@@ -2,12 +2,32 @@ import AuthUser from "./AuthUser";
 import axios from "axios";
 import { message } from "antd"; 
 import { useCallback, useEffect, useState } from "react";
+// import { useDispatch } from "react-redux";
 
 export default function UserService() {
     const apiUrl = process.env.REACT_APP_API_URL;
-    const {token, getUser} = AuthUser();
-
+    const {token} = AuthUser();
     const [orders, setOrders] = useState([]);
+    // const dispatch = useDispatch();
+
+  const getUser = useCallback(async() => {
+    try{
+      if(token){
+        const response = await axios.get(`${apiUrl}/me`,{
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          },
+        });
+        return response.data;
+      }
+    }catch(error){
+      throw error
+    }
+  },[token, apiUrl]) 
+
+//////////////////////////////////////// ORDER ////////////////////////////////////////////////////////
+
     const userOrder = useCallback(async(order) => {
       try {
           const response = await axios.post(
@@ -20,15 +40,12 @@ export default function UserService() {
                   }
               }
           );
-         message.success(<>Đặt hàng thành công <br />Vui lòng kiểm tra đơn hàng của bạn</>)
          return response
           
       } catch (err) {
-          message.error(<>Đặt hàng thất bại <br />Vui lòng thử lại</>)
           throw err
-          
       }
-  }, [])
+  }, [token, apiUrl])
 
     const getOrder = useCallback(async() => {
       try {
@@ -111,34 +128,33 @@ export default function UserService() {
         }
       );
       
-      message.success(<>Thêm vào giỏ hàng thành công<br/> Vui lòng kiểm tra giỏ hàng của bạn </>)
+      
       return response
     }
     catch(error){
-      message.error(<>Thêm vào giỏ hàng thất bại <br />Vui lòng thử lại</>)
       throw error
     }
-  }, [])
+  }, [token, apiUrl])
 
 
   const getCart = useCallback(async() => {
     try {
-      const user = getUser();
-      if (user && user.id !== null) {
+      const user = await getUser()
+      if (user) {
         const response = await axios.get(`${apiUrl}/getAllCart/${user.id}`, {
           headers: {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`
           }
       });
-      setCarts(response.data)
+      // console.log('rep', response.data)
+      // dispatch(setCarts(response.data))
       return response.data
       }
-
   } catch (error) {
       throw error;
   } 
-}, []);
+  }, [getUser, apiUrl, token]);
 
 
 
@@ -155,18 +171,18 @@ export default function UserService() {
 //   fetchCart();
 // }, [fetchCart,getCart]);
 
-useEffect(() =>{
-  const fetchCart = async() => {
-    try{
-      const fetchedCart = await getCart();
-      setCarts(fetchedCart)
-    }
-    catch(error){
-      throw error
-    }
-  };
-  fetchCart();
-}, [getCart])
+// useEffect(() =>{
+//   const fetchCart = async() => {
+//     try{
+//       const fetchedCart = await getCart();
+//       setCarts(fetchedCart)
+//     }
+//     catch(error){
+//       throw error
+//     }
+//   };
+//   fetchCart();
+// }, [getCart])
   
 
 const updateCart = async(id, value) => {
@@ -241,6 +257,7 @@ const deleteCart = async(checkedList) => {
 }
 
     return {
+      getUser,
       userOrder,
       orders,
       updateCondition,

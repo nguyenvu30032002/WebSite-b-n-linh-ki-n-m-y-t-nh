@@ -1,25 +1,62 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Header from "../../parts/Header/Header";
-import { ProductSimilar, Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperComment, WrapperConditionSimilar, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPrice, WrapperPriceSimilar, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperRateSimilar, WrapperSimilar, WrapperVariants } from "./style";
+import { ProductSimilar, Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperComment, WrapperConditionSimilar, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPrice, WrapperPriceSimilar, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperRateSimilar, WrapperSimilar } from "./style";
 import Footer from "../../parts/Footer/Footer";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCartShopping, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Button, Image, Input, message, Radio, Rate, Upload} from 'antd';
-import AuthUser from '../../services/AuthUser';
 import UserService from '../../services/UserService';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
-import { CameraOutlined, HeartFilled, PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { CameraOutlined, HeartFilled} from '@ant-design/icons';
+import ProductService from '../../services/ProductService';
+
 
 
 const Product = () => {
-    const [zoom, setZoom] = useState(false) 
+  
     const location = useLocation();
     const product = location.state?.product;
-    const {getUser} = AuthUser();
-    const [amount, setAmount] = useState(1)
     const navigate = useNavigate(); 
-    const { userOrder, userCart} = UserService();
+    const { userOrder, userCart, getUser} = UserService();
+    const {getProductSimilar} = ProductService()
+    const [amount, setAmount] = useState(1);
+    const [valueRadio, setValueRadio] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [comment, setComment] = useState("");
+    const [rating, setRating] = useState(0);
+    const [fileList, setFileList] = useState([]);
+    const [previewImage, setPreviewImage] = useState('');
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [user, setUser] = useState([]);
+    const [zoom, setZoom] = useState(false) 
+    const [productSimilar, setProductSimilar] = useState([])
+
+    const fetchProductSimilar = useCallback(async() => {
+      try{
+          const dataProductSimilar = await getProductSimilar(product)
+          setProductSimilar(dataProductSimilar)
+      }catch(error){
+        throw error
+      }
+    },[getProductSimilar,product])
+
+    useEffect(() => {
+      fetchProductSimilar()
+    }, [fetchProductSimilar])
+
+    const fetchUser = useCallback(async() =>{
+      try{
+        const dataUser = await getUser()
+        setUser(dataUser)
+      }catch(error){
+        throw error
+      }
+    },[getUser])
+  
+    useEffect(() => {
+      fetchUser()
+    }, [fetchUser])
 
 
     const handlePlus = () =>{
@@ -35,31 +72,36 @@ const Product = () => {
       setZoom(visible); // Cập nhật trạng thái khi preview đóng
     };
     const handleClick = (product) => {
-        // navigate(`/product/id/${product.id}/name/${encodeURIComponent(product.name)}`, { state: { product } });
+        window.scrollTo(0, 0);
+        navigate(`/product/id/${product.id}/name/${encodeURIComponent(product.name)}`, { state: { product } });
     }
-/////////////////////////////////////////////////////////////////////////////
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const showModal = () => {
-      setIsModalOpen(true);
-    };
+///////////////////////////////// MODAL //////////////////////////////////////////////////////
 
+    const showModal = () => {
+      if(!user){
+        navigate('/login')
+      }
+      else{
+        setIsModalOpen(true);
+      }
+    };
   
     const handleCancel = () => {
       setIsModalOpen(false);
     };
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// PAY ////////////////////////////////////////////////
 
-    const [valueRadio, setValueRadio] = useState("");
+
     const handleRadioChange = (e) => {
       setValueRadio(e.target.value); // Cập nhật giá trị khi chọn radio
     };
     const handleOk = (e) => {
       const data =
        {
-        user_id: getUser().id,
-        userName: getUser().name,
-        address: getUser().address,
-        phone: getUser().phone,
+        user_id: user.id,
+        userName: user.name,
+        address: user.address,
+        phone: user.phone,
         status: valueRadio,
         product_id: product.id,
         imgProduct: product.image,
@@ -69,7 +111,7 @@ const Product = () => {
         origin: product.origin,
        };
 
-      if(getUser().address === null){
+      if(user.address === null){
         message.error('Vui lòng điền địa chỉ nhận hàng')
         setIsModalOpen(true);
       }
@@ -77,23 +119,42 @@ const Product = () => {
         message.error('Vui lòng chọn phương thức thanh toán');
         setIsModalOpen(true);
       }
-      else if(getUser().phone === null){
+      else if(user.phone === null){
         message.error('Vui lòng thêm số điện thoại');
         setIsModalOpen(true);
       }
       else{
-        userOrder(data);
-        setIsModalOpen(false);
+        userOrder(data)
+        .then((response) =>{
+          const data = response.data;
+            if(data){
+              message.success('Đặt hàng thành công')
+              setIsModalOpen(false);
+            }
+            else{
+              message.error('Dặt hàng thất bại')
+              setIsModalOpen(false);
+            }
+        })
+        .catch((error) => {
+          message.error('Có lỗi xảy ra, vui lòng thử lại!');
+          setIsModalOpen(false);
+        })
+        
       }
     };
 
     const handleCart = () => {
-      const data =
+      if(!user){
+        navigate('/login')
+      }
+      else{
+        const data =
        {
-        user_id: getUser().id,
-        userName: getUser().name,
-        address: getUser().address,
-        phone: getUser().phone,
+        user_id: user.id,
+        userName: user.name,
+        address: user.address,
+        phone: user.phone,
         product_id: product.id,
         imgProduct: product.image,
         nameProduct: product.name,
@@ -101,27 +162,52 @@ const Product = () => {
         price: ((product.price) - (product.price * (product.discount / 100))),
         origin: product.origin,
        };
-       
        userCart(data)
-
+       .then((reponse) => {
+        const data = reponse.data
+        if(data){
+          message.success('Thêm vào giỏ hàng thành công')
+        }
+        else{
+          message.error('Thêm vào giỏ hàng thất bại')
+        }
+       })
+       .catch((error) => {
+        message.error('Có lỗi xảy ra, vui lòng thử lại!');
+        setIsModalOpen(false);
+      })
+      }
+      
     }
 ///////////////////////////////////////////////////  Comment   /////////////////////////////////////////////////
-const [comment, setComment] = useState("");
-  const [rating, setRating] = useState(0);
-  const [fileList, setFileList] = useState([]);
-  const [previewImage, setPreviewImage] = useState('');
-  const [previewOpen, setPreviewOpen] = useState(false);
+  
 
   const handleCommentChange = (e) => {
-    setComment(e.target.value);
+    if(user){
+      setComment(e.target.value);
+    }
+    else{
+      message.error('Vui lòng đăng nhập')
+    }
   };
 
   const handleRateChange = (value) => {
-    setRating(value);
+    if(user){
+      setRating(value);
+    }
+    else{
+      message.error('Vui lòng đăng nhập')
+
+    }
   };
 
   const handleUploadChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
+    if(user){
+      setFileList(newFileList);
+    }
+    else{
+      message.error('Vui lòng đăng nhập')
+    }
   };  
   const uploadButton = (
     <button
@@ -142,12 +228,32 @@ const [comment, setComment] = useState("");
       </div>
     </button>
   );
-  const handleSubmit = () => {
-    console.log("Comment:", comment);
-    console.log("Rating:", rating);
-    console.log("Uploaded Images:", fileList.map((file) => file.name));
-    // Xử lý gửi dữ liệu đến server
+  const handleSubmit = async () => {
+    const convertToBase64 = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    };
+  
+    try {
+      // Chuyển đổi danh sách file thành Base64
+      const imgComment = await Promise.all(
+        fileList.map((file) => convertToBase64(file.originFileObj)) // `originFileObj` là file gốc từ Ant Design Upload
+      );
+      const imgCommentString = imgComment.join(",");
+      console.log("Comment:", comment);
+      console.log("Rating:", rating);
+      console.log("Uploaded Images (Base64):", imgCommentString);
+  
+      // Xử lý gửi dữ liệu đến server
+    } catch (error) {
+      console.error("Error converting to Base64:", error);
+    }
   };
+
 return (
     <Wrapper>
             <WrapperHeader>
@@ -251,48 +357,55 @@ return (
                         </WrapperOrder>
                   </WrapperProduct>
               </WrapperProductInformation>
-              <WrapperSimilar>
-                <span className='similar'>SẢN PHẨM TƯƠNG TỰ</span>
-                <div>
-                <ProductSimilar key={product.id}>
-                      {product.discount !== 0 ? (
-                        <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
-                      ) : null}
-                      <img onClick={() => handleClick(product)} src="/cpu-intel-core-i7-12700f.webp"  alt={product.name} />
-                      <p onClick={() => handleClick(product)} className='nameProduct' style={{WebkitLineClamp: product.discount !== 0 ? 2 : 3,}}>{product.name}</p>
-                      <WrapperPriceSimilar onClick={() => handleClick(product)}>
-                        {product.discount !== 0 ? (
-                          <div className='oldPrice'>
-                            <p>{Number(product.price).toLocaleString('vi-VN')}</p>
-                            <p>đ</p>
-                          </div>
-                        ) : null}
-                        {product.discount === 0 ? (
-                          <div className='Price'>
-                            <p>{Number(product.price).toLocaleString('vi-VN')}</p>
-                            <p>đ</p>
-                          </div>
-                        ) : (
-                          <div className='newPrice'>
-                            <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
-                            <p>đ</p>
-                          </div>
-                        )}
-                      </WrapperPriceSimilar>
-                      <WrapperConditionSimilar onClick={() => handleClick(product)}>
-                        <div className="soldProduct">
-                          <p>Đã bán:</p>
-                          <p>{product.sold}</p>
-                        </div>
-                      </WrapperConditionSimilar>
-                      <WrapperRateSimilar>
-                        <Rate disabled allowHalf defaultValue={1.5} />
-                        <HeartFilled />
-                      </WrapperRateSimilar>
-                </ProductSimilar>
-           
-                </div>
-              </WrapperSimilar>
+              {
+                productSimilar && (
+                  <WrapperSimilar>
+                    <span className='similar'>SẢN PHẨM TƯƠNG TỰ</span>
+                    <div>
+                    {
+                      productSimilar.map((product) => (
+                        <ProductSimilar key={product.id}>
+                            {product.discount !== 0 ? (
+                              <p className='discountProduct'>-{(product.discount).toLocaleString('vi-VN')}%</p>
+                            ) : null}
+                            <img onClick={() => handleClick(product)} src={`http://localhost:3000/${product.image}`}  alt={product.name} />
+                            <p onClick={() => handleClick(product)} className='nameProduct' style={{WebkitLineClamp: product.discount !== 0 ? 2 : 3,}}>{product.name}</p>
+                            <WrapperPriceSimilar onClick={() => handleClick(product)}>
+                              {product.discount !== 0 ? (
+                                <div className='oldPrice'>
+                                  <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                                  <p>đ</p>
+                                </div>
+                              ) : null}
+                              {product.discount === 0 ? (
+                                <div className='Price'>
+                                  <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                                  <p>đ</p>
+                                </div>
+                              ) : (
+                                <div className='newPrice'>
+                                  <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                                  <p>đ</p>
+                                </div>
+                              )}
+                            </WrapperPriceSimilar>
+                            <WrapperConditionSimilar onClick={() => handleClick(product)}>
+                              <div className="soldProduct">
+                                <p>Đã bán:</p>
+                                <p>{product.sold}</p>
+                              </div>
+                            </WrapperConditionSimilar>
+                            <WrapperRateSimilar>
+                              <Rate disabled allowHalf defaultValue={1.5} />
+                              <HeartFilled />
+                            </WrapperRateSimilar>
+                         </ProductSimilar>
+                      ))
+                    }
+                    </div>
+                  </WrapperSimilar>
+                )
+              }
               <WrapperComment>
                 <div className='formComment'>
                  <span className='title'>Đánh giá & nhận xét {product.name}</span>
@@ -326,7 +439,7 @@ return (
                     )}
                     </div>
                     <Input.TextArea 
-                      rows={4} 
+                      rows={1} 
                       // style={{width: '600px'}}
                       placeholder="Nhập bình luận của bạn..." 
                       value={comment} 
@@ -361,7 +474,7 @@ return (
                       </div>
                     </div>
 
-                    <div className='commentUser' key={1}>
+                    <div className='commentUser' key={2}>
                       <div className='profileUser'>
                           <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
                           
@@ -381,7 +494,7 @@ return (
                       </div>
                     </div>
 
-                    <div className='commentUser' key={1}>
+                    <div className='commentUser' key={3}>
                       <div className='profileUser'>
                           <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
                           
@@ -430,32 +543,36 @@ return (
                 }
                 <p>{(Number((product.price) - (product.price * (product.discount / 100)))*amount).toLocaleString('vi-VN')} đ</p>
               </div>
-              <div className='information'>
-                <div>
-                  <p>Tới: {getUser().name}</p>
-                  <div className='address'>
-                    <p>Địa chỉ:</p>
-                    {
-                      getUser().address !== null ? (
-                        <p>{getUser().address}</p>
-                      ) : (
-                        <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
-                      )
-                    }
+              {
+                user && (
+                  <div className='information'>
+                    <div>
+                      <p>Tới: {user.name}</p>
+                      <div className='address'>
+                        <p>Địa chỉ:</p>
+                        {
+                          user.address !== null ? (
+                            <p>{user.address}</p>
+                          ) : (
+                            <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
+                          )
+                        }
+                      </div>
+                    </div>
+                    <div className='phone'>
+                    <p>Số điện thoại: </p>
+                    <div>
+                      {
+                          user.phone !== null ? (
+                            <p>{user.phone}</p>
+                          ) : (
+                            <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
+                          )
+                        }</div>
+                    </div>
                   </div>
-                </div>
-                <div className='phone'>
-                <p>Số điện thoại: </p>
-                <div>
-                  {
-                      getUser().phone !== null ? (
-                        <p>{getUser().phone}</p>
-                      ) : (
-                        <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
-                      )
-                    }</div>
-                </div>
-              </div>
+                )
+              }
               <Radio.Group onChange={handleRadioChange} value={valueRadio}>
                 <Radio value="Chưa thanh toán">Thanh toán bằng tiền mặt</Radio>
                 <Radio value="Đã thanh toán">Thanh toán bằng tài khoản ngân hàng</Radio>
@@ -478,10 +595,10 @@ return (
                           const details = await actions.order.capture();
                           const data =
                         {
-                         user_id: getUser().id,
-                         userName: getUser().name,
-                         address: getUser().address,
-                         phone: getUser().phone,
+                         user_id: user.id,
+                         userName: user.name,
+                         address: user.address,
+                         phone: user.phone,
                          status: valueRadio,
                          product_id: product.id,
                          imgProduct: product.image,
@@ -491,11 +608,11 @@ return (
                          origin: product.origin,
                         };
                  
-                       if(getUser().address === null){
+                       if(user.address === null){
                          message.error('Vui lòng điền địa chỉ nhận hàng')
                          setIsModalOpen(true);
                        }
-                       else if(getUser().phone === null){
+                       else if(user.phone === null){
                          message.error('Vui lòng thêm số điện thoại');
                          setIsModalOpen(true);
                        }
