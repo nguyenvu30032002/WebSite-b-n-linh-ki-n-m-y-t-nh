@@ -9,6 +9,8 @@ export default function UserService() {
     const {token} = AuthUser();
     const [orders, setOrders] = useState([]);
     // const dispatch = useDispatch();
+    const [user, setUser] = useState('');
+
 
   const getUser = useCallback(async() => {
     try{
@@ -19,12 +21,17 @@ export default function UserService() {
             "Authorization": `Bearer ${token}` 
           },
         });
+        setUser(response.data)
         return response.data;
       }
     }catch(error){
       throw error
     }
   },[token, apiUrl]) 
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
 
 //////////////////////////////////////// ORDER ////////////////////////////////////////////////////////
 
@@ -83,7 +90,6 @@ export default function UserService() {
 
   const updateCondition = async(condition, idOrder, product_id) => {
     try{
-      console.log(product_id, condition , idOrder)
       const response = await axios.post(
         `${apiUrl}/condition/${idOrder}`, 
         {condition: condition,
@@ -110,7 +116,7 @@ export default function UserService() {
     }
   }
 
-  /////////////////////////////////////////////////////////////
+  ////////////////////////////// CART  ///////////////////////////////
 
   const [carts,  setCarts] = useState([]);
 
@@ -134,7 +140,7 @@ export default function UserService() {
     catch(error){
       throw error
     }
-  }, [token, apiUrl])
+  }, [])
 
 
   const getCart = useCallback(async() => {
@@ -147,8 +153,6 @@ export default function UserService() {
               "Authorization": `Bearer ${token}`
           }
       });
-      // console.log('rep', response.data)
-      // dispatch(setCarts(response.data))
       return response.data
       }
   } catch (error) {
@@ -255,9 +259,44 @@ const deleteCart = async(checkedList) => {
       message.error(<>Xóa sản phẩm khỏi giỏ hàng thất bại <br/> Vui lòng thử lại</>)
     }
 }
+//////////////////////////////////////////////// COMMENT ////////////////////////////////////////
+
+    const createComment = useCallback(async(data) => {
+      try{
+        
+        const response = await axios.post(`${apiUrl}/createComment`,
+          data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
+        });
+        return response
+      }catch(error){
+        throw error
+      }
+    }, [token, apiUrl])
+
+//////////////////////////////////////////// COMMENT ///////////////////////////////////////////////////////////////
+
+    const getAllComments = useCallback(async(data) => {
+      const { product_id, user_id } = data;
+      try{
+        const response = await axios.get(`${apiUrl}/comments/getAll/${product_id}`,
+         { params: { user_id },
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+        return response.data
+      }catch(error){
+        throw error
+      }
+    },[apiUrl])
 
     return {
-      getUser,
+      user,
       userOrder,
       orders,
       updateCondition,
@@ -267,5 +306,7 @@ const deleteCart = async(checkedList) => {
       orderCart,
       getCart,
       deleteCart,
+      createComment,
+      getAllComments
     };
 }

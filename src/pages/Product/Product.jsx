@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Header from "../../parts/Header/Header";
-import { ProductSimilar, Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperComment, WrapperConditionSimilar, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPrice, WrapperPriceSimilar, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperRateSimilar, WrapperSimilar } from "./style";
+import { ProductSimilar, Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperComment, WrapperConditionSimilar, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPaginate, WrapperPrice, WrapperPriceSimilar, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperRateSimilar, WrapperSimilar } from "./style";
 import Footer from "../../parts/Footer/Footer";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCartShopping, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Button, Image, Input, message, Radio, Rate, Upload} from 'antd';
+import { Button, Image, Input, message, Pagination, Radio, Rate, Upload} from 'antd';
 import UserService from '../../services/UserService';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { CameraOutlined, HeartFilled} from '@ant-design/icons';
@@ -18,7 +18,7 @@ const Product = () => {
     const location = useLocation();
     const product = location.state?.product;
     const navigate = useNavigate(); 
-    const { userOrder, userCart, getUser} = UserService();
+    const { userOrder, userCart, user, createComment,getAllComments} = UserService();
     const {getProductSimilar} = ProductService()
     const [amount, setAmount] = useState(1);
     const [valueRadio, setValueRadio] = useState("");
@@ -28,10 +28,23 @@ const Product = () => {
     const [fileList, setFileList] = useState([]);
     const [previewImage, setPreviewImage] = useState('');
     const [previewOpen, setPreviewOpen] = useState(false);
-    const [user, setUser] = useState([]);
     const [zoom, setZoom] = useState(false) 
     const [productSimilar, setProductSimilar] = useState([])
+    const [imgComment, setImgComment] = useState('');
+    const [dataComment, setDataComment] = useState([])
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 3;
 
+  const averageRate = dataComment.length > 0 ? dataComment.reduce((acc, curr) => acc + curr.rate, 0) / dataComment.length : 0;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = dataComment.slice(indexOfFirstItem, indexOfLastItem);
+  // Hàm xử lý sự kiện thay đổi trang
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+///////////////////////////////////////////////////////////////////////////////////////////
     const fetchProductSimilar = useCallback(async() => {
       try{
           const dataProductSimilar = await getProductSimilar(product)
@@ -45,20 +58,26 @@ const Product = () => {
       fetchProductSimilar()
     }, [fetchProductSimilar])
 
-    const fetchUser = useCallback(async() =>{
-      try{
-        const dataUser = await getUser()
-        setUser(dataUser)
-      }catch(error){
-        throw error
+    const fetchComments = useCallback(async () => {
+      try {
+        if (user) {
+          const data = { product_id: product.id, user_id: user.id };
+          const dataComment = await getAllComments(data);
+          setDataComment(dataComment || []);
+        } else {
+          const data = { product_id: product.id };
+          const dataComment = await getAllComments(data);
+          setDataComment(dataComment || []);
+        }
+      } catch (error) {
+        throw error;
       }
-    },[getUser])
-  
+    }, [getAllComments, product.id, user]);
+
     useEffect(() => {
-      fetchUser()
-    }, [fetchUser])
-
-
+      fetchComments()
+     
+    },[fetchComments])
     const handlePlus = () =>{
         setAmount(() => amount + 1)
     }
@@ -182,33 +201,33 @@ const Product = () => {
 ///////////////////////////////////////////////////  Comment   /////////////////////////////////////////////////
   
 
-  const handleCommentChange = (e) => {
-    if(user){
-      setComment(e.target.value);
-    }
-    else{
-      message.error('Vui lòng đăng nhập')
-    }
-  };
+const handleCommentChange = (e) => {
+  if (user) {
+    setComment(e.target.value);
+  } else {
+    message.error('Vui lòng đăng nhập để bình luận');
+  }
+};
 
-  const handleRateChange = (value) => {
-    if(user){
-      setRating(value);
-    }
-    else{
-      message.error('Vui lòng đăng nhập')
+const handleRateChange = (value) => {
+  if (user) {
+    setRating(value);
+  } else {
+    message.error('Vui lòng đăng nhập để đánh giá sản phẩm');
+  }
+};
 
-    }
-  };
-
-  const handleUploadChange = ({ fileList: newFileList }) => {
-    if(user){
-      setFileList(newFileList);
-    }
-    else{
-      message.error('Vui lòng đăng nhập')
-    }
-  };  
+const handleUploadChange = ({ fileList: newFileList }) => {
+  if (user) {
+    const imgComment = newFileList?.length
+      ? JSON.stringify(newFileList.map((file) => file.name))
+      : '';
+    setImgComment(imgComment); // Cập nhật `imgComment` để dùng trong handleSubmit
+    setFileList(newFileList); // Cập nhật `fileList`
+  } else {
+    message.error('Vui lòng đăng nhập để tải ảnh lên');
+  }
+};
   const uploadButton = (
     <button
       style={{
@@ -229,28 +248,44 @@ const Product = () => {
     </button>
   );
   const handleSubmit = async () => {
-    const convertToBase64 = (file) => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
-    };
+    if (user) {
+      const data = {
+        user_id: user.id,
+        product_id: product.id,
+        comment: comment,
+        rate: rating,
+        image: imgComment,
+      };
   
-    try {
-      // Chuyển đổi danh sách file thành Base64
-      const imgComment = await Promise.all(
-        fileList.map((file) => convertToBase64(file.originFileObj)) // `originFileObj` là file gốc từ Ant Design Upload
-      );
-      const imgCommentString = imgComment.join(",");
-      console.log("Comment:", comment);
-      console.log("Rating:", rating);
-      console.log("Uploaded Images (Base64):", imgCommentString);
+      try {
+        const response = await createComment(data);
+        const res = response.data;
   
-      // Xử lý gửi dữ liệu đến server
-    } catch (error) {
-      console.error("Error converting to Base64:", error);
+        if (res.message === 'notExists') {
+          setFileList([]);
+          setRating(0);
+          setComment('');
+          message.error('Vui lòng mua hàng để đánh giá sản phẩm');
+        } else if (res.message === 'success') {
+          setFileList([]);
+          setRating(0);
+          setComment('');
+          fetchComments();
+          message.success('Đánh giá sản phẩm thành công');
+        } else {
+          setFileList([]);
+          setRating(0);
+          setComment('');
+          message.error('Đánh giá sản phẩm thất bại');
+        }
+      } catch (error) {
+        setFileList([]);
+        setRating(0);
+        setComment('');
+        message.error('Có lỗi xảy ra, vui lòng thử lại!');
+      }
+    } else {
+      message.error('Vui lòng đăng nhập');
     }
   };
 
@@ -276,7 +311,11 @@ return (
                          </p>
                       </WrapperProductName>
                       <WrapperRate>
-                        <Rate className='rate' disabled allowHalf defaultValue={1.5} />
+                        {
+                          Array.isArray(product.comments) && product.comments.length > 0 ? (
+                            <Rate className='rate' disabled allowHalf defaultValue={product.comments.length > 0 ? product.comments.reduce((acc, curr) => acc + curr.rate, 0) / product.comments.length : 0} />
+                          ) : null
+                        }
                         <HeartFilled className='heart' />
                       </WrapperRate>
                       {/* {
@@ -396,8 +435,13 @@ return (
                               </div>
                             </WrapperConditionSimilar>
                             <WrapperRateSimilar>
-                              <Rate disabled allowHalf defaultValue={1.5} />
-                              <HeartFilled />
+                            <HeartFilled />
+                            {
+                              Array.isArray(product.comments) && product.comments.length > 0 ? (
+                                <Rate disabled allowHalf defaultValue={product.comments.length > 0 ? product.comments.reduce((acc, curr) => acc + curr.rate, 0) / product.comments.length : 0} />
+                              ) : null
+                            }
+                             
                             </WrapperRateSimilar>
                          </ProductSimilar>
                       ))
@@ -412,7 +456,7 @@ return (
                  <div className='comment' >
                     <div className='rateComment'>
                       <span>Chọn đánh giá của bạn: </span>
-                      <Rate onChange={handleRateChange} />                    
+                      <Rate value={rating}  onChange={handleRateChange} />                    
                     </div>
                     <div className='imgComment'>
                     <p>Đính kèm ảnh:</p>
@@ -453,68 +497,61 @@ return (
                       <Button type="primary" onClick={handleSubmit}>Gửi bình luận</Button>
                     </div>
                   </div>
-                  <div className='userComment'>
-                    <div className='commentUser' key={1}>
-                      <div className='profileUser'>
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                          
-                          <div className='profile'>
-                            <span style={{ fontSize: 15, color: 'rgba(0,0,0,.87)'}}>sadada</span>
-                            <Rate disabled defaultValue={2} />
-                            <span style={{color: 'rgba(0,0,0,.54)'}}>2022-2-20</span>
-                          </div>
+
+                    <div className='userComment' >
+                    {
+                      currentItems.map(dataComment => (
+                        <div className='commentUser' key={dataComment.id}>
+                        <div className='profileUser'>
+                            <img src={dataComment.created_by_user.image ? dataComment.created_by_user.image : '/static/media/d0tb7-copy.62dad774c0cb86058595.jpg' } alt={dataComment.created_by_user.name} />
+                            
+                            <div className='profile'>
+                              <span style={{ fontSize: 15, color: 'rgba(0,0,0,.87)',margin:'0 0 10px 0'}}>{dataComment.created_by_user.name}</span>
+                              {
+                                dataComment.rate  && dataComment.rate !==0 ? (
+
+                                      <Rate disabled defaultValue={dataComment.rate} />
+
+                                ) : null
+                              }
+                              <span style={{color: 'rgba(0,0,0,.54)'}}>{dataComment.created_at ? new Date(dataComment.created_at).toLocaleString('vi-VN') : 'Ngày chưa có'}</span>
+                            </div>
+                        </div>
+                        {
+                          dataComment.comment && (
+                            <span className='comment'>
+                              {dataComment.comment}
+                            </span>
+                          )
+                        }
+                        {
+                          dataComment.image && (
+                            <div className='commentImg'>
+                              {
+                                Array.isArray(JSON.parse(dataComment.image)) && JSON.parse(dataComment.image).map((image, index) => (
+                                  <img key={index} src={`http://localhost:3000/${image}`} alt={image.name} />
+                                ))
+                              }
+                            </div>
+                          )
+                        }
                       </div>
-                      <span className='comment'>
-                          aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaa aaaaaa aaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                      </span>
-                      <div className='commentImg'>
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                      </div>
+                      ))
+                    }
+                    {
+                      Array.isArray(dataComment) && dataComment.length > 0 ? (
+                        <WrapperPaginate>
+                          <Pagination
+                            current={currentPage}
+                            total={dataComment.length}
+                            pageSize={itemsPerPage}
+                            onChange={handlePageChange}
+                          />
+                        </WrapperPaginate>
+                      ) : null
+                    }
                     </div>
 
-                    <div className='commentUser' key={2}>
-                      <div className='profileUser'>
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                          
-                          <div className='profile'>
-                            <span style={{ fontSize: 15, color: 'rgba(0,0,0,.87)'}}>sadada</span>
-                            <Rate disabled defaultValue={2} />
-                            <span style={{color: 'rgba(0,0,0,.54)'}}>2022-2-20</span>
-                          </div>
-                      </div>
-                      <span className='comment'>
-                          aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaa aaaaaa aaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                      </span>
-                      <div className='commentImg'>
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                      </div>
-                    </div>
-
-                    <div className='commentUser' key={3}>
-                      <div className='profileUser'>
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                          
-                          <div className='profile'>
-                            <span style={{ fontSize: 15, color: 'rgba(0,0,0,.87)'}}>sadada</span>
-                            <Rate disabled defaultValue={2} />
-                            <span style={{color: 'rgba(0,0,0,.54)'}}>2022-2-20</span>
-                          </div>
-                      </div>
-                      <span className='comment'>
-                          aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaa aaaaaa aaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                      </span>
-                      <div className='commentImg'>
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                          <img src="/static/media/d0tb7-copy.62dad774c0cb86058595.jpg" alt="" />
-                      </div>
-                    </div>
-                    
-                  </div>
                 </div>
                 
               </WrapperComment>

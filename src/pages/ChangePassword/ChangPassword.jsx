@@ -98,7 +98,7 @@ const ChangPassword = () => {
                       <Button type="primary" htmlType="submit">
                         Change Password
                       </Button>
-                      <Button type="primary" onClick={() => navigate('/login')}>
+                      <Button type="primary" onClick={() => navigate('/')}>
                         Back
                       </Button>
                     </Form.Item>

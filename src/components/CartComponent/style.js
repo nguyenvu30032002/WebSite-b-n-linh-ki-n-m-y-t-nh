@@ -1,19 +1,22 @@
 import styled from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+export const Wrapper = styled.div`
+    position: relative;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`
 
 export const WapperCart = styled(FontAwesomeIcon)`
-    margin-left: 40px;
-    margin-right: 25px;
-    margin-top: 20px;
     width: 20px;
     height: 20px;
     color: black;
-    position: relative;
-    top: -10px;
-    
     &:hover{
-        color: #1677ff;
+        color: #ee4d2d;
     }
 `
 
@@ -27,8 +30,7 @@ export const WrapperAmount = styled.div`
     justify-content: center;
     align-items: center;
     position: absolute;
-    right: 160px;
-    top: 10px;
+    margin: -30px -20px 0 0;
     z-index: 1;
     font-size: 13px;
 

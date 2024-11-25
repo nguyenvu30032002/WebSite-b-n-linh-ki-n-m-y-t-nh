@@ -160,7 +160,7 @@ export const WrapperCondition = styled.div`
         display: flex;
         justify-content: start;
         align-items: center;
-        margin: 0 0 0 10px;
+        margin: 0 0 0 8px;
         color: rgba(0,0,0,.87);
         font-size: .75rem;
         & p:first-child{
@@ -346,7 +346,7 @@ export const WrapperConditionOutOfStock = styled.div`
         display: flex;
         justify-content: start;
         align-items: center;
-        margin: 0 0 0 10px;
+        margin: 0 0 0 8px;
         color: rgba(0,0,0,.87);
         font-size: .75rem;
         & p:first-child{
@@ -372,10 +372,11 @@ export const WrapperRateOutOfStock = styled.div`
     width: 90%;
     display: flex;
     justify-content: space-between;
-    opacity: 0.5;
     margin: 5px;
+    opacity: 0.5;
     & .ant-rate {
         font-size: 15px;
     }
+   
 `
 

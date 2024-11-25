@@ -20,6 +20,7 @@ function App() {
         <div className="App">
             <Provider store={store}>  {/* Bọc ứng dụng trong Provider */}
                 <BrowserRouter>
+                
                     <AuthUserWrapper />
                 </BrowserRouter>
             </Provider>
@@ -39,6 +40,7 @@ const AuthUserWrapper = () => {
         
         <Routes>
             <>
+            
                 {/* Các route không yêu cầu đăng nhập */}
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />

@@ -86,14 +86,18 @@ export const WrapperRate = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
     & .rate{
         margin: 0 0 0 15px;
         font-size: 40px;
+        
     } 
     & .heart{
         color: red;
         font-size: 40px;
         cursor: pointer;
+        position: absolute;
+        right: 0;
     }
     
     
@@ -537,7 +541,6 @@ export const WrapperComment = styled.div`
         & .userComment{
             width: 950px;
             max-height: 1500px;
-            border: 1px solid #ccc;
             border-radius: 10px;
             margin: 10px 0 20px 0;
             display: flex;
@@ -547,7 +550,7 @@ export const WrapperComment = styled.div`
                 width: 800px;
                 max-height: 800px;
                 margin: 20px 0;
-                border-bottom: 1px solid #ccc;
+                border-bottom: 1px dotted rgba(0, 0, 0, 0.1);
                 display: flex;
                 flex-direction: column;
                 & .profileUser{
@@ -570,8 +573,8 @@ export const WrapperComment = styled.div`
                         }
                         .ant-rate{
                             font-size: 15px;
-                            margin: 10px 0;
                             color: #fadb14;
+                            margin: 0 0 10px -35px;
                         }
                         
                     }
@@ -604,11 +607,18 @@ export const WrapperComment = styled.div`
                         width: 100px;
                         height: 100px;
                         margin: 0 20px 0 0;
+                        border: 1px dotted #ccc;
                     }
                 }
             }
         }
     }
-
-    
+`
+export const WrapperPaginate = styled.div`
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0 0 0 ;
 `

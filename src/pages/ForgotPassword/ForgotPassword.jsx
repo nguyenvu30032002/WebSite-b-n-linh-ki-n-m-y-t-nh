@@ -16,7 +16,7 @@ const tailFormItemLayout = {
 const ForgotPassword = () => {
     const navigate = useNavigate();
     const onFinish = (values) => {
-        console.log('Received values of form: ', values);
+        // console.log('Received values of form: ', values);
       };
   return (
     <Wrapper>
