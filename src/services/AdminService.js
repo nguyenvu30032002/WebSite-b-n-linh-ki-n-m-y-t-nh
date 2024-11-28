@@ -24,6 +24,7 @@ export default function AdminService(){
             {
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
             })
             return response;
@@ -59,6 +60,7 @@ export default function AdminService(){
                 {
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}` 
                     },
             });
             return response
@@ -74,6 +76,7 @@ export default function AdminService(){
                 {    data: { selectedRowKeys }, 
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}` 
                     },
                 }
             )
@@ -111,6 +114,7 @@ const updateUser = async(formData, id) => {
             {
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
         });
         return response
@@ -126,6 +130,7 @@ const deleteUser = async(selectedRowKeys) =>{
             {    data: { selectedRowKeys }, 
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
             }
         )
@@ -157,6 +162,7 @@ const createProduct = async(formData) => {
         {
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` 
             },
         })
         return response;
@@ -201,6 +207,7 @@ const updateProduct = async(selectedProduct) => {
             {
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
         });
         return response
@@ -216,6 +223,7 @@ const deleteProduct = async(selectedRowKeys) =>{
             {    data: { selectedRowKeys }, 
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
             }
         )
@@ -240,6 +248,7 @@ const createCategory = async(values, admin_id) => {
         {
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` 
             },
         })
         return response;
@@ -276,6 +285,7 @@ const updateCategory = async(data,id, admin_id) => {
             {
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
         });
         return response
@@ -291,6 +301,7 @@ const deleteCategories = async(selectedRowKeys) =>{
             {    data: { selectedRowKeys }, 
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
             }
         )
@@ -375,6 +386,7 @@ const createSuppliers = async(values, admin_id) => {
         {
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` 
             },
         })
         return response;
@@ -412,6 +424,7 @@ const updateSuppliers = async(data,id, admin_id) => {
             {
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
         });
         return response
@@ -427,6 +440,7 @@ const deleteSuppliers = async(selectedRowKeys) =>{
             {    data: { selectedRowKeys }, 
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
             }
         )
@@ -450,6 +464,7 @@ const createVariants = async(values, admin_id) => {
         {
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` 
             },
         })
         return response;
@@ -488,6 +503,7 @@ const updateVariants= async(data, admin_id) => {
         //     {
         //         headers: {
         //             "Content-Type": "application/json",
+        //             "Authorization": `Bearer ${token}` 
         //         },
         // });
         // return response
@@ -503,6 +519,7 @@ const deleteVariants = async(selectedRowKeys) =>{
             {    data: { selectedRowKeys }, 
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
                 },
             }
         )

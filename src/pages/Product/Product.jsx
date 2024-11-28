@@ -35,7 +35,6 @@ const Product = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 3;
 
-  const averageRate = dataComment.length > 0 ? dataComment.reduce((acc, curr) => acc + curr.rate, 0) / dataComment.length : 0;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = dataComment.slice(indexOfFirstItem, indexOfLastItem);

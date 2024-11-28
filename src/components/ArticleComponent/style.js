@@ -60,7 +60,6 @@ export const Product = styled.div`
     border-radius: 15px;
     margin: 0px 10px 0px 10px;
     box-shadow: 0 1px 2px 0 rgba(60,64,67,.1),0 2px 6px 2px rgba(60,64,67,.15);
-    cursor: pointer;
     & .discountProduct{
         position: absolute;
         width: 80px;
@@ -70,11 +69,13 @@ export const Product = styled.div`
         text-align: center;
         margin: 0px 0 0 -160px;
         z-index: 1;
+        cursor: pointer;
     }
     & img{
         width: 80%;
         height: 170px;
         margin: 10px 0 0 0;
+        cursor: pointer;
     }
     & .nameProduct{
         width: 95%;
@@ -89,6 +90,7 @@ export const Product = styled.div`
         font-size: 14px;
         font-weight: 600;
         color: #333e48;
+        cursor: pointer;
     }    
 `
 
@@ -99,6 +101,7 @@ export const WrapperPrice = styled.div`
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
+    cursor: pointer;
     & .Price{
         width:95%;
         height: 30px;
@@ -154,6 +157,7 @@ export const WrapperPrice = styled.div`
 export const WrapperCondition = styled.div`
     width: 95%;
     height: 30px;
+    cursor: pointer;
     & .soldProduct{
         width: 50%;
         height: 30px;

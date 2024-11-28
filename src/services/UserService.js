@@ -278,7 +278,6 @@ const deleteCart = async(checkedList) => {
       }
     }, [token, apiUrl])
 
-//////////////////////////////////////////// COMMENT ///////////////////////////////////////////////////////////////
 
     const getAllComments = useCallback(async(data) => {
       const { product_id, user_id } = data;
@@ -295,6 +294,58 @@ const deleteCart = async(checkedList) => {
       }
     },[apiUrl])
 
+/////////////////////////////////////////// FAVOURITE ////////////////////////////////////////////////////////////////////
+
+    const createFavourite = useCallback(async(data) => {
+      const { product_id, user_id } = data;
+      try{
+        const response = await axios.post(`${apiUrl}/createFavourite`,
+          {
+            product_id, user_id
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}` 
+            }
+          })
+          return response
+      }catch(error){
+        throw error
+      }
+    },[apiUrl,token])
+
+    const getAllFavourite = useCallback(async(user) => {
+     
+      try{
+        const response = await axios.get(`${apiUrl}/getAllFavourite/${user}`,
+         {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+        return response.data
+      }catch(error){
+        throw error
+      }
+    },[apiUrl])
+
+    const deleteFavourite = useCallback(async(data) => {
+      const { product_id, user_id } = data;
+      try{
+        const response = await axios.delete(`${apiUrl}/deleteFavourite/${user_id}/${product_id}`,
+          {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
+        });
+        return response.data
+      }catch(error){
+        throw error
+      }
+    },[apiUrl,token])
+
     return {
       user,
       userOrder,
@@ -307,6 +358,9 @@ const deleteCart = async(checkedList) => {
       getCart,
       deleteCart,
       createComment,
-      getAllComments
+      getAllComments,
+      createFavourite,
+      getAllFavourite,
+      deleteFavourite
     };
 }

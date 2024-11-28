@@ -1,6 +1,6 @@
   import React, { useCallback, useEffect, useState } from 'react';
   import { Product, ProductOutOfStock, ToolTipSpan, Wrapper, WrapperArrange, WrapperCondition, WrapperConditionOutOfStock, WrapperPaginate, WrapperPrice, WrapperPriceOutOfStock, WrapperProduct, WrapperRate, WrapperRateOutOfStock } from './style';
-  import { Button, Pagination, Rate, Tooltip } from 'antd';
+  import { Button, message, Pagination, Rate, Tooltip } from 'antd';
   import { useNavigate } from 'react-router-dom';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
   import { faArrowDownWideShort, faArrowUpWideShort, faPercent } from '@fortawesome/free-solid-svg-icons';
@@ -8,16 +8,20 @@
   import { FilterOutlined, HeartFilled } from '@ant-design/icons';
   import { useDispatch, useSelector } from 'react-redux';
   import { setSearchTerm } from '../../store/Action';
+import UserService from '../../services/UserService';
 
   const ArticleComponent = () => {
     const dispatch = useDispatch();
     const [products, setProducts] = useState([]);
-    const {getAllProduct} = ProductService();
-
-
-    
-    // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
+    const [favourite, setFavourite] = useState([])
+    const {getAllProduct, getAllCategories} = ProductService();
+    const {user, createFavourite, getAllFavourite, deleteFavourite} = UserService();
+    const [categories, setCategories] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedSort, setSelectedSort] = useState(null);
+
+
+    // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
     const itemsPerPage = 6;
     const searchTerm = useSelector((state) => state.searchTerm);  
     
@@ -56,7 +60,6 @@
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const [selectedSort, setSelectedSort] = useState(null);
     const handleSortClick = (sortType) => {
       setSelectedSort((prevSortType) => {
           const newSortType = prevSortType === sortType ? null : sortType;
@@ -69,8 +72,7 @@
           return newSortType;
       });
   };
-    const { getAllCategories} = ProductService();
-    const [categories, setCategories] = useState([])
+
     const fetchCategories = useCallback(async() => {
       try{
           const categories = await getAllCategories()
@@ -97,6 +99,52 @@
       dispatch(setSearchTerm(e.target.innerText));
     }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  const handleHeart = (product) => {
+    if (user) {
+      const favouriteProduct = favourite.find(fvr => fvr.product_id === product.id && fvr.favourite === 1);
+  
+      if (favouriteProduct) {
+        const data = { product_id: product.id, user_id: user.id };
+        deleteFavourite(data)
+          .then(() => {
+            fetchFavourite();
+          })
+          .catch((error) => {
+            message.error('Có lỗi xảy ra, vui lòng thử lại!');
+          });
+      } else {
+        const data = { product_id: product.id, user_id: user.id };
+        createFavourite(data)
+          .then(() => {
+            fetchFavourite();
+          })
+          .catch((error) => {
+            message.error('Có lỗi xảy ra, vui lòng thử lại!');
+          });
+      }
+    } else {
+      message.error('Vui lòng đăng nhập');
+    }
+  };
+
+  const fetchFavourite = useCallback(async() => {
+    try{
+      const data = await getAllFavourite(user.id)
+      setFavourite(data)
+    }
+    catch(error){
+      throw error
+    }
+  },[getAllFavourite, user.id])
+
+  useEffect(() => {
+    if(user){
+      
+      fetchFavourite()
+    }
+  }, [fetchFavourite, user])
 
     return (
       <Wrapper>
@@ -162,8 +210,15 @@
                     </div>
                   </WrapperCondition>
                   <WrapperRate>
-                    <HeartFilled />
-                      {
+                  <HeartFilled 
+                    style={{ 
+                      color: favourite?.map(fav => fav.product_id === product.id && fav.favourite === 1 ? 'red' : undefined).includes('red') 
+                        ? 'red' 
+                        : undefined 
+                    }} 
+                    onClick={() => handleHeart(product)} 
+                  />
+                  {
                         Array.isArray(product.comments) && product.comments.length > 0 ? (
                           <Rate disabled allowHalf defaultValue={product.comments.length > 0 ? product.comments.reduce((acc, curr) => acc + curr.rate, 0) / product.comments.length : 0} />
                         ) : null
