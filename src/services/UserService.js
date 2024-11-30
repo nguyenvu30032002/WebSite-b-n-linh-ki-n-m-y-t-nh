@@ -1,14 +1,10 @@
 import AuthUser from "./AuthUser";
 import axios from "axios";
-import { message } from "antd"; 
 import { useCallback, useEffect, useState } from "react";
-// import { useDispatch } from "react-redux";
 
 export default function UserService() {
     const apiUrl = process.env.REACT_APP_API_URL;
-    const {token} = AuthUser();
-    const [orders, setOrders] = useState([]);
-    // const dispatch = useDispatch();
+    const {token} = AuthUser();    // const dispatch = useDispatch();
     const [user, setUser] = useState('');
 
 
@@ -47,44 +43,25 @@ export default function UserService() {
                   }
               }
           );
-         return response
-          
+         return response 
       } catch (err) {
           throw err
       }
   }, [token, apiUrl])
 
-    const getOrder = useCallback(async() => {
+    const getOrder = useCallback(async(user) => {
       try {
-          const user = getUser();
-      if (user && user.id !== null) { // Kiểm tra nếu user không phải null
-          const response = await axios.get(`${apiUrl}/getAllOrder/${user.id}`, {
+          const response = await axios.get(`${apiUrl}/getAllOrder/${user}`, {
               headers: {
                   "Content-Type": "application/json",
                   "Authorization": `Bearer ${token}`
               }
           });
-          setOrders(response.data)
           return response.data;
-      } 
       } catch (error) {
           throw error;
-      }
-  }, [])
+      }}, [apiUrl,token])
 
-    
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const fetchedOrders = await getOrder();
-        setOrders(fetchedOrders); // Cập nhật state với đơn hàng đã lấy
-      } catch (error) {
-        throw error;
-      }
-    };
-    fetchOrders();
-  }, [getOrder]); // Chạy lại nếu getOrder thay đổi
 
   ////////////////////////////////////////////////////////////////////////
 
@@ -101,15 +78,7 @@ export default function UserService() {
                 "Authorization": `Bearer ${token}` 
             }
         });
-        if(response.data.message === "success"){
-          message.success("Xác nhận thành công")
-          
-        }
-        else{
-          message.error("Lỗi xác nhận")
-        }
-        const updatedOrders  = await getOrder();
-          setOrders(updatedOrders)
+       return response
     }
     catch(error){
       throw error
@@ -117,9 +86,6 @@ export default function UserService() {
   }
 
   ////////////////////////////// CART  ///////////////////////////////
-
-  const [carts,  setCarts] = useState([]);
-
 
   const userCart = useCallback(async(cart) => {
     try{
@@ -133,61 +99,28 @@ export default function UserService() {
             }
         }
       );
-      
-      
       return response
     }
     catch(error){
       throw error
     }
-  }, [])
+  }, [apiUrl, token])
 
 
-  const getCart = useCallback(async() => {
+  const getCart = useCallback(async(user) => {
     try {
-      const user = await getUser()
-      if (user) {
-        const response = await axios.get(`${apiUrl}/getAllCart/${user.id}`, {
+     
+        const response = await axios.get(`${apiUrl}/getAllCart/${user}`, {
           headers: {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`
           }
       });
       return response.data
-      }
   } catch (error) {
       throw error;
   } 
-  }, [getUser, apiUrl, token]);
-
-
-
-// const fetchCart = useCallback(async () => {
-//   try {
-//     const fetchedCart = await getCart();
-//     setCarts(fetchedCart);
-//   } catch (error) {
-//     throw error
-//   }
-// }, [getCart]);
-
-// useEffect(() => {
-//   fetchCart();
-// }, [fetchCart,getCart]);
-
-// useEffect(() =>{
-//   const fetchCart = async() => {
-//     try{
-//       const fetchedCart = await getCart();
-//       setCarts(fetchedCart)
-//     }
-//     catch(error){
-//       throw error
-//     }
-//   };
-//   fetchCart();
-// }, [getCart])
-  
+  }, [apiUrl, token]);
 
 const updateCart = async(id, value) => {
   try{
@@ -201,14 +134,9 @@ const updateCart = async(id, value) => {
           }
       });
      
-        message.success("Cập nhật đơn hàng thành công")
-        const updatedCart = await getCart();
-        setCarts(updatedCart);
-      
       return response
   }
   catch(error){
-    message.error("Cập nhật đơn hàng thất bại")
     throw error
   }
 }
@@ -225,15 +153,9 @@ const orderCart = async(orderCart) => {
               }
           }
       );
-      if(response.data.message === 'success'){
-        message.success(<>Đặt hàng thành công <br />Vui lòng kiểm tra đơn hàng của bạn</>)
-      }
-      const updatedCart = await getCart();
-      setCarts(updatedCart);
       return response;
       
   } catch (err) {
-      message.error(<>Đặt hàng thất bại <br />Vui lòng thử lại</>)
       throw err
   }
 }
@@ -250,13 +172,11 @@ const deleteCart = async(checkedList) => {
               }
           }
       );
-      message.success('Xóa sản phẩm khỏi giỏ hàng thành công')
-      const updatedCart = await getCart();
-      setCarts(updatedCart)
+    
       return response
     }
     catch(error){
-      message.error(<>Xóa sản phẩm khỏi giỏ hàng thất bại <br/> Vui lòng thử lại</>)
+      throw error
     }
 }
 //////////////////////////////////////////////// COMMENT ////////////////////////////////////////
@@ -349,10 +269,9 @@ const deleteCart = async(checkedList) => {
     return {
       user,
       userOrder,
-      orders,
+      getOrder,
       updateCondition,
       userCart,
-      carts,
       updateCart,
       orderCart,
       getCart,

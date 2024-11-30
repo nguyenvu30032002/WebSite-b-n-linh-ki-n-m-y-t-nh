@@ -50,14 +50,10 @@ const Order = () => {
         </WrapperHeader>
         <WrapperBody>
             <WrapperNav>
-              <Dropdown menu={menuProps}>
-                <WrapperButton>
-                  <Space>
-                    Quản lý đơn hàng
-                    <DownCircleFilled />
-                  </Space>
-                </WrapperButton>
-              </Dropdown>
+              <span onClick={() => setSelectedOrderStatus('Chờ xác nhận')}><FontAwesomeIcon icon={faHourglassHalf} style={{margin: '0 15px 0 0'}} /> Chờ xác nhận</span>
+              <span onClick={() => setSelectedOrderStatus('Đã giao')}><FontAwesomeIcon icon={faTruck} style={{margin: '0 15px 0 0'}} /> Đã giao</span>
+              <span onClick={() => setSelectedOrderStatus('Đã nhận')}><FontAwesomeIcon icon={faCheck} style={{margin: '0 15px 0 0'}} /> Đã nhận</span>
+              <span onClick={() => setSelectedOrderStatus('Đã hủy')}><FontAwesomeIcon icon={faXmark} style={{margin: '0 15px 0 0'}} /> Đã hủy</span>
             </WrapperNav>
             <Wrappertable>
                 <WrapperH1>{selectedOrderStatus}</WrapperH1>

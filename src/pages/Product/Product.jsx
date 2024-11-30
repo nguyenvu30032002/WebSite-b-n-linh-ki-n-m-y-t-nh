@@ -18,7 +18,7 @@ const Product = () => {
     const location = useLocation();
     const product = location.state?.product;
     const navigate = useNavigate(); 
-    const { userOrder, userCart, user, createComment,getAllComments} = UserService();
+    const { userOrder, userCart, user, createComment,getAllComments, createFavourite, getAllFavourite, deleteFavourite} = UserService();
     const {getProductSimilar} = ProductService()
     const [amount, setAmount] = useState(1);
     const [valueRadio, setValueRadio] = useState("");
@@ -33,8 +33,10 @@ const Product = () => {
     const [imgComment, setImgComment] = useState('');
     const [dataComment, setDataComment] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 3;
+    const [favourite, setFavourite] = useState([])
 
+  
+  const itemsPerPage = 3;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = dataComment.slice(indexOfFirstItem, indexOfLastItem);
@@ -44,6 +46,7 @@ const Product = () => {
   };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+
     const fetchProductSimilar = useCallback(async() => {
       try{
           const dataProductSimilar = await getProductSimilar(product)
@@ -56,6 +59,8 @@ const Product = () => {
     useEffect(() => {
       fetchProductSimilar()
     }, [fetchProductSimilar])
+
+/////////////////////////////////////////
 
     const fetchComments = useCallback(async () => {
       try {
@@ -75,8 +80,57 @@ const Product = () => {
 
     useEffect(() => {
       fetchComments()
-     
     },[fetchComments])
+
+//////////////////////////////////////////////////////////
+
+const handleHeart = (product) => {
+  if (user) {
+    const favouriteProduct = favourite.find(fvr => fvr.product_id === product.id && fvr.favourite === 1);
+
+    if (favouriteProduct) {
+      const data = { product_id: product.id, user_id: user.id };
+      deleteFavourite(data)
+        .then(() => {
+          fetchFavourite();
+        })
+        .catch((error) => {
+          message.error('Có lỗi xảy ra, vui lòng thử lại!');
+        });
+    } else {
+      const data = { product_id: product.id, user_id: user.id };
+      createFavourite(data)
+        .then(() => {
+          fetchFavourite();
+        })
+        .catch((error) => {
+          message.error('Có lỗi xảy ra, vui lòng thử lại!');
+        });
+    }
+  } else {
+    message.error('Vui lòng đăng nhập');
+  }
+};
+
+const fetchFavourite = useCallback(async() => {
+  try{
+    const data = await getAllFavourite(user.id)
+    setFavourite(data)
+  }
+  catch(error){
+    throw error
+  }
+},[getAllFavourite, user.id])
+
+useEffect(() => {
+  if(user){
+    
+    fetchFavourite()
+  }
+}, [fetchFavourite, user])
+
+/////////////////////////////////////////////////////////
+
     const handlePlus = () =>{
         setAmount(() => amount + 1)
     }
@@ -126,7 +180,8 @@ const Product = () => {
         nameProduct: product.name,
         amount: amount,
         totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
-        origin: product.origin,
+        price: product.price,
+        discount: product.discount
        };
 
       if(user.address === null){
@@ -146,6 +201,7 @@ const Product = () => {
         .then((response) =>{
           const data = response.data;
             if(data){
+              setAmount(1)
               message.success('Đặt hàng thành công')
               setIsModalOpen(false);
             }
@@ -162,6 +218,8 @@ const Product = () => {
       }
     };
 
+////////////////////////////////////////////// CART ////////////////////////////////////////////////
+
     const handleCart = () => {
       if(!user){
         navigate('/login')
@@ -177,13 +235,15 @@ const Product = () => {
         imgProduct: product.image,
         nameProduct: product.name,
         amount: amount,
-        price: ((product.price) - (product.price * (product.discount / 100))),
-        origin: product.origin,
+        newPrice: ((product.price) - (product.price * (product.discount / 100))),
+        oldPrice: product.price,
+        discount: product.discount
        };
        userCart(data)
        .then((reponse) => {
         const data = reponse.data
         if(data){
+          setAmount(1)
           message.success('Thêm vào giỏ hàng thành công')
         }
         else{
@@ -315,7 +375,13 @@ return (
                             <Rate className='rate' disabled allowHalf defaultValue={product.comments.length > 0 ? product.comments.reduce((acc, curr) => acc + curr.rate, 0) / product.comments.length : 0} />
                           ) : null
                         }
-                        <HeartFilled className='heart' />
+                        <HeartFilled style={{ 
+                          color: favourite?.map(fav => fav.product_id === product.id && fav.favourite === 1 ? 'red' : undefined).includes('red') 
+                            ? 'red' 
+                            : undefined ,fontSize: '40px', cursor: 'pointer', position: 'absolute', right: '0'
+                        }} 
+                        onClick={() => handleHeart(product)}
+                        />
                       </WrapperRate>
                       {/* {
                         product.id && product.variants !== null ? (
@@ -434,7 +500,12 @@ return (
                               </div>
                             </WrapperConditionSimilar>
                             <WrapperRateSimilar>
-                            <HeartFilled />
+                            <HeartFilled style={{ 
+                              color: favourite?.map(fav => fav.product_id === product.id && fav.favourite === 1 ? 'red' : undefined).includes('red') 
+                                ? 'red' 
+                                : undefined 
+                            }} 
+                            onClick={() => handleHeart(product)} />
                             {
                               Array.isArray(product.comments) && product.comments.length > 0 ? (
                                 <Rate disabled allowHalf defaultValue={product.comments.length > 0 ? product.comments.reduce((acc, curr) => acc + curr.rate, 0) / product.comments.length : 0} />
@@ -584,27 +655,29 @@ return (
                   <div className='information'>
                     <div>
                       <p>Tới: {user.name}</p>
-                      <div className='address'>
-                        <p>Địa chỉ:</p>
+                      <div className='phone'>
+                      <p>Số điện thoại: </p>
+                      <div>
                         {
-                          user.address !== null ? (
-                            <p>{user.address}</p>
-                          ) : (
-                            <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
-                          )
-                        }
+                            user.phone !== null ? (
+                              <p>{user.phone}</p>
+                            ) : (
+                              <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
+                            )
+                          }
+                      </div>
+                        
                       </div>
                     </div>
-                    <div className='phone'>
-                    <p>Số điện thoại: </p>
-                    <div>
-                      {
-                          user.phone !== null ? (
-                            <p>{user.phone}</p>
-                          ) : (
-                            <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
-                          )
-                        }</div>
+                    <div className='address'>
+                      <p>Địa chỉ:</p>
+                          {
+                            user.address !== null ? (
+                              <p>{user.address}</p>
+                            ) : (
+                              <p style={{color: '#1677ff', cursor: 'pointer'}} onClick={() => navigate('/information')}>Thay dổi</p>
+                            )
+                          }
                     </div>
                   </div>
                 )
@@ -641,7 +714,8 @@ return (
                          nameProduct: product.name,
                          amount: amount,
                          totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
-                         origin: product.origin,
+                         price: product.price,
+                         discount: product.discount
                         };
                  
                        if(user.address === null){
@@ -653,8 +727,24 @@ return (
                          setIsModalOpen(true);
                        }
                        else{
-                         userOrder(data);
-                         setIsModalOpen(false);
+                         userOrder(data)
+                         .then((response) =>{
+                          const data = response.data;
+                            if(data.message === 'success'){
+                              setAmount(1)
+                              message.success('Đặt hàng thành công')
+                              setIsModalOpen(false);
+                            }
+                            else{
+                              message.error('Dặt hàng thất bại')
+                              setIsModalOpen(false);
+                            }
+                          })
+                          .catch((error) => {
+                            message.error('Có lỗi xảy ra, vui lòng thử lại!');
+                            setIsModalOpen(false);
+                          })
+                          setIsModalOpen(false);
                        }
                         }
                         catch(error){

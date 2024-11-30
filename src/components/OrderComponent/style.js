@@ -2,10 +2,11 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
     width: 100%;
-    height: 67%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
     /* gap: 25px;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); */
     & .product{
@@ -205,6 +206,16 @@ export const WrapperSelect = styled.div`
         border-radius: 2px;
         cursor: pointer;
     }
+`
+
+export const WrapperPaginate = styled.div`
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
 `
 
 

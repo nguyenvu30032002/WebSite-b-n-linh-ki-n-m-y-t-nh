@@ -92,15 +92,7 @@ export const WrapperRate = styled.div`
         font-size: 40px;
         
     } 
-    & .heart{
-        color: red;
-        font-size: 40px;
-        cursor: pointer;
-        position: absolute;
-        right: 0;
-    }
-    
-    
+   
 `
 
 export const WrapperVariants = styled.div`
@@ -297,18 +289,17 @@ export const WrapperModal = styled(Modal)`
             border-top: 1px solid #ccc ;
             & div{
                 display: flex;
-               & .address{
+               & .phone{
                 margin: 0 0 0 100px;
                 & p:last-child{
                     padding-left: 10px;
                 }
                }
             }
-            & .phone{
+            & .address{
                 display: flex;
                 justify-content: start;
                 align-items: center;
-                /* background-color: red; */
                 & p:first-child{
                     width: 100px;
                 }

@@ -19,10 +19,6 @@ import UserService from '../../services/UserService';
     const [categories, setCategories] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedSort, setSelectedSort] = useState(null);
-
-
-    // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
-    const itemsPerPage = 6;
     const searchTerm = useSelector((state) => state.searchTerm);  
     
     const fetchProducts = useCallback(async() => {
@@ -39,6 +35,9 @@ import UserService from '../../services/UserService';
   useEffect(() => {
   fetchProducts(); 
   }, [fetchProducts]);
+
+    // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
+    const itemsPerPage = 6;
     // Tính toán các sản phẩm hiển thị trên trang hiện tại
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
