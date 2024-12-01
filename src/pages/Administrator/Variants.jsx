@@ -162,22 +162,25 @@ useEffect(() => {
     const admin_id = user.id
     createVariants(values, admin_id)
     .then((response) => {
-      const data = response.data; // Lấy dữ liệu từ phản hồi
+      const data = response.data; 
       if (data.message === 'already existed') {
+          fetchVariants()
           message.error('Biến thể đã tồn tại');
           form.resetFields(); 
           setShowWrapperToggle(false);
       } else if (data.message === 'success') {
-          message.success('Tạo mới thành công');
           fetchVariants()
+          message.success('Tạo mới thành công');
           form.resetFields(); 
           setShowWrapperToggle(false);
       } else {
+          fetchVariants()
           message.error('Lỗi thêm mới');
           form.resetFields(); 
           setShowWrapperToggle(false);
       }
     }).catch((error) => {
+        fetchVariants()
         message.error('Có lỗi xảy ra, vui lòng thử lại!');
         form.resetFields(); 
         setShowWrapperToggle(false);
@@ -191,16 +194,18 @@ useEffect(() => {
   const DeleteVariants = () => {
     deleteVariants(selectedRowKeys)
     .then((response) =>{
-      if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
+      if (response.data.message === 'success') { 
+        fetchVariants();
         setSelectedRowKeys([]);
         message.success('Xóa biến thể thành công');
-        fetchVariants();
-       
+
       } else {
+          fetchVariants();
           message.error('Xóa biến thể thất bại'); // Nếu có lỗi từ server
       }
     })
     .catch((error) => {
+      fetchVariants();
       message.error('Có lỗi xảy ra, vui lòng thử lại!')
     })
   };
@@ -242,18 +247,21 @@ useEffect(() => {
     updateVariants(data, admin_id)
         .then((response) => {
             if (response.data.message === 'already existed') {
+                fetchVariants();
                 message.error('Biến thể đã tồn tại');
                 setShowWrapperToggle(false);
             } else if (response.data.message === 'success') {
-                message.success('Thay đổi thành công');
                 fetchCategories();
+                message.success('Thay đổi thành công');
                 setIsModalOpen(false);
             } else {
+                fetchCategories();
                 message.error('Thay đổi thất bại');
                 setIsModalOpen(false);
             }
         })
         .catch((error) => {
+            fetchCategories();
             message.error('Có lỗi xảy ra, vui lòng thử lại!');
             setIsModalOpen(false);
         });

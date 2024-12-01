@@ -4,7 +4,7 @@ import Home from './pages/Home/Home';
 import Information from './pages/Information/Information';
 import Order from './pages/Order/Order';
 import Administrator from './pages/Administrator/Administrator';
-import ChangPassword from './pages/ChangePassword/ChangPassword';
+import ChangePassword from './pages/ChangePassword/ChangePassword';
 import Product from './pages/Product/Product';
 import Cart from './pages/Cart/Cart';
 import Login from './pages/Login/Login';
@@ -66,7 +66,7 @@ const AuthUserWrapper = () => {
                     {/* Các route khác dành cho người dùng đã đăng nhập */}
                     <Route path='/information' element={<Information />} />
                     <Route path='/order' element={<Order />} />
-                    <Route path='/changePassword' element={<ChangPassword />} />
+                    <Route path='/changePassword' element={<ChangePassword />} />
                     <Route path='/cart' element={<Cart />} />
                 </>
             )}

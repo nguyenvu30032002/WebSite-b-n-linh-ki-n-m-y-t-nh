@@ -10,6 +10,7 @@ import UserService from '../../services/UserService';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { CameraOutlined, HeartFilled} from '@ant-design/icons';
 import ProductService from '../../services/ProductService';
+import AuthUser from '../../services/AuthUser';
 
 
 
@@ -20,6 +21,7 @@ const Product = () => {
     const navigate = useNavigate(); 
     const { userOrder, userCart, user, createComment,getAllComments, createFavourite, getAllFavourite, deleteFavourite} = UserService();
     const {getProductSimilar} = ProductService()
+    const {getUser} = AuthUser()
     const [amount, setAmount] = useState(1);
     const [valueRadio, setValueRadio] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -85,7 +87,7 @@ const Product = () => {
 //////////////////////////////////////////////////////////
 
 const handleHeart = (product) => {
-  if (user) {
+  if (getUser()) {
     const favouriteProduct = favourite.find(fvr => fvr.product_id === product.id && fvr.favourite === 1);
 
     if (favouriteProduct) {
@@ -150,7 +152,7 @@ useEffect(() => {
 ///////////////////////////////// MODAL //////////////////////////////////////////////////////
 
     const showModal = () => {
-      if(!user){
+      if(!(getUser())){
         navigate('/login')
       }
       else{
@@ -184,7 +186,7 @@ useEffect(() => {
         discount: product.discount
        };
 
-      if(user.address === null){
+      if(!(user.address)){
         message.error('Vui lòng điền địa chỉ nhận hàng')
         setIsModalOpen(true);
       }
@@ -192,7 +194,7 @@ useEffect(() => {
         message.error('Vui lòng chọn phương thức thanh toán');
         setIsModalOpen(true);
       }
-      else if(user.phone === null){
+      else if(!(user.phone)){
         message.error('Vui lòng thêm số điện thoại');
         setIsModalOpen(true);
       }
@@ -206,11 +208,13 @@ useEffect(() => {
               setIsModalOpen(false);
             }
             else{
+              setAmount(1)
               message.error('Dặt hàng thất bại')
               setIsModalOpen(false);
             }
         })
         .catch((error) => {
+          setAmount(1)
           message.error('Có lỗi xảy ra, vui lòng thử lại!');
           setIsModalOpen(false);
         })
@@ -221,7 +225,7 @@ useEffect(() => {
 ////////////////////////////////////////////// CART ////////////////////////////////////////////////
 
     const handleCart = () => {
-      if(!user){
+      if(!(getUser())){
         navigate('/login')
       }
       else{
@@ -718,11 +722,11 @@ return (
                          discount: product.discount
                         };
                  
-                       if(user.address === null){
+                       if(!(user.address)){
                          message.error('Vui lòng điền địa chỉ nhận hàng')
                          setIsModalOpen(true);
                        }
-                       else if(user.phone === null){
+                       else if(!(user.phone)){
                          message.error('Vui lòng thêm số điện thoại');
                          setIsModalOpen(true);
                        }
@@ -736,11 +740,13 @@ return (
                               setIsModalOpen(false);
                             }
                             else{
+                              setAmount(1)
                               message.error('Dặt hàng thất bại')
                               setIsModalOpen(false);
                             }
                           })
                           .catch((error) => {
+                            setAmount(1)
                             message.error('Có lỗi xảy ra, vui lòng thử lại!');
                             setIsModalOpen(false);
                           })

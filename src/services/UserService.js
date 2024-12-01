@@ -29,6 +29,37 @@ export default function UserService() {
     getUser();
   }, [getUser]);
 
+  const updateUser = async (id, data) => {
+    try {
+      const response = await axios.post(`${apiUrl}/update/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+      return response;
+    } catch (error) {
+      throw error
+    }
+  };
+
+  const changePassword = useCallback(async(id, data) =>{
+    try{
+      const response = await axios.post(`${apiUrl}/change_password/${id}`, 
+        data,
+        {
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}` 
+          }
+      })
+      return response
+    }catch(error){
+      throw error
+    }
+  },[apiUrl,token])
+
+
 //////////////////////////////////////// ORDER ////////////////////////////////////////////////////////
 
     const userOrder = useCallback(async(order) => {
@@ -267,7 +298,10 @@ const deleteCart = async(checkedList) => {
     },[apiUrl,token])
 
     return {
+      getUser,
       user,
+      updateUser,
+      changePassword,
       userOrder,
       getOrder,
       updateCondition,

@@ -1,5 +1,5 @@
 import { Button, Flex, message, Select } from 'antd';
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import AdminService from '../../services/AdminService';
 import * as XLSX from 'xlsx';
 import img from '../../assets/images/avatar/d0tb7-copy.jpg'
@@ -41,18 +41,20 @@ const UserPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const {deleteUser, getUser, updateUser} = AdminService()
 
-useEffect(() => {
-  const fetchUser = async() => {
-      try{
-          const dataUser = await getUser(searchTerm)
-          setUsers(dataUser)
-      }
-      catch(error){
-          throw error
-      }
+const fetchUser = useCallback(async() => {
+  try{
+    const data = await getUser(searchTerm)
+    setUsers(data)
   }
-  fetchUser()
-}, [getUser,searchTerm])
+  catch(error){
+    throw error
+  }
+}, [getUser, searchTerm])
+
+useEffect(() => {
+
+  
+}, [fetchUser])
 
   const dataSource = users.map((user) => ({
     key: user.id,
@@ -111,13 +113,16 @@ const onSearch = (value) => {
 const DeleteUser = () => {
   deleteUser(selectedRowKeys)
   .then((response) =>{
-    if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
+    if (response.data.message === 'success') { 
+      fetchUser()
       message.success('Xóa người dùng thành công');
     } else {
+      fetchUser()
         message.error('Xóa người dùng thất bại'); // Nếu có lỗi từ server
     }
   })
   .catch((error) => {
+    fetchUser()
     message.error('Có lỗi xảy ra, vui lòng thử lại!')
   })
 };
@@ -151,15 +156,18 @@ const handleUpdate = () => {
   .then((response) => {
     if(response.data.message === 'success')
     {
+      fetchUser()
       message.success('Thay đổi thành công')
       setIsModalOpen(false)
     }
     else{
+      fetchUser()
       message.error('Thay đổi thất bại')
       setIsModalOpen(false);
     }
   })
   .catch((error) => {
+    fetchUser()
     message.error('Có lỗi xảy ra, vui lòng thử lại!')
     setIsModalOpen(false);
   })

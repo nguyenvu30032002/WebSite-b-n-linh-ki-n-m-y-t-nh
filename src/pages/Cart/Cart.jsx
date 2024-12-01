@@ -6,9 +6,11 @@ import { Button, Checkbox, InputNumber, message, Radio } from 'antd';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import UserService from '../../services/UserService';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
+import AuthUser from '../../services/AuthUser';
 
 const Cart = () => {
   const {user, getCart, updateCart, orderCart, deleteCart} = UserService();
+  const {getUser} = AuthUser();
   const [checkedList, setCheckedList] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedCarts, setSelectedCarts] = useState([]);
@@ -21,10 +23,10 @@ const Cart = () => {
  },[getCart, user.id])
 
  useEffect(() => {
-  if(user){
+  if(getUser()){
     fetchCart()
   }
- }, [fetchCart, user])
+ }, [fetchCart, getUser])
 
    // Lưu trạng thái các sản phẩm đã chọn
   const cartOptions = carts.map((cart) => cart.id);
@@ -125,6 +127,7 @@ const Cart = () => {
         }
       })
       .catch((error) => {
+        fetchCart()
         message.error('Có lỗi xảy ra, vui lòng thử lại!');
       })
     }
@@ -155,10 +158,12 @@ const Cart = () => {
           message.success('Xóa sản phẩm khỏi giỏ hàng thành công')
         }
         else{
+          fetchCart()
           message.error('Xóa sản phẩm khỏi giỏ hàng thất bại')
         }
       })
       .catch((error) => {
+        fetchCart()
         message.error('Có lỗi xảy ra, vui lòng thử lại!');
 
       })
@@ -296,6 +301,7 @@ const Cart = () => {
                             }
                           })
                           .catch((error) => {
+                            fetchCart()
                             message.error('Có lỗi xảy ra, vui lòng thử lại!');
                           })
                           

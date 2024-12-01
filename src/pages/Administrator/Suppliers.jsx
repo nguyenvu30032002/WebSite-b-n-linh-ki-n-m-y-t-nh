@@ -150,20 +150,23 @@ const onFinish = (values) => {
   .then((response) => {
     const data = response.data; // Lấy dữ liệu từ phản hồi
     if (data.message === 'already existed') {
+        fetchSuppliers()
         message.error('Nhà cung cấp đã tồn tại');
         form.resetFields(); 
         setShowWrapperToggle(false);
     } else if (data.message === 'success') {
-        message.success('Tạo mới thành công');
         fetchSuppliers()
+        message.success('Tạo mới thành công');
         form.resetFields(); 
         setShowWrapperToggle(false);
     } else {
+        fetchSuppliers()
         message.error('Lỗi thêm mới');
         form.resetFields(); 
         setShowWrapperToggle(false);
     }
   }).catch((error) => {
+      fetchSuppliers()
       message.error('Có lỗi xảy ra, vui lòng thử lại!');
       form.resetFields(); 
       setShowWrapperToggle(false);
@@ -177,16 +180,18 @@ const onSearch = (value) => {
 const DeleteSuppliers = () => {
     deleteSuppliers(selectedRowKeys)
   .then((response) =>{
-    if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
+    if (response.data.message === 'success') { 
+      fetchSuppliers();
       setSelectedRowKeys([]);
       message.success('Xóa nhà cung cấp thành công');
-      fetchSuppliers();
      
     } else {
-        message.error('Xóa nhà cung cấp thất bại'); // Nếu có lỗi từ server
+      fetchSuppliers();
+      message.error('Xóa nhà cung cấp thất bại'); // Nếu có lỗi từ server
     }
   })
   .catch((error) => {
+    fetchSuppliers();
     message.error('Có lỗi xảy ra, vui lòng thử lại!')
   })
 };
@@ -218,22 +223,25 @@ const handleUpdate = () => {
   updateSuppliers(data,id,admin_id)
   .then((response) => {
     if (response.data.message === 'already existed') {
+      fetchSuppliers();
       message.error('Nhà cung cấp đã tồn tại');
       setShowWrapperToggle(false);
     }
     else if(response.data.message === 'success')
     {
-      message.success('Thay đổi thành công')
       fetchSuppliers()
+      message.success('Thay đổi thành công')
       setIsModalOpen(false)
       
     }
     else{
+      fetchSuppliers()
       message.error('Thay đổi thất bại')
       setIsModalOpen(false);
     }
   })
   .catch((error) => {
+    fetchSuppliers()
     message.error('Có lỗi xảy ra, vui lòng thử lại!')
     setIsModalOpen(false);
   })

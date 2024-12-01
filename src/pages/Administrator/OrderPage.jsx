@@ -185,7 +185,7 @@ function copyToClipboard(text) {
             <Search  placeholder="input search text" onSearch={onSearch} style={{ width: 300, marginLeft:'700px', marginRight:'40px', position: 'absolute' }} />
             <PrinterOutlined  onClick={exportToExcel} style={{cursor:'pointer', marginLeft:'1070px', marginRight:'40px', position: 'absolute'}} />
           </Flex>
-          <WrapperTable rowSelection={rowSelection} columns={columns} dataSource={dataSource} pagination={{ pageSize: 7 }}  onRow={(record) => ({
+          <WrapperTable rowSelection={rowSelection} columns={columns} dataSource={dataSource} pagination={{ pageSize: 6 }}  onRow={(record) => ({
           onClick: (event) => handleRowClick(record, event),
           style: { cursor: 'pointer' }, // Gọi hàm khi click vào hàng
         })} />;

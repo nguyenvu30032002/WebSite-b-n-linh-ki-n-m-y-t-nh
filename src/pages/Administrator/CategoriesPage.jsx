@@ -142,20 +142,23 @@ const onFinish = (values) => {
   .then((response) => {
     const data = response.data; // Lấy dữ liệu từ phản hồi
     if (data.message === 'already existed') {
+        fetchCategories()
         message.error('Loại sản phẩm đã tồn tại');
         form.resetFields(); 
         setShowWrapperToggle(false);
     } else if (data.message === 'success') {
-        message.success('Tạo mới thành công');
         fetchCategories()
+        message.success('Tạo mới thành công');
         form.resetFields(); 
         setShowWrapperToggle(false);
     } else {
+        fetchCategories()
         message.error('Lỗi thêm mới');
         form.resetFields(); 
         setShowWrapperToggle(false);
     }
   }).catch((error) => {
+      fetchCategories()
       message.error('Có lỗi xảy ra, vui lòng thử lại!');
       form.resetFields(); 
       setShowWrapperToggle(false);
@@ -169,16 +172,19 @@ const onSearch = (value) => {
 const DeleteCategory = () => {
   deleteCategories(selectedRowKeys)
   .then((response) =>{
-    if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
+    if (response.data.message === 'success') {
+      fetchCategories()
       setSelectedRowKeys([]);
       message.success('Xóa loại sản phẩm thành công');
       fetchCategories();
      
     } else {
+        fetchCategories()
         message.error('Xóa loại sản phẩm thất bại'); // Nếu có lỗi từ server
     }
   })
   .catch((error) => {
+    fetchCategories()
     message.error('Có lỗi xảy ra, vui lòng thử lại!')
   })
 };
@@ -207,22 +213,25 @@ const handleUpdate = () => {
   updateCategory(data,id,admin_id)
   .then((response) => {
     if (response.data.message === 'already existed') {
+      fetchCategories()
       message.error('Loại sản phẩm đã tồn tại');
       setShowWrapperToggle(false);
     }
     else if(response.data.message === 'success')
     {
-      message.success('Thay đổi thành công')
       fetchCategories()
+      message.success('Thay đổi thành công')
       setIsModalOpen(false)
       
     }
     else{
+      fetchCategories()
       message.error('Thay đổi thất bại')
       setIsModalOpen(false);
     }
   })
   .catch((error) => {
+    fetchCategories()
     message.error('Có lỗi xảy ra, vui lòng thử lại!')
     setIsModalOpen(false);
   })

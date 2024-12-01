@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, Flex, Form, Input, message, Select } from 'antd';
 import AdminService from '../../services/AdminService'
 import { WrapperTable, WrapperToggle, WrapperToggleShow } from './Admin';
@@ -67,18 +67,19 @@ const AdminPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const {createAdmin, deleteAdmin, getAdmin, updateAdmin} = AdminService()
 
-    useEffect(() => {
-      const fetchAdmin = async() => {
-          try{
-              const dataAdmin = await getAdmin(searchTerm)
-              setAdmins(dataAdmin)
-          }
-          catch(error){
-              throw error
-          }
+    const fetchAdmin = useCallback(async() => {
+      try{
+        const data = await getAdmin(searchTerm)
+        setAdmins(data)
       }
+      catch(error){
+        throw error
+      }
+    }, [getAdmin, searchTerm])
+
+    useEffect(() => {
       fetchAdmin()
-  }, [getAdmin, searchTerm])
+  }, [fetchAdmin])
 
 
     const dataSource = admins.map((admin) => ({
@@ -142,19 +143,23 @@ const AdminPage = () => {
     .then((response) => {
       const data = response.data; // Lấy dữ liệu từ phản hồi
       if (data.message === 'already existed') {
+          fetchAdmin()
           message.error('Tài khoản đã tồn tại');
           form.resetFields(); 
           setShowWrapperToggle(false);
       } else if (data.message === 'success') {
+          fetchAdmin()
           message.success('Tạo tài khoản thành công');
           form.resetFields(); 
           setShowWrapperToggle(false);
       } else {
+          fetchAdmin()
           message.error('Lỗi tạo tài khoản');
           form.resetFields(); 
           setShowWrapperToggle(false);
       }
     }).catch((error) => {
+      fetchAdmin()
       message.error('Có lỗi xảy ra, vui lòng thử lại!');
       form.resetFields(); 
       setShowWrapperToggle(false);
@@ -168,13 +173,16 @@ const AdminPage = () => {
   const DeleteUser = () => {
     deleteAdmin(selectedRowKeys)
     .then((response) =>{
-      if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
+      if (response.data.message === 'success') {
+        fetchAdmin()
         message.success('Xóa người dùng thành công');
       } else {
-          message.error('Xóa người dùng thất bại'); // Nếu có lỗi từ server
+        fetchAdmin()
+        message.error('Xóa người dùng thất bại'); // Nếu có lỗi từ server
       }
     })
     .catch((error) => {
+      fetchAdmin()
       message.error('Có lỗi xảy ra, vui lòng thử lại!')
     })
   };
@@ -208,15 +216,18 @@ const handleUpdate = () => {
     .then((response) => {
       if(response.data.message === 'success')
       {
+        fetchAdmin()
         message.success('Thay đổi thành công')
         setIsModalOpen(false)
       }
       else{
+        fetchAdmin()
         message.error('Thay đổi thất bại')
         setIsModalOpen(false);
       }
     })
     .catch((error) => {
+      fetchAdmin()
       message.error('Có lỗi xảy ra, vui lòng thử lại!')
       setIsModalOpen(false);
     })

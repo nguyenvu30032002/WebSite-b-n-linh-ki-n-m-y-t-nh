@@ -248,13 +248,14 @@ const onFinish = (values) => {
   .then((response) => {
     const data = response.data; // Lấy dữ liệu từ phản hồi
     if (data.message === 'success') {
-        message.success('Tạo mới thành công');
         fetchProduct()
+        message.success('Tạo mới thành công');
         setIsChecked(false)
         form.resetFields(); 
         setShowWrapperToggle(false);
         
     } else {
+        fetchProduct()
         message.error('Lỗi thêm mới');
         setIsChecked(false)
         form.resetFields(); 
@@ -262,6 +263,7 @@ const onFinish = (values) => {
         
     }
   }).catch((error) => {
+      fetchProduct()
       message.error('Có lỗi xảy ra, vui lòng thử lại!');
       setIsChecked(false)
       form.resetFields(); 
@@ -272,16 +274,17 @@ const onFinish = (values) => {
 const DeleteProduct = () => {
   deleteProduct(selectedRowKeys)
   .then((response) =>{
-    if (response.data.message === 'success') { // Giả sử server trả về một thuộc tính 'success'
+    if (response.data.message === 'success') { 
+      fetchProduct();
       setSelectedRowKeys([]);
       message.success('Xóa sản phẩm thành công');
-      fetchProduct();
-     
     } else {
-        message.error('Xóa sản phẩm thất bại'); // Nếu có lỗi từ server
+      fetchProduct(); 
+      message.error('Xóa sản phẩm thất bại'); // Nếu có lỗi từ server
     }
   })
   .catch((error) => {
+    fetchProduct();
     message.error('Có lỗi xảy ra, vui lòng thử lại!')
   })
 };
@@ -372,17 +375,19 @@ const updateProducts = () => {
   .then((response) => {
     if(response.data.message === 'success')
     {
-      message.success('Thay đổi thành công')
       fetchProduct()
+      message.success('Thay đổi thành công')
       setIsModalOpen(false)
       
     }
     else{
+      fetchProduct()
       message.error('Thay đổi thất bại')
       setIsModalOpen(false);
     }
   })
   .catch((error) => {
+    fetchProduct()
     message.error('Có lỗi xảy ra, vui lòng thử lại!')
     setIsModalOpen(false);
   })

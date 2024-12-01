@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Form, Input, message } from 'antd'
 import { WrapperForm } from '../Register/style'
 import AuthUser from '../../services/AuthUser'
+import UserService from '../../services/UserService'
 
 const formItemLayout = {
   labelCol: {
@@ -25,28 +26,42 @@ const tailFormItemLayout = {
   },
 };
 
-const ChangPassword = () => {
+const ChangePassword = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const {getUser, token, http} = AuthUser();
-  const id =  getUser().id;
+  const {user, changePassword} = UserService();
 
   const onFinish = async(values) => {
-    try{
-      await http.post(`/change-password/${id}`, {password: values.password}, {
-        headers: { 
-          Authorization: `Bearer ${token}` 
-        }
-      });
-      message.success('Đổi mật khẩu thành công');
+    const id = user.id
+    const data = {
+      old_password : values.old_password,
+      password: values.password
+    }
+    changePassword(id, data)
+    .then((response) => {
+      const data = response.data
+      if(data.message === 'success'){
+        form.resetFields();
+        message.success('Đổi mật khẩu thành công')
+        setTimeout(() => {
+          navigate('/')
+        }, 3000); 
+      }
+      else if(data.message === 'wrong password'){
+        form.resetFields();
+        message.error('Mật khẩu cũ không đúng')
+      }
+      else{
+        form.resetFields();
+        message.error('Đổi mật khẩu thất bại')
+      }
+    })
+    .catch((error) => {
       form.resetFields();
-      navigate('/'); 
-    }
-    catch(err){
-      message.error('Lỗi đổi mật khẩu');
-      throw err
-    }
+      message.error('Có lỗi xảy ra, vui lòng thử lại!');
+    })
   };
+
   return (
     <Wrapper>
         <WrapperHeader>
@@ -61,6 +76,19 @@ const ChangPassword = () => {
                     style={{ maxWidth: 600 }}
                     scrollToFirstError
                   >
+                    <Form.Item
+                      name="old_password"
+                      label="Old Password"
+                      rules={[
+                        { required: true, message: 'Please input your password!' },
+                        { min: 5, message: 'Password must be at least 5 characters.' },
+                        { max: 15, message: 'Password must be at most 15 characters.' },
+                      ]}
+                      hasFeedback
+                    >
+                      <Input.Password autoComplete="new-password" />
+                    </Form.Item>
+
                     <Form.Item
                       name="password"
                       label="Password"
@@ -109,4 +137,4 @@ const ChangPassword = () => {
   )
 }
 
-export default ChangPassword
+export default ChangePassword
