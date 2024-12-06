@@ -42,7 +42,7 @@ const slideOut = keyframes`
 export const WrapperToggle = styled.div`
     max-height: 650px;
     background-color: #fff;
-    z-index: 1;
+    z-index: 1000;
     position: absolute;
     right: 0;
     overflow: hidden;
@@ -122,7 +122,7 @@ export const WrapperToggleShow = styled.div`
     height: 650px;
     background-color: #fff;
     overflow: hidden;
-    z-index: 1;
+    z-index: 1000;
     animation: ${slideOut} 0.3s ease forwards;
     position: absolute;
     border-left: 1px solid #ccc ;

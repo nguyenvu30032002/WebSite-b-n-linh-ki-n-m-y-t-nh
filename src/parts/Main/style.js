@@ -6,5 +6,4 @@ export const Wrapper = styled.div`
     display: flex;
     height: 1000px;
     justify-content: center;
-    
 `

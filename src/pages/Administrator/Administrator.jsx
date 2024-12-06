@@ -12,6 +12,7 @@ import LogoComponent from '../../components/LogoComponent/LogoComponent'
 import InformationComponent from "../../components/InformationComponent/InformationComponent.tsx";
 import Suppliers from './Suppliers.jsx';
 import Variants from './Variants.jsx';
+import MessageAdminComponent from '../../components/Message/MessageAdminComponent.jsx';
 
 const Administrator = () => {
   const [selectedPage, setSelectedPage] = useState('admin');
@@ -59,6 +60,7 @@ const Administrator = () => {
                 {renderContent()}
             </Wrappertable>
         </WrapperBody>
+        <MessageAdminComponent/>
     </Wrapper>
   )
 }
