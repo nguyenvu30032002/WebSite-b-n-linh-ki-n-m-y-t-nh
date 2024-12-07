@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState,useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import { message } from "antd";
@@ -34,7 +34,24 @@ export default function AuthUser() {
         setExpires_in(expires_in);
     }
 
+    const logoutUser = useCallback(async() => {
+        try{
+            const response = await axios.post(`${apiUrl}/logout/${getUser().id}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                }
+            )
+            return response
+        }
+        catch(error){
+            throw error
+        }
+    },[])
+
     const logout = () => {
+        logoutUser()
         sessionStorage.clear();
         navigate('/login');
     }
