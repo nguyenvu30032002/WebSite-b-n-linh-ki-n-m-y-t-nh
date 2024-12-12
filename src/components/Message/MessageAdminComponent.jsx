@@ -1,16 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ArrowLeftOutlined, CloseOutlined, SendOutlined } from '@ant-design/icons'
-import {  Space } from 'antd'
+import {  message, Space } from 'antd'
 import Input from 'antd/es/input/Input'
 import { Wrapper, WrapperMessage, WrapperMessages, WrappperImage } from './styleAdmin'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons';
+import Pusher from 'pusher-js'
+import UserService from '../../services/UserService'
+
 const MessageAdminComponent = () => {
-    const [inputValue, setInputValue] = useState('');
+    const {user, messageUser} = UserService()
     const [openMessage, setOpenMessage] = useState(false)
     const [openMessages, setOpenMessages] = useState(false)
     const endOfMessagesRef = useRef(null); // Tham chiếu đến phần tử cuối cùng của tin nhắn
-  
+    const [messages, setMessages] = useState([])
+    const [messager, setMessager] = useState('')
 
     const handleOpenMessages = () => {
         setOpenMessages(true)
@@ -40,9 +44,43 @@ const MessageAdminComponent = () => {
   
   /////////////////////////////////////////////////////////////////////////////////////////
   
-    const handleSubmit = (e) => {
-      console.log('Giá trị Input:', inputValue);
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if(!user){
+      setMessager('')
+      message.error('Vui lòng đăng nhập')
+      
+    }
+    else{
+      const data = {
+        user_id : user.id,
+        message : messager
+      }
+      setMessager('')
+      messageUser(data)
+    }
+  };
+
+  // let allMessage = []
+  useEffect(() => {
+    Pusher.logToConsole = true;
+  
+    const pusher = new Pusher('4dda97803b66743534b3', {
+      cluster: 'eu'
+    });
+    
+    const channel = pusher.subscribe('chat');
+    channel.bind('message', function(data) {
+      // allMessage.push(data)
+      // setMessages(allMessage)
+      setMessages((prevMessages) => [...prevMessages, data]); // Thêm message mới vào mảng hiện tại
+    });
+  
+    return () => {
+      channel.unbind_all();  // Dọn dẹp để tránh sự kiện bị gọi lại
+      channel.unsubscribe();
+    }
+  }, []);
    
   return (
     <Wrapper>
@@ -72,37 +110,7 @@ const MessageAdminComponent = () => {
                     <FontAwesomeIcon  icon={faCircleSolid} bounce style={{color: "#1fe31c", margin: '0 20px 0 0'}} />
                     </div>
 
-                    <div>
-                    <img src="OIP.jpg" alt="user" />
-                    <div className='user'>
-                        <p>Nguyen Anh Vu  sfafafdfsdfsdfsfsdfs</p>
-                        <span>tin nhan sdfsfsdfsfsdfdsfsd</span>
-                    </div>
-                    </div>
-
-                    <div>
-                    <img src="OIP.jpg" alt="user" />
-                    <div className='user'>
-                        <p>Nguyen Anh Vu  sfafafdfsdfsdfsfsdfs</p>
-                        <span>tin nhan sdfsfsdfsfsdfdsfsd</span>
-                    </div>
-                    </div>
-
-                    <div>
-                    <img src="OIP.jpg" alt="user" />
-                    <div className='user'>
-                        <p>Nguyen Anh Vu  sfafafdfsdfsdfsfsdfs</p>
-                        <span>tin nhan sdfsfsdfsfsdfdsfsd</span>
-                    </div>
-                    </div>
-                    <div>
-                    <img src="OIP.jpg" alt="user" />
-                    <div className='user'>
-                        <p>Nguyen Anh Vu  sfafafdfsdfsdfsfsdfs</p>
-                        <span>tin nhan sdfsfsdfsfsdfdsfsd</span>
-                    </div>
-                    </div>
-                    
+                   
                 </div>
             
              </WrapperMessages>
@@ -118,22 +126,16 @@ const MessageAdminComponent = () => {
       </div>
 
       <div className='main'>
-        <div>
-          <p className='mess'>
-            sadaafdsckasjbfdfhdsf
-            
-          </p>
-        </div>
-        <div>
-          <p className='mess'>
-           Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus tenetur culpa explicabo neque. Quam unde labore quaerat reiciendis totam temporibus fuga, quas laudantium nam minus quibusdam neque culpa magnam a!
-          </p>
-        </div>
-        <div>
-          <p className='mess'>
-           Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus tenetur culpa explicabo neque. Quam unde labore quaerat reiciendis totam temporibus fuga, quas laudantium nam minus quibusdam neque culpa magnam a!
-          </p>
-        </div>
+        {
+              messages.map((msg, index) => (
+                <div key={index} style={{justifyContent: msg.user_id === user.id ? 'flex-end' : 'flex-start' }}>
+                  <p className='mess'>
+                    {msg.message}
+                  </p>
+                </div>
+              ))
+            }
+        
         <div ref={endOfMessagesRef} /> 
       </div>
       
@@ -143,7 +145,7 @@ const MessageAdminComponent = () => {
           width: '100%',
         }}
       >
-        <Input onChange={(e) => setInputValue(e.target.value)} onPressEnter={handleSubmit} />
+        <Input value={messager} onChange={(e) => setMessager(e.target.value)} onPressEnter={handleSubmit} />
         <SendOutlined type="primary" onClick={handleSubmit}/>
       </Space.Compact>
       </div>

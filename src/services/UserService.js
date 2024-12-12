@@ -297,6 +297,26 @@ const deleteCart = async(checkedList) => {
       }
     },[apiUrl,token])
 
+    //////////////////////////////////////// CHAT MESSAGE /////////////////////////////////////////////////////////////////////
+
+    const messageUser = useCallback(async(data) => {
+      try{
+        const response = await axios.post(`${apiUrl}/messages`,
+          data,
+          {
+            
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}` 
+            }
+          })
+          return response
+      }
+      catch(error){
+        throw error
+      }
+    })
+
     return {
       getUser,
       user,
@@ -314,6 +334,7 @@ const deleteCart = async(checkedList) => {
       getAllComments,
       createFavourite,
       getAllFavourite,
-      deleteFavourite
+      deleteFavourite,
+      messageUser
     };
 }

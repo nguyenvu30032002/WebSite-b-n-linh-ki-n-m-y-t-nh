@@ -1,13 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Wrapper, WrapperMessage, WrappperImage } from './styleUser'
 import { CloseOutlined, SendOutlined } from '@ant-design/icons'
-import {  Space } from 'antd'
+import { message,Space } from 'antd'
 import Input from 'antd/es/input/Input'
+import UserService from '../../services/UserService'
+import Pusher from 'pusher-js'
 
 const MessageUserComponent = () => {
-  const [inputValue, setInputValue] = useState('');
+  const {user, messageUser} = UserService()
   const [openMessage, setOpenMessage] = useState(false)
   const endOfMessagesRef = useRef(null); // Tham chiếu đến phần tử cuối cùng của tin nhắn
+  const [messages, setMessages] = useState([])
+  const [messager, setMessager] = useState('')
 
   const handleOpenMessage = () => {
     setOpenMessage(true)
@@ -24,9 +28,43 @@ const MessageUserComponent = () => {
 /////////////////////////////////////////////////////////////////////////////////////////
 
   const handleSubmit = (e) => {
-    console.log('Giá trị Input:', inputValue);
+    e.preventDefault()
+    if(!user){
+      setMessager('')
+      message.error('Vui lòng đăng nhập')
+      
+    }
+    else{
+      const data = {
+        user_id : user.id,
+        message : messager
+      }
+      setMessager('')
+      messageUser(data)
+    }
   };
- 
+
+  // let allMessage = []
+  useEffect(() => {
+    Pusher.logToConsole = true;
+  
+    const pusher = new Pusher('4dda97803b66743534b3', {
+      cluster: 'eu'
+    });
+    
+    const channel = pusher.subscribe('chat');
+    channel.bind('message', function(data) {
+      // allMessage.push(data)
+      // setMessages(allMessage)
+      setMessages((prevMessages) => [...prevMessages, data]); // Thêm message mới vào mảng hiện tại
+    });
+  
+    return () => {
+      channel.unbind_all();  //  Xóa tất cả các listeners (sự kiện đã đăng ký) trên kênh chat. Điều này giúp tránh việc các sự kiện tiếp tục được gọi khi component đã bị hủy.
+      channel.unsubscribe();// Ngừng đăng ký kênh chat của Pusher. Điều này ngăn không cho nhận thêm tin nhắn khi component đã bị hủy hoặc không còn cần thiết.
+    }
+  }, []);
+
 
   return (
     <Wrapper>
@@ -47,22 +85,21 @@ const MessageUserComponent = () => {
           </div>
 
           <div className='main'>
-            <div>
-              <p className='mess'>
-                sadaafdsckasjbfdfhdsf
-                
-              </p>
-            </div>
-            <div>
-              <p className='mess'>
-               Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus tenetur culpa explicabo neque. Quam unde labore quaerat reiciendis totam temporibus fuga, quas laudantium nam minus quibusdam neque culpa magnam a!
-              </p>
-            </div>
-            <div>
-              <p className='mess'>
-               Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus tenetur culpa explicabo neque. Quam unde labore quaerat reiciendis totam temporibus fuga, quas laudantium nam minus quibusdam neque culpa magnam a!
-              </p>
-            </div>
+            {
+              messages.map((msg, index) => (
+                <div key={index} style={{justifyContent: msg.user_id === user.id ? 'flex-end' : 'flex-start' }}>
+                  <p className='mess'>
+                    {msg.message}
+                  </p>
+                </div>
+              ))
+            }
+                {/* <div style={{justifyContent: messages.user_id === user.id ? 'flex-end' : 'flex-start' }}>
+                  <p className='mess'>
+                   {messages.message}
+                  </p>
+                </div> */}
+               
             <div ref={endOfMessagesRef} /> 
           </div>
           
@@ -72,7 +109,7 @@ const MessageUserComponent = () => {
               width: '100%',
             }}
           >
-            <Input onChange={(e) => setInputValue(e.target.value)} onPressEnter={handleSubmit} />
+            <Input value={messager} onChange={(e) => setMessager(e.target.value)} onPressEnter={handleSubmit} />
             <SendOutlined type="primary" onClick={handleSubmit}/>
           </Space.Compact>
           </div>

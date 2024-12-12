@@ -80,12 +80,13 @@ export const WrapperMessage = styled.div`
         overflow-y: auto;
         display: flex;
         flex-direction: column;
+        
         & div{
             width: 100%;
             max-height: 500px;
             margin: 0px 0 20px 0;
             display: flex;
-            justify-content: end;
+            /* justify-content: end; */
             & .mess{
                 max-width: 230px;
                 max-height: 500px;
@@ -98,8 +99,8 @@ export const WrapperMessage = styled.div`
                 padding: 10px;
             } 
         }
-        & > div:last-child {
-            margin-top: auto;
+        & > div:first-child {
+            margin-top:  auto;
             margin-bottom: 20px;
             
         }
