@@ -317,6 +317,40 @@ const deleteCart = async(checkedList) => {
       }
     })
 
+    const getMessageUser = useCallback(async(id) => {
+      try{
+        const response = await axios.get(`${apiUrl}/getMessage/${id}`,
+          {
+            
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}` 
+            }
+          })
+          return response.data
+      }catch(error)
+      {
+        throw error
+      }
+    }, [apiUrl,token])
+
+    const readMessage = useCallback(async(id) => {
+      try{
+        const response = await axios.get(`${apiUrl}/readMessage/${id}`,
+          {
+            
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}` 
+            }
+          })
+          return response
+      }
+      catch(error){
+        throw error
+      }
+    })
+
     return {
       getUser,
       user,
@@ -335,6 +369,8 @@ const deleteCart = async(checkedList) => {
       createFavourite,
       getAllFavourite,
       deleteFavourite,
-      messageUser
+      messageUser,
+      getMessageUser,
+      readMessage
     };
 }

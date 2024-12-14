@@ -128,7 +128,7 @@ const Information = () => {
 
           <div>
             <label>Nickname: </label>
-            <input type="text" name='name' value={user.name || ''} onChange={handleInputChange} />
+            <input type="text" name='name' value={user.name || ''} onChange={handleInputChange} placeholder='Nickname'/>
           </div>
 
           <div>
@@ -156,7 +156,7 @@ const Information = () => {
 
           <div>
             <label>Địa chỉ: </label>
-            <input type="text" name='address' value={user.address || ''} onChange={handleInputChange} />
+            <input type="text" name='address' value={user.address || ''} onChange={handleInputChange} placeholder='Địa chỉ'/>
           </div>
 
           <div className='button'>

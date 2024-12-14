@@ -6,27 +6,27 @@ import { Button, Checkbox, InputNumber, message, Radio } from 'antd';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import UserService from '../../services/UserService';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
-import AuthUser from '../../services/AuthUser';
 
 const Cart = () => {
   const {user, getCart, updateCart, orderCart, deleteCart} = UserService();
-  const {getUser} = AuthUser();
   const [checkedList, setCheckedList] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedCarts, setSelectedCarts] = useState([]);
   const [value, setValue] = useState(null);
   const [carts,  setCarts] = useState([]);
 
- const fetchCart = useCallback(async() => {
-    const data = await getCart(user.id)
-    setCarts(data)
- },[getCart, user.id])
-
- useEffect(() => {
-  if(getUser()){
-    fetchCart()
-  }
- }, [fetchCart, getUser])
+  const fetchCart = useCallback(async () => {
+    if (user && user.id) {
+      const data = await getCart(user.id);
+      setCarts(data);
+    }
+  }, [user, getCart]); 
+  
+  useEffect(() => {
+    if (user && user.id) { 
+      fetchCart(); 
+    }
+  }, [fetchCart, user]);
 
    // Lưu trạng thái các sản phẩm đã chọn
   const cartOptions = carts.map((cart) => cart.id);

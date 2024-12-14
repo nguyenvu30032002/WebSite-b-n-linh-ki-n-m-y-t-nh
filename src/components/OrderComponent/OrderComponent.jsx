@@ -168,10 +168,10 @@ const OrderComponent = ({ selectedOrderStatus }) => {
           </WrapperInformation>
           <WrapperUser>
                 <div>
-                  <p className='name'>Tới:<span>dsuifdsgfuafsssssssssafs</span></p>
-                  <p>Số điện thoại:<span>004359334508477</span></p>
+                  <p className='name'>Tới:<span>{order.userName}</span></p>
+                  <p className='phone'>Số điện thoại:<span>{order.phone}</span></p>
                 </div>
-                <p className='address'>Địa chỉ: <span> xom 3 thon lang trung xa trung an huyen vu thu tinh thai binh</span></p>
+                <p className='address'>Địa chỉ: <span> {order.address}</span></p>
             </WrapperUser>
           {
             order.condition === 'Chờ xác nhận' ? (

@@ -7,26 +7,22 @@ import UserService from '../../services/UserService';
 const CartComponent = () => {
   const {getToken} = AuthUser();
   const [carts, setCarts] = useState([]);
-  const {user,getCart} = UserService();
-  const [isCartLoaded, setIsCartLoaded] = useState(false); 
+  const {user, getCart} = UserService();
 
   const fetchCarts = useCallback(async() => {
     try {
-      if (user && !isCartLoaded) { // Chỉ gọi khi có `user` và chưa tải giỏ hàng
-        const dataCarts = await getCart();
+      if (user) { 
+        const dataCarts = await getCart(user.id);
         setCarts(dataCarts || []);
-        setIsCartLoaded(true); // Đánh dấu giỏ hàng đã được tải
       }
     } catch (error) {
       throw error
     }
-  }, [getCart, user, isCartLoaded])
+  }, [getCart, user])
 
   useEffect(() => {
     fetchCarts();
   }, [fetchCarts]);
-  // const cartLength = useMemo(() => carts.length, [carts]);
-
   return (
     <Wrapper> 
           {

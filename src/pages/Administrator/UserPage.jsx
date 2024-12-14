@@ -52,8 +52,7 @@ const fetchUser = useCallback(async() => {
 }, [getUser, searchTerm])
 
 useEffect(() => {
-
-  
+  fetchUser()
 }, [fetchUser])
 
   const dataSource = users.map((user) => ({
@@ -211,7 +210,7 @@ return (
             <div className='user'>
                 {
                   selectedUser.avatar !== null ?(
-                    <img src={selectedUser.imgProduct} alt={selectedUser.nameProduct} />
+                    <img src={selectedUser.avatar} alt={selectedUser.name} />
                   ) : (
                     <img src={img} alt="null" />
                   )

@@ -394,7 +394,7 @@ const handleUpdate = () => {
               <div className='user'>
                   {
                     selectedAdmin.avatar !== null ?(
-                      <img src={selectedAdmin.imgProduct} alt={selectedAdmin.nameProduct} />
+                      <img src={selectedAdmin.avatar} alt={selectedAdmin.name} />
                     ) : (
                       <img src={img} alt="null" />
                     )

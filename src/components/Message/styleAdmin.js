@@ -14,8 +14,6 @@ export const WrappperImage = styled.div`
         width: 70px;
         height: 70px;
         cursor: pointer;
-        border: 1px solid #ccc;
-
     }
     & div{
         width: 30px;

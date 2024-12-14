@@ -138,8 +138,18 @@ export const WrapperUser = styled.div`
         justify-content: space-evenly;
         & .name{
             display: flex;
-            width: 450px;
+            min-width: 450px;
             float: left;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            margin: 0 0 0 10px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        & .phone{
+            min-width: 250px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -150,6 +160,9 @@ export const WrapperUser = styled.div`
         margin: 0 0 0 24px;
         display: flex;
         float: left;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
     & p{
         font-weight: 500;
