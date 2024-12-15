@@ -530,6 +530,93 @@ const deleteVariants = async(selectedRowKeys) =>{
     }
 }
 
+///////////////////////////////////////////// GET MESSAGE USER ////////////////////////////////////////////////////////////////
+
+const getMessageUser = useCallback(async() => {
+    try{
+        const response = await axios.get(`${apiUrl}/getMessageUser`,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
+                },
+            })
+        return response.data
+    }
+    catch(error){
+        throw error
+    }
+},[token,apiUrl])
+
+const getUserMessage = useCallback(async(id) => {
+    try{
+      const response = await axios.get(`${apiUrl}/getUserMessage/${id}`,
+        {
+          
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
+        })
+        return response.data
+    }catch(error)
+    {
+      throw error
+    }
+  }, [apiUrl,token])
+
+  const readMessage = useCallback(async(id) => {
+    try{
+      const response = await axios.get(`${apiUrl}/readMessage/${id}`,
+        {
+          
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
+        })
+        return response
+    }
+    catch(error){
+      throw error
+    }
+  },[apiUrl, token])
+
+  const sendMessageAdmin = useCallback(async(data) => {
+    try{
+      const response = await axios.post(`${apiUrl}/sendMessage`,
+        data,
+        {
+          
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
+        })
+        return response
+    }
+    catch(error){
+      throw error
+    }
+  }, [apiUrl,token])
+
+  const notReadMessage = useCallback(async() => {
+    try{
+      const response = await axios.get(`${apiUrl}/notReadMessage`,
+        {
+          
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
+        })
+        return response.data
+    }
+    catch(error){
+      throw error
+    }
+  },[apiUrl, token])
+
 
     return{
         createAdmin,
@@ -556,6 +643,11 @@ const deleteVariants = async(selectedRowKeys) =>{
         createVariants,
         getVariants,
         updateVariants,
-        deleteVariants
+        deleteVariants,
+        getMessageUser,
+        getUserMessage,
+        readMessage,
+        sendMessageAdmin,
+        notReadMessage
     }
 }

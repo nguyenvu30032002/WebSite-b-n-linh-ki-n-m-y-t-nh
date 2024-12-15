@@ -4,7 +4,7 @@ import { ProductSimilar, Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, W
 import Footer from "../../parts/Footer/Footer";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faCartShopping, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faCartShopping, faMinus, faPlus, faShare } from '@fortawesome/free-solid-svg-icons';
 import { Button, Image, Input, message, Pagination, Radio, Rate, Upload} from 'antd';
 import UserService from '../../services/UserService';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
@@ -19,7 +19,7 @@ const Product = () => {
     const location = useLocation();
     const product = location.state?.product;
     const navigate = useNavigate(); 
-    const { userOrder, userCart, user, createComment,getAllComments, createFavourite, getAllFavourite, deleteFavourite} = UserService();
+    const { userOrder, userCart, user, createComment,getAllComments, createFavourite, getAllFavourite, deleteFavourite, messageUser} = UserService();
     const {getProductSimilar} = ProductService()
     const {getUser} = AuthUser()
     const [amount, setAmount] = useState(1);
@@ -130,6 +130,20 @@ useEffect(() => {
     fetchFavourite()
   }
 }, [fetchFavourite, user])
+
+//////////////////////////////////////////
+
+const handleShareMessage = () => {
+  if(user)
+  {
+    const data = {
+      user_id : user.id,
+      product_id : product.id
+    }
+    message.success('Gửi nhân viên thành công')
+    messageUser(data)
+  }
+}
 
 /////////////////////////////////////////////////////////
 
@@ -364,14 +378,18 @@ return (
                       <div>
                       <Image className='img' onClick={handleZoom}  preview={{ visible: zoom , onVisibleChange:handlePreviewClose }} src={`http://localhost:3000/${product.image}`} alt={product.name} />
                       {/* <img src={product.image} alt={product.name} onError={() => console.error('Error loading image')} /> */}
+                      
                       </div>
                     </WrapperCarousel>
+                    <FontAwesomeIcon title="Gửi cho nhân viên" onClick={handleShareMessage} icon={faShare} style={{color: '#0B89EA', position: 'absolute', zIndex: '10', right: '0', top: '0', margin: '10px 10px 0 0 ', fontSize: '25px', cursor: 'pointer'}}/>
                     </WrapperImg>
                     <WrapperProduct>
                       <WrapperProductName>
                          <p>
                             {product.name}
+                            
                          </p>
+                         
                       </WrapperProductName>
                       <WrapperRate>
                         {

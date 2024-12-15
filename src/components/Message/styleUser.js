@@ -95,7 +95,71 @@ export const WrapperMessage = styled.div`
                 text-align: left;
                 border-radius: 15px;
                 padding: 10px;
-            } 
+            }
+            
+            & .product {
+                max-width: 280px;
+                max-height: 500px;
+                background-color: hsla(0, 0%, 91%, .5);
+                margin: 0 25px 0 25px;
+                overflow-wrap: break-word;
+                box-sizing: border-box;
+                border-radius: 15px;
+                padding: 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid #ccc;
+                & .product_info{
+                    min-width: 250px;
+                    display: flex;
+                    justify-content: start;
+                    align-items: start;
+                    border: 1px solid #ccc;
+                    width: 150px;
+                    margin: 10px;
+                    background-color: #fff;
+                    & img{
+                    width: 80px;
+                    height: 80px;
+                    }
+                    & .name_price{
+                    display: flex;
+                    flex-direction: column;
+                    /* border: none; */
+                    /* background-color: red; */
+                    & .name{
+                        width: 150px;
+                        display: -webkit-box;
+                        -webkit-box-orient: vertical; 
+                        -webkit-line-clamp: 1;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        text-align: left;
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #333e48;
+                    }
+                    & .oldPrice{
+                        width: 130px;
+                        color: #ccc;
+                        font-weight: 600;
+                        font-size: 15px;
+                        text-decoration: line-through;
+                        text-align: left;
+                    }
+                    & .newPrice{
+                        width: 130px;
+                        color: #d70018;
+                        font-weight: 600;
+                        font-size: 15px;
+                        text-align: left;
+                    }
+                    }
+                
+                }
+                
+            }
         }
         & > div:first-child {
             margin-top:  auto;

@@ -39,6 +39,7 @@ export const WrapperImg = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 `
 
 export const WrapperCarousel = styled(Carousel)`
@@ -242,20 +243,15 @@ export const WrapperAmount = styled.div`
 export const WrapperOrder = styled.div`
     width: 100%;
     height: 70px;
-    /* background-color: green; */
     display: flex;
     align-items: center;
     margin: 25px 0 25px 25px;
     & .OrderProduct{
         width: 150px;
         height: 50px;
-        margin: 0 20px 0 0;
-        
-}
-
-    & .cartProduct{
-
+        margin: 0 20px 0 0;    
     }
+
 
     & button:focus {
         border-color: #ccc;

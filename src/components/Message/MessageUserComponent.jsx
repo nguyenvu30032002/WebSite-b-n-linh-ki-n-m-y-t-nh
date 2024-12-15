@@ -14,7 +14,7 @@ const MessageUserComponent = () => {
   const endOfMessagesRef = useRef(null); // Tham chiếu đến phần tử cuối cùng của tin nhắn
   const [messages, setMessages] = useState([])
   const [messager, setMessager] = useState('')
-  const [getMessages, setGetMessage] = useState([])
+  const [getMessages, setGetMessages] = useState([])
   const [isLoading, setIsLoading] = useState(true);
 
   const handleOpenMessage = () => {
@@ -40,6 +40,10 @@ const MessageUserComponent = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (!messager.trim()) {
+      message.error('Tin nhắn không được để trống');
+      return; // Dừng hàm nếu điều kiện không đạt
+    }
     if(!user){
       setMessager('')
       message.error('Vui lòng đăng nhập')
@@ -85,7 +89,7 @@ const MessageUserComponent = () => {
  const fetchMessageUser = useCallback(async() => {
   try{
     const data = await getMessageUser(user.id)
-    setGetMessage(data)
+    setGetMessages(data)
   }
   catch(error){
     throw error
@@ -107,9 +111,6 @@ const MessageUserComponent = () => {
   }
   catch(error){
     throw error
-  }
-  finally {
-    setIsLoading(false); 
   }
  }, [readMessage,user.id])
 
@@ -149,16 +150,34 @@ const MessageUserComponent = () => {
                   <FontAwesomeIcon icon={faSpinner} spin  style={{color: "#74C0FC", fontSize: '40px'}}  />
               </div>
               
-             ) : getMessages.length === 0 ? (
+             ) : getMessages.length === 0 &&  messages.length === 0 ? (
                 <div style={{width: '100%', height: '100%', display: 'flex', justifyContent:' center', alignItems: 'center'}}>
                   <p>Không có tin nhắn</p>
                 </div>
             ) :  (
               getMessages.map((msg, index) => (
                 <div key={index} style={{justifyContent: msg.is_from_user ? 'flex-end' : 'flex-start' }}>
-                  <p className='mess'>
-                    {msg.message}
-                  </p>
+                  {
+                    (msg?.message) && (
+                      <p className='mess'>
+                        {msg.message}
+                      </p>
+                    )
+                  }
+                 {
+                  (msg?.product_id) && (
+                    <div className='product'>
+                        <div className='product_info'>
+                          <img src={msg.created_by_product.image} alt="" />
+                          <div className='name_price'>
+                            <span className='name'>{msg.created_by_product.name}</span>
+                            <span className='oldPrice'>{Number(msg.created_by_product.price).toLocaleString('vi-VN')}</span>
+                            <span className='newPrice'>{Number((msg.created_by_product.price) - (msg.created_by_product.price * (msg.created_by_product.discount / 100))).toLocaleString('vi-VN')}</span>
+                          </div>
+                        </div>
+                    </div>
+                  )
+                 }
                 </div>
               ))
              )
