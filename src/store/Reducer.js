@@ -1,7 +1,7 @@
 
 const initialState = {
     searchTerm: '',  // Khai báo giá trị mặc định cho searchTerm
-    // carts: [],
+    carts: 0,
     product: '',
 };
 
@@ -13,11 +13,11 @@ const searchReducer = (state = initialState, action) => {
                 ...state,          // Giữ nguyên state cũ
                 searchTerm: action.payload,   // Cập nhật giá trị tìm kiếm với payload từ action
             };
-        // case 'SET_CARTS':  
-        //     return {
-        //         ...state,
-        //         carts: action.payload,
-        // }; 
+        case 'SET_CARTS':  
+            return {
+                ...state,
+                carts: action.payload,
+        }; 
         case 'ID_PRODUCT':
             return{
                 ...state,

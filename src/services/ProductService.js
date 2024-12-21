@@ -18,18 +18,18 @@ export default function ProductService() {
         }
     }, [apiUrl]); 
 
-    // const getProduct = useCallback(async(id_product) => {
-    //     try{
-    //         const response = await axios.get(`${apiUrl}/product/getOne/${id_product}`,{
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //         })
-    //         return response.data
-    //     }catch(error) {
-    //         throw error
-    //     }
-    // }, [apiUrl])
+    const getProduct = useCallback(async(id_product) => {
+        try{
+            const response = await axios.get(`${apiUrl}/product/getOne/${id_product}`,{
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            return response.data
+        }catch(error) {
+            throw error
+        }
+    }, [apiUrl])
 
     const getProductSimilar = useCallback(async(product) => {
         try{
@@ -62,7 +62,7 @@ export default function ProductService() {
 
     return {
         getAllProduct,
-        // getProduct,
+        getProduct,
         getProductSimilar,
         getAllCategories,
         

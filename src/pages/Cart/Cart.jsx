@@ -6,6 +6,10 @@ import { Button, Checkbox, InputNumber, message, Radio } from 'antd';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import UserService from '../../services/UserService';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
+import { setCart } from '../../store/Action';
+import { useDispatch } from 'react-redux';
+
+
 
 const Cart = () => {
   const {user, getCart, updateCart, orderCart, deleteCart} = UserService();
@@ -14,13 +18,15 @@ const Cart = () => {
   const [selectedCarts, setSelectedCarts] = useState([]);
   const [value, setValue] = useState(null);
   const [carts,  setCarts] = useState([]);
+  const dispatch = useDispatch();
 
   const fetchCart = useCallback(async () => {
     if (user && user.id) {
       const data = await getCart(user.id);
       setCarts(data);
+      dispatch(setCart(data.length));
     }
-  }, [user, getCart]); 
+  }, [user, getCart,dispatch]); 
   
   useEffect(() => {
     if (user && user.id) { 

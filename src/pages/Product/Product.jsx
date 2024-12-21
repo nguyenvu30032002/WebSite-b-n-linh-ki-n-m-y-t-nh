@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Header from "../../parts/Header/Header";
 import { ProductSimilar, Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperComment, WrapperConditionSimilar, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPaginate, WrapperPrice, WrapperPriceSimilar, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperRateSimilar, WrapperSimilar } from "./style";
 import Footer from "../../parts/Footer/Footer";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCartShopping, faMinus, faPlus, faShare } from '@fortawesome/free-solid-svg-icons';
 import { Button, Image, Input, message, Pagination, Radio, Rate, Upload} from 'antd';
@@ -11,17 +11,17 @@ import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { CameraOutlined, HeartFilled} from '@ant-design/icons';
 import ProductService from '../../services/ProductService';
 import AuthUser from '../../services/AuthUser';
-
+import { setCart } from '../../store/Action';
+import { useDispatch } from 'react-redux';
 
 
 const Product = () => {
-  
-    const location = useLocation();
-    const product = location.state?.product;
+
+    const { id} = useParams();
     const navigate = useNavigate(); 
-    const { userOrder, userCart, user, createComment,getAllComments, createFavourite, getAllFavourite, deleteFavourite, messageUser} = UserService();
-    const {getProductSimilar} = ProductService()
-    const {getUser} = AuthUser()
+    const { userOrder, userCart, createComment,getAllComments, createFavourite, getAllFavourite, deleteFavourite, messageUser, getCart} = UserService();
+    const {getProductSimilar, getProduct} = ProductService()
+    const {getUser, user} = AuthUser()
     const [amount, setAmount] = useState(1);
     const [valueRadio, setValueRadio] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +36,24 @@ const Product = () => {
     const [dataComment, setDataComment] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [favourite, setFavourite] = useState([])
+    const [product, setProduct] = useState([])
+    const dispatch = useDispatch();
 
+    ////////////////////////////////////////////////////////////////
+
+    const fetchProduct = useCallback(async() => {
+      try{
+        const data = await getProduct(id)
+        setProduct(data)
+      }
+      catch(error){
+        throw error
+      }
+    },[getProduct, id])
+
+    useEffect(() => {
+      fetchProduct()
+    }, [fetchProduct])
   
   const itemsPerPage = 3;
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -143,6 +160,9 @@ const handleShareMessage = () => {
     message.success('Gửi nhân viên thành công')
     messageUser(data)
   }
+  else{
+    message.error('Vui lòng đăng nhập')
+  }
 }
 
 /////////////////////////////////////////////////////////
@@ -238,6 +258,21 @@ const handleShareMessage = () => {
 
 ////////////////////////////////////////////// CART ////////////////////////////////////////////////
 
+const fetchCarts = useCallback(async() => {
+    try {
+      if (user) { 
+        const dataCarts = await getCart(user.id);
+        dispatch(setCart(dataCarts.length));
+      }
+    } catch (error) {
+      throw error
+    }
+  }, [getCart, user, dispatch])
+
+  useEffect(() => {
+    fetchCarts();
+  }, [fetchCarts]);
+
     const handleCart = () => {
       if(!(getUser())){
         navigate('/login')
@@ -262,6 +297,7 @@ const handleShareMessage = () => {
         const data = reponse.data
         if(data){
           setAmount(1)
+          fetchCarts()
           message.success('Thêm vào giỏ hàng thành công')
         }
         else{
@@ -478,7 +514,7 @@ return (
                           }
                         </WrapperAmount>
                         <WrapperOrder>
-                          <Button className='OrderProduct' type="primary" onClick={showModal} >Đặt hàng</Button>
+                          <Button className='OrderProduct' type="primary" onClick={showModal} >Mua hàng</Button>
                           <Button className='cartProduct' type="primary" danger><FontAwesomeIcon icon={faCartShopping} onClick={handleCart}/></Button>
                         </WrapperOrder>
                   </WrapperProduct>

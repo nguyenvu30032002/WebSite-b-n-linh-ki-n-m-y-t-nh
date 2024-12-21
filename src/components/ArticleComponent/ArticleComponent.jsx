@@ -53,6 +53,7 @@ import UserService from '../../services/UserService';
     const navigate = useNavigate();
     const handleClick = (product) => {
         window.scrollTo(0, 0);
+        localStorage.setItem('redirectAfterLogin', `/product/id/${product.id}/name/${encodeURIComponent(product.name)}`);
         navigate(`/product/id/${product.id}/name/${encodeURIComponent(product.name)}`, { state: { product } });
         
     }

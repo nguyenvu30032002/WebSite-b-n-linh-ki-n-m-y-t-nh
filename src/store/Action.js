@@ -4,10 +4,10 @@ export const setSearchTerm = (value) => ({
     payload: value,            // Dữ liệu bạn muốn cập nhật vào store (ở đây là giá trị tìm kiếm)
 });
 
-// export const setCarts = (value) => ({
-//     type: 'SET_CARTS',
-//     payload: value
-// })
+export const setCart = (value) => ({
+    type: 'SET_CARTS',
+    payload: value
+})
 
 export const setProduct = (value) => ({
         type: 'ID_PRODUCT',

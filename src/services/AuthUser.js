@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import { message } from "antd";
 
@@ -8,6 +8,7 @@ export default function AuthUser() {
     const apiUrl = process.env.REACT_APP_API_URL;
     const secretKey  = process.env.REACT_APP_SECRET_KEY;
     const navigate = useNavigate();
+
     const getToken = () => {
         const tokenString = sessionStorage.getItem('token');
         return tokenString ? JSON.parse(tokenString) : null;
@@ -82,8 +83,7 @@ export default function AuthUser() {
         return null; 
    };
  
-     const [user, setUser] = useState(getUser());
- 
+    const [user, setUser] = useState(getUser());
      const saveUser = (userData) => {
        const encryptedUser = CryptoJS.AES.encrypt(JSON.stringify(userData), secretKey).toString(); // Mã hóa
         sessionStorage.setItem('user', encryptedUser); 
@@ -91,7 +91,9 @@ export default function AuthUser() {
         if(userData.role === 'User'){
             message.success('Đăng nhập thành công')
             setTimeout(() => {
-                navigate('/');
+                const redirectPath = localStorage.getItem('redirectAfterLogin') || '/'; 
+                localStorage.removeItem('redirectAfterLogin');
+                navigate(redirectPath);
             }, 500);
         }
         else{
