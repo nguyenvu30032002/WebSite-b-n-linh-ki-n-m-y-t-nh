@@ -155,9 +155,7 @@ const createProduct = async(formData) => {
                inventory: formData.inventory,
                origin: formData.origin,
                price: formData.price,
-               productType: formData.productType,
-               variant: formData.variant,
-              
+               productType: formData.productType,              
         },
         {
             headers: {
@@ -458,8 +456,9 @@ const createVariants = async(values, admin_id) => {
         const response = await axios.post(`${apiUrl}/createVariants`, 
         {
             name: values.name,
-            categories_id: values.categories_id,
-            admin_id: admin_id
+            product_id: values.product_id,
+            admin_id: admin_id,
+            price: values.price
         },
         {
             headers: {

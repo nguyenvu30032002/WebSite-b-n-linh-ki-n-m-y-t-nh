@@ -22,9 +22,13 @@ const columns = [
     },
 
     {
-        title: 'Created_by_Category',
-        dataIndex: 'created_by_Category',
-      },
+        title: 'Created_by_Product',
+        dataIndex: 'created_by_Product',
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+  },
 
     {
       title: 'Created_at',
@@ -68,26 +72,25 @@ const Variants = () => {
     const [showWrapperToggle, setShowWrapperToggle] = useState(false);
     const [selectedVariants, setSelectedVariants] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
     const [variants, setVariants] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const {createVariants, getVariants, updateVariants, deleteVariants, getCategories} = AdminService()
+    const {createVariants, getVariants, updateVariants, deleteVariants, getProduct} = AdminService()
     const {user} = AuthUser()
   
-    const fetchCategories = useCallback(async() => {
-      try{
-          const dataCategories = await getCategories()
-          setCategories(dataCategories)
-      }
-      catch(error){
-          throw error
-      }
-  }, [getCategories])
-  
-  useEffect(() => {
+    const fetchProduct = useCallback(async() =>{
+              try{
+                const dataProduct = await getProduct()
+                setProducts(dataProduct)
+            }
+            catch(error){
+                throw error
+            }
+        },[getProduct])
     
-    fetchCategories();
-  }, [fetchCategories])
+        useEffect(() => {
+          fetchProduct()
+        },[fetchProduct])
 
   const fetchVariants = useCallback(async() => {
     try{
@@ -108,8 +111,9 @@ useEffect(() => {
       key: variant.id,
       name: variant.name,
       created_by_Admin: variant.created_by.name, 
-      created_by_Category: variant.created_by_category.name,
-      id_category: variant.created_by_category.id,
+      created_by_Product: variant.created_by_product.name,
+      id_product: variant.created_by_product.id,
+      price: `${Number(variant.price).toLocaleString('vi-VN')}đ`,
       created_at: new Date(variant.created_at).toISOString().slice(0, 19).replace('T', ' '), // Định dạng ngày
       updated_at: new Date(variant.updated_at).toISOString().slice(0, 19).replace('T', ' '), // Định dạng ngày
     }));
@@ -236,43 +240,43 @@ useEffect(() => {
   
   
   const handleUpdate = () => {
-    const data = { ...selectedVariants };
+    // const data = { ...selectedVariants };
 
-    // Nếu giá trị mới trùng với giá trị cũ, sử dụng id_category
-    if (data.created_by_Category === data.created_by_category) {
-        data.created_by_Category = data.id_category; // Thay đổi giá trị mới thành id_category
-    }
+    // // Nếu giá trị mới trùng với giá trị cũ, sử dụng id_category
+    // if (data.created_by_Category === data.created_by_category) {
+    //     data.created_by_Category = data.id_category; // Thay đổi giá trị mới thành id_category
+    // }
 
-    const admin_id = user.id;
-    updateVariants(data, admin_id)
-        .then((response) => {
-            if (response.data.message === 'already existed') {
-                fetchVariants();
-                message.error('Biến thể đã tồn tại');
-                setShowWrapperToggle(false);
-            } else if (response.data.message === 'success') {
-                fetchCategories();
-                message.success('Thay đổi thành công');
-                setIsModalOpen(false);
-            } else {
-                fetchCategories();
-                message.error('Thay đổi thất bại');
-                setIsModalOpen(false);
-            }
-        })
-        .catch((error) => {
-            fetchCategories();
-            message.error('Có lỗi xảy ra, vui lòng thử lại!');
-            setIsModalOpen(false);
-        });
+    // const admin_id = user.id;
+    // updateVariants(data, admin_id)
+    //     .then((response) => {
+    //         if (response.data.message === 'already existed') {
+    //             fetchVariants();
+    //             message.error('Biến thể đã tồn tại');
+    //             setShowWrapperToggle(false);
+    //         } else if (response.data.message === 'success') {
+    //             fetchCategories();
+    //             message.success('Thay đổi thành công');
+    //             setIsModalOpen(false);
+    //         } else {
+    //             fetchCategories();
+    //             message.error('Thay đổi thất bại');
+    //             setIsModalOpen(false);
+    //         }
+    //     })
+    //     .catch((error) => {
+    //         fetchCategories();
+    //         message.error('Có lỗi xảy ra, vui lòng thử lại!');
+    //         setIsModalOpen(false);
+    //     });
   };
   
 ///////////////////////////////////////////////////////////////////
 
-const optionsType = categories.map((category) => ({
-    key: category.id,
-    label: category.name,
-    value: category.id,
+const optionsType = products.map((product) => ({
+    key: product.id,
+    label: product.name,
+    value: product.id,
   }));
 
   return (
@@ -329,16 +333,31 @@ const optionsType = categories.map((category) => ({
                 </Form.Item>
               
                 <Form.Item
-                    name='categories_id'
-                    rules={[{ required: true, message: 'Please select a product type!' }]}
+                    name='product_id'
+                    rules={[{ required: true, message: 'Please select a product!' }]}
                 >
                     <Select
-                        placeholder="Loại sản phẩm"
+                        placeholder="Sản phẩm"
                         options={optionsType}
-                        style={{width:'150px'}}
+                        style={{width:'250px'}}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option?.label.toLowerCase().includes(input.toLowerCase())
+                        }
                     />
                 </Form.Item>
-
+                <Form.Item
+                        name="price"
+                        rules={[{ required: true, message: 'Input Price!' },
+                          { max: 15, message: 'Price must be at most 15 characters.' },
+                          {
+                            pattern: /^[0-9]*$/, // Chỉ cho phép số
+                            message: 'Price must be numeric!', // Thông báo lỗi nếu không phải là số
+                          },
+                        ]}
+                      >
+                      <Input style={{width: '250px'}} placeholder='Giá sản phẩm' />
+                  </Form.Item>
                 <Form.Item {...tailFormItemLayout}>
                   <Button type="primary" htmlType="submit">
                     Add new
@@ -361,22 +380,31 @@ const optionsType = categories.map((category) => ({
         </Button>
           
         ]} >
-          {selectedVariants ? (
-            <input type="text" name='name' value={selectedVariants.name || ''}  onChange={updateData} />
-          ) : null
-          }
+          {
+          selectedVariants ? (
+            <>
+              <Input type="text" name='name' value={selectedVariants.name || ''}  onChange={updateData} />
             <Select
-                // placeholder={selectedVariants.created_by_Category}
                 options={optionsType}
-                style={{width:'150px'}}
-                value={selectedVariants.created_by_Category}
+                style={{width:'350px'}}
+                value={selectedVariants.created_by_Product}
                 onChange={(value) => {
                     setSelectedVariants((prevState) => ({
                         ...prevState,
-                        created_by_Category: value, // Cập nhật giá trị loại sản phẩm
+                        created_by_Product: value, // Cập nhật giá trị loại sản phẩm
                     }));
                 }}
+                showSearch
+                  filterOption={(input, option) =>
+                  option?.label.toLowerCase().includes(input.toLowerCase())
+                  }
             />
+            <Input style={{width: '350px'}} value={selectedVariants.price} onChange={updateData} placeholder='Giá sản phẩm' />
+            
+            </>
+          ) : null
+          }
+            
         </WrapperModal>
   
       </>

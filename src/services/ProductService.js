@@ -60,11 +60,27 @@ export default function ProductService() {
         }
     }, [apiUrl]); 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const getAllVariants = useCallback(async () => {
+    try {
+        const response = await axios.get(`${apiUrl}/variants/getAll`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}, [apiUrl]); 
+
+
     return {
         getAllProduct,
         getProduct,
         getProductSimilar,
         getAllCategories,
-        
+        getAllVariants
     }
 }   

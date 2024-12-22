@@ -325,7 +325,7 @@ const handleUpdate = () => {
           </WrapperToggleShow>
       )}
     
-      <WrapperModal title="Loại sản phẩm" maskClosable={isModalOpen} closable={false} onCancel={isClose} open={isModalOpen}  footer={[
+      <WrapperModal title="Nhà cung cấp" maskClosable={isModalOpen} closable={false} onCancel={isClose} open={isModalOpen}  footer={[
         <Button key="update" type="primary" onClick={handleUpdate}>
         Cập nhật
       </Button>,

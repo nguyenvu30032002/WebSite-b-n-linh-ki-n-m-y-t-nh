@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Header from "../../parts/Header/Header";
-import { ProductSimilar, Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperComment, WrapperConditionSimilar, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPaginate, WrapperPrice, WrapperPriceSimilar, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperRateSimilar, WrapperSimilar } from "./style";
+import { ProductSimilar, Wrapper, WrapperAmount, WrapperBody, WrapperCarousel, WrapperComment, WrapperConditionSimilar, WrapperDescription, WrapperHeader, WrapperImg, WrapperModal, WrapperOrder, WrapperOrigin, WrapperPaginate, WrapperPrice, WrapperPriceSimilar, WrapperProduct, WrapperProductInformation, WrapperProductName, WrapperRate, WrapperRateSimilar, WrapperSimilar, WrapperVariants } from "./style";
 import Footer from "../../parts/Footer/Footer";
 import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -101,7 +101,8 @@ const Product = () => {
       fetchComments()
     },[fetchComments])
 
-//////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////
 
 const handleHeart = (product) => {
   if (getUser()) {
@@ -133,13 +134,18 @@ const handleHeart = (product) => {
 
 const fetchFavourite = useCallback(async() => {
   try{
+    
+    // if(user){
+    //   const data = await getAllFavourite(user.id)
+    //   setFavourite(data)
+    // }
     const data = await getAllFavourite(user.id)
     setFavourite(data)
   }
   catch(error){
     throw error
   }
-},[getAllFavourite, user.id])
+},[getAllFavourite, user])
 
 useEffect(() => {
   if(user){
@@ -329,7 +335,6 @@ const handleRateChange = (value) => {
     message.error('Vui lòng đăng nhập để đánh giá sản phẩm');
   }
 };
-
 const handleUploadChange = ({ fileList: newFileList }) => {
   if (user) {
     const imgComment = newFileList?.length
@@ -402,6 +407,22 @@ const handleUploadChange = ({ fileList: newFileList }) => {
     }
   };
 
+///////////////////////////////////////////////////////////////////////////////////////
+
+const [selectedVariantPrice, setSelectedVariantPrice] = useState(null);
+const [selectedVariant, setSelectedVariant] = useState(null);
+
+const handleVariantClick = (variant) => {
+  setSelectedVariant(variant); // Cập nhật variant được chọn
+  setSelectedVariantPrice(variant.price); // Cập nhật giá của variant khi click
+};
+  useEffect(() => {
+    if (product.variants && product.variants.length > 0) {
+      setSelectedVariant(product.variants[0]); // Chọn variant đầu tiên
+      setSelectedVariantPrice(product.variants[0].price); // Cập nhật giá của variant đầu tiên
+    }
+  }, [product]);
+
 return (
     <Wrapper>
             <WrapperHeader>
@@ -425,8 +446,26 @@ return (
                             {product.name}
                             
                          </p>
-                         
                       </WrapperProductName>
+                      {
+                        product.variants && product.variants.length > 0 && (
+                          <WrapperVariants>
+                            {
+                              product.variants.map((variant) => (
+                                <Button key={variant.id} onClick={() => handleVariantClick(variant)} 
+                                style={{
+                                  marginRight: '8px',
+                                  color: selectedVariant && selectedVariant.id === variant.id ? '#1677ff' : '', // Nút được chọn sẽ có màu nền khác
+                                  border: selectedVariant && selectedVariant.id === variant.id ? '1px solid #1677ff' : '', // Nút được chọn sẽ có border xanh
+                                }}
+                                >{
+                                  variant.name}
+                                  </Button> // Đảm bảo bạn trả về Button ở đây
+                              ))
+                            }
+                          </WrapperVariants>
+                        )
+                      }
                       <WrapperRate>
                         {
                           Array.isArray(product.comments) && product.comments.length > 0 ? (
@@ -441,15 +480,7 @@ return (
                         onClick={() => handleHeart(product)}
                         />
                       </WrapperRate>
-                      {/* {
-                        product.id && product.variants !== null ? (
-                          <WrapperVariants>
-                          <Button>8gb</Button>
-                          <Button>16gb</Button>
-                          <Button>32gb</Button>
-                        </WrapperVariants>
-                        ) : null
-                      } */}
+                      
                       {
                         product.description !== null ? (
                           <WrapperDescription>
@@ -470,29 +501,55 @@ return (
                         </div>
                       </WrapperOrigin>
                       <WrapperPrice>
-                      
                       {
-                        product.discount ===0 ? (
-                          <div className='newPrice'>
-                            <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
-                            <p>đ</p>
-                          </div>
-                        ) : (
-                        <>
-                        <div className='oldPrice'>
-                          <p>{Number(product.price).toLocaleString('vi-VN')}</p>
-                          <p>đ</p>
-                        </div>
-                        <div className='arrow'>
-                          <FontAwesomeIcon icon={faArrowRight} />
-                        </div>
-                        <div className='newPrice'>
-                          <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
-                          <p>đ</p>
-                        </div>
-                        </>
-                        )
-                      }
+                          product.discount === 0 ? (
+                            <>
+                            {product.variants && product.variants.length > 0 ? (
+                              <div className='newPrice'>
+                              <p>{Number(selectedVariantPrice).toLocaleString('vi-VN')}</p>
+                              <p>đ</p>
+                            </div>
+                            ) : (
+                              <div className='newPrice'>
+                                <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                                <p>đ</p>
+                              </div>
+                            )}
+                            </>
+                          ) : (
+                            <>
+                              {product.variants && product.variants.length > 0 ? (
+                                <>
+                                  <div className='oldPrice'>
+                                    <p>{Number(selectedVariantPrice ).toLocaleString('vi-VN')}</p>
+                                    <p>đ</p>
+                                  </div>
+                                  <div className='arrow'>
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                  </div>
+                                  <div className='newPrice'>
+                                    <p>{Number((selectedVariantPrice ) - (selectedVariantPrice  * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                                    <p>đ</p>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className='oldPrice'>
+                                    <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                                    <p>đ</p>
+                                  </div>
+                                  <div className='arrow'>
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                  </div>
+                                  <div className='newPrice'>
+                                    <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                                    <p>đ</p>
+                                  </div>
+                                </>
+                              )}
+                            </>
+                          )
+                        }
                       </WrapperPrice>
 
                         <WrapperAmount>
@@ -533,23 +590,45 @@ return (
                             <img onClick={() => handleClick(product)} src={`http://localhost:3000/${product.image}`}  alt={product.name} />
                             <p onClick={() => handleClick(product)} className='nameProduct' style={{WebkitLineClamp: product.discount !== 0 ? 2 : 3,}}>{product.name}</p>
                             <WrapperPriceSimilar onClick={() => handleClick(product)}>
-                              {product.discount !== 0 ? (
-                                <div className='oldPrice'>
-                                  <p>{Number(product.price).toLocaleString('vi-VN')}</p>
-                                  <p>đ</p>
-                                </div>
-                              ) : null}
-                              {product.discount === 0 ? (
-                                <div className='Price'>
-                                  <p>{Number(product.price).toLocaleString('vi-VN')}</p>
-                                  <p>đ</p>
-                                </div>
+                            {
+                              product.discount === 0 ? (
+                                product.variants && product.variants.length > 0 ? (
+                                  <div className='Price'>
+                                    <p>{Number(product.variants[0]?.price).toLocaleString('vi-VN')}</p>
+                                    <p>đ</p>
+                                  </div>
+                                ) : (
+                                  <div className='Price'>
+                                    <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                                    <p>đ</p>
+                                  </div>
+                                )
                               ) : (
-                                <div className='newPrice'>
-                                  <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
-                                  <p>đ</p>
-                                </div>
-                              )}
+                                product.variants && product.variants.length > 0 ? (
+                                  <>
+                                    <div className='oldPrice'>
+                                      <p>{Number(product.variants[0]?.price).toLocaleString('vi-VN')}</p>
+                                      <p>đ</p>
+                                    </div>
+                                    <div className='newPrice'>
+                                      <p>{Number((product.variants[0]?.price) - (product.variants[0]?.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                                      <p>đ</p>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className='oldPrice'>
+                                      <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                                      <p>đ</p>
+                                    </div>
+                                    <div className='newPrice'>
+                                      <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                                      <p>đ</p>
+                                    </div>
+                                  </>
+                                )
+                              )
+                            }
                             </WrapperPriceSimilar>
                             <WrapperConditionSimilar onClick={() => handleClick(product)}>
                               <div className="soldProduct">
@@ -702,11 +781,16 @@ return (
                 <p className='name'>{product.name}</p>
                 <p>x {amount}</p>
                 {
-                  product.id && product.variants === true ? (
-                    <p>{product.variants}</p>
-                  ) : null
+                  product.variants && product.variants.length > 0 && selectedVariant ? (
+                    <>
+                      <p>{selectedVariant.name}</p>
+                      <p>{(Number((selectedVariant.price) - (selectedVariant.price * (product.discount / 100)))*amount).toLocaleString('vi-VN')} đ</p>
+                    </>
+                  ):(
+                    <p>{(Number((product.price) - (product.price * (product.discount / 100)))*amount).toLocaleString('vi-VN')} đ</p>
+                  )
                 }
-                <p>{(Number((product.price) - (product.price * (product.discount / 100)))*amount).toLocaleString('vi-VN')} đ</p>
+                
               </div>
               {
                 user && (

@@ -276,7 +276,7 @@ export const WrapperModal = styled(Modal)`
             }
         }
         & .name{
-            width: 350px;
+            width: 300px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;

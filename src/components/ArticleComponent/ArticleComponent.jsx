@@ -14,9 +14,9 @@ import UserService from '../../services/UserService';
     const dispatch = useDispatch();
     const [products, setProducts] = useState([]);
     const [favourite, setFavourite] = useState([])
-    const {getAllProduct, getAllCategories} = ProductService();
+    const {getAllProduct, getAllVariants} = ProductService();
     const {user, createFavourite, getAllFavourite, deleteFavourite} = UserService();
-    const [categories, setCategories] = useState([])
+    const [variants, setVariants] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedSort, setSelectedSort] = useState(null);
     const searchTerm = useSelector((state) => state.searchTerm);  
@@ -73,26 +73,28 @@ import UserService from '../../services/UserService';
       });
   };
 
-    const fetchCategories = useCallback(async() => {
+    const fetchVariants = useCallback(async() => {
       try{
-          const categories = await getAllCategories()
-          setCategories(categories)
+          const variants = await getAllVariants()
+          setVariants(variants)
       }
       catch(error){
           throw error
       }
-    },[getAllCategories])
+    },[getAllVariants])
 
     useEffect(() => {
-      fetchCategories()
-    },[fetchCategories]) 
+      fetchVariants()
+    },[fetchVariants]) 
 
     const text = () => {
-      return categories.map((category) => 
-        category.variants.map((variant) => (
-          <ToolTipSpan onClick={handleVariants} key={variant.id}>{variant.name}</ToolTipSpan>
-        ))
-      );
+      return [
+        ...new Map(variants.map((variant) => [variant.name, variant])).values(),
+      ].map((variant) => (
+        <ToolTipSpan onClick={handleVariants} key={variant.id}>
+          {variant.name}
+        </ToolTipSpan>
+      ));
     };
 
     const handleVariants = (e) => {
@@ -157,14 +159,14 @@ import UserService from '../../services/UserService';
             onClick={() => handleSortClick('desc')}
             className={selectedSort === 'desc' ? 'active' : ''}
             >
-            <FontAwesomeIcon icon={faArrowDownWideShort} /> Cao đến thấp
+            <FontAwesomeIcon icon={faArrowDownWideShort} /> Giá cao đến thấp
           </Button>
 
           <Button
               onClick={() => handleSortClick('asc')}
               className={selectedSort === 'asc' ? 'active' : ''}
           >
-            <FontAwesomeIcon icon={faArrowUpWideShort} /> Thấp đến cao
+            <FontAwesomeIcon icon={faArrowUpWideShort} /> Giá thấp đến cao
           </Button>
 
           <Button
@@ -185,23 +187,45 @@ import UserService from '../../services/UserService';
                   <img onClick={() => handleClick(product)} src={product.image} alt={product.name} />
                   <p onClick={() => handleClick(product)} className='nameProduct' style={{WebkitLineClamp: product.discount !== 0 ? 2 : 3,}}>{product.name}</p>
                   <WrapperPrice onClick={() => handleClick(product)}>
-                    {product.discount !== 0 ? (
-                      <div className='oldPrice'>
-                        <p>{Number(product.price).toLocaleString('vi-VN')}</p>
-                        <p>đ</p>
-                      </div>
-                    ) : null}
-                    {product.discount === 0 ? (
-                      <div className='Price'>
-                        <p>{Number(product.price).toLocaleString('vi-VN')}</p>
-                        <p>đ</p>
-                      </div>
-                    ) : (
-                      <div className='newPrice'>
-                        <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
-                        <p>đ</p>
-                      </div>
-                    )}
+                    {
+                      product.discount === 0 ? (
+                        product.variants && product.variants.length > 0 ? (
+                          <div className='Price'>
+                            <p>{Number(product.variants[0]?.price).toLocaleString('vi-VN')}</p>
+                            <p>đ</p>
+                          </div>
+                        ) : (
+                          <div className='Price'>
+                            <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                            <p>đ</p>
+                          </div>
+                        )
+                      ) : (
+                        product.variants && product.variants.length > 0 ? (
+                          <>
+                            <div className='oldPrice'>
+                              <p>{Number(product.variants[0]?.price).toLocaleString('vi-VN')}</p>
+                              <p>đ</p>
+                            </div>
+                            <div className='newPrice'>
+                              <p>{Number((product.variants[0]?.price) - (product.variants[0]?.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                              <p>đ</p>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className='oldPrice'>
+                              <p>{Number(product.price).toLocaleString('vi-VN')}</p>
+                              <p>đ</p>
+                            </div>
+                            <div className='newPrice'>
+                              <p>{Number((product.price) - (product.price * (product.discount / 100))).toLocaleString('vi-VN')}</p>
+                              <p>đ</p>
+                            </div>
+                          </>
+                        )
+                      )
+                    }
                   </WrapperPrice>
                   <WrapperCondition onClick={() => handleClick(product)}>
                     <div className="soldProduct">

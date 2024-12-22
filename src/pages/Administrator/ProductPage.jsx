@@ -1,4 +1,4 @@
-import { Button, Checkbox, Flex, Form, Image, Input, message, Select, Upload } from 'antd';
+import { Button, Flex, Form, Image, Input, message, Select, Upload } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react'
 import AdminService from '../../services/AdminService'
 import { WrapperModal, WrapperTable, WrapperToggle, WrapperToggleShow } from './Product';
@@ -72,12 +72,10 @@ const ProductPage = () => {
     const [updateImage, setUpdateImage] = useState(null);
     const [categories, setCategories] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
-    const [variants, setVariants] = useState([]);
     const [products, setProducts] = useState([]);
-    const [isChecked, setIsChecked] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedProduct, setSelectedProduct] = useState('')
-    const {createProduct, getProduct, updateProduct, deleteProduct, getCategories, getSuppliers, getVariants} = AdminService()
+    const {createProduct, getProduct, updateProduct, deleteProduct, getCategories, getSuppliers} = AdminService()
 
     const fetchProduct = useCallback(async() =>{
           try{
@@ -123,27 +121,12 @@ const ProductPage = () => {
       fetchSuppliers();
       }, [fetchSuppliers])
 
-      const fetchVariants = useCallback(async() => {
-        try{
-            const dataVariants = await getVariants()
-            setVariants(dataVariants)
-        }
-        catch(error){
-            throw error
-        }
-    }, [getVariants])
-    
-    useEffect(() => {
-      
-        fetchVariants();
-    }, [fetchVariants])
-
     const dataSource = products.map((product) => ({
       key: product.id,
       name: product.name,
       productType: product.productType,
       description: product.description,
-      price: product.price,
+      price: `${Number(product.price).toLocaleString('vi-VN')}đ`,
       inventory: product.inventory,
       origin: product.origin,
       brand: product.brand,
@@ -228,7 +211,6 @@ const handleUpload = (file) => {
 
 const toggleWrapper = () => {
   setShowWrapperToggle(!showWrapperToggle);
-  setIsChecked(false)
   form.resetFields();
   setFileList([]);
 };
@@ -250,14 +232,12 @@ const onFinish = (values) => {
     if (data.message === 'success') {
         fetchProduct()
         message.success('Tạo mới thành công');
-        setIsChecked(false)
         form.resetFields(); 
         setShowWrapperToggle(false);
         
     } else {
         fetchProduct()
         message.error('Lỗi thêm mới');
-        setIsChecked(false)
         form.resetFields(); 
         setShowWrapperToggle(false);
         
@@ -265,7 +245,6 @@ const onFinish = (values) => {
   }).catch((error) => {
       fetchProduct()
       message.error('Có lỗi xảy ra, vui lòng thử lại!');
-      setIsChecked(false)
       form.resetFields(); 
       setShowWrapperToggle(false);
   });
@@ -311,18 +290,6 @@ const optionsBrand = suppliers.map((supplier) => ({
   value: supplier.name
 }));
 
-  const optionVariant = variants.map((variant) => ({
-    key: variant.id,
-    label: variant.name,
-    value: variant.name
-  }));
-
-
-const handleCheckboxChange = (e) => {
-  setIsChecked(e.target.checked);
-  
-};
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -336,10 +303,6 @@ const isClose = () => {
   setUpdateImage([null])
 };
 
-const combinedOptions = [
-  ...optionVariant, // Các tùy chọn ban đầu
-  { label: 'Not Variant', value: 'not_variant' } // Thêm tùy chọn "Not Variant"
-];
 
 const onUpdate = (e) => {
   const { name, type } = e.target; // Lấy tên và loại của input
@@ -563,27 +526,9 @@ const updateProducts = () => {
                     >
                       <TextArea placeholder="Mô tả sản phẩm" rows={4} style={{ width: '350px', height: '70px' }} />
                     </Form.Item>
-                    
-                   <div className='checkbox'>
-                    <Checkbox checked={isChecked} onChange={handleCheckboxChange} >Variants </Checkbox>
-                   </div>
                   </div>
                 </div>
-                {
-                  isChecked === true && (
-                      <Form.Item
-                        name='variant'
-                        rules={[{ required: true, message: 'Please select a variant!' }]}
-                      >
-                        <Select
-                          placeholder="Biến thể"
-                          options={optionVariant}
-                          style={{width:'150px', margin: '0 0 0 75px'}}
-                        />
-                      </Form.Item>
-                  )
-                    
-                }
+               
 
               <div className='add'>
                 <Form.Item {...tailFormItemLayout}>
@@ -648,35 +593,6 @@ const updateProducts = () => {
                       <Input name="origin" onChange={onUpdate}  value={selectedProduct.origin} placeholder="Xuất xứ" style={{width: '150px'}}/>
                     </div>
                       <TextArea name='description' onChange={onUpdate}  value={selectedProduct.description} placeholder="Mô tả sản phẩm" rows={5} style={{ width: '350px', height: '100px',margin: '0 0 20px 0' }} />
-                      {
-                        selectedProduct.variant !== null && isChecked === false ? (
-                          <Select
-                          placeholder="Biến thể"
-                          options={combinedOptions}
-                          style={{width:'150px', margin: '0 0 10px 0'}}
-                          name='variant'
-                          value={selectedProduct.variant}
-                          onChange={(value) => onUpdateSelect('variant', value)}
-                          />
-                        ) : (
-                          <div className='checkbox'>
-                            <Checkbox checked={isChecked} onChange={handleCheckboxChange} >Variants </Checkbox>
-                          </div>
-                          
-                        )
-                      }
-                       {
-                            isChecked === true && (
- 
-                                  <Select
-                                    placeholder="Biến thể"
-                                    options={optionVariant}
-                                    style={{width:'150px'}}
-                                    name='variant'
-                                    onChange={(value) => onUpdateSelect('variant', value)}
-                                  />
-                            )  
-                          }
                   </div>
                 </div>
         </WrapperModal>
