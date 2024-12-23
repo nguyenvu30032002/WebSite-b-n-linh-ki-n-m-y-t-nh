@@ -29,7 +29,9 @@ const OrderComponent = ({ selectedOrderStatus }) => {
     if(condition === 'Xác nhận'){
       console.log(condition)
       const idOrder = order.id
-      const product_id = order.product_id
+      const product_id = order.order_detail && order.order_detail.length > 0 
+      ? order.order_detail.map(detail => detail.product_id) 
+      : [];
       updateCondition(condition,idOrder,product_id)
       .then((response) => {
         const data = response.data;
@@ -108,7 +110,7 @@ const OrderComponent = ({ selectedOrderStatus }) => {
   ///////////////////////////////////////////////////////////////////////////////
 
   // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
-    const itemsPerPage = 2;
+    const itemsPerPage = 1;
     // Tính toán các sản phẩm hiển thị trên trang hiện tại
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -124,95 +126,113 @@ const OrderComponent = ({ selectedOrderStatus }) => {
     }, [selectedOrderStatus]);
 
   return (
-    <Wrapper>
-      {currentItems.length > 0 ? (
-    currentItems.map((order, index) => (
-        <div key={order.id} className='product'>
-          <WrapperInformation>
-            <div className='imgProduct'>
-              <img src={order.imgProduct} alt="product" />
+<Wrapper>
+  {currentItems.length > 0 ? (
+    currentItems.map((order) => (
+      <div key={order.id} className='product'>
+        <WrapperInformation>
+          {order.bill_of_lading_code !== null && (
+            <div className='orderCode'>
+              <span>Mã vận đơn: </span>
+              <span>{order.bill_of_lading_code}</span>
             </div>
-            
-            <div className='informationProduct'>
-              {/* <div className='condition'>
-                <p>Trạng thái:</p>
-                <p>{order.condition}</p>
-              </div>  */}
-              
-              <div className='nameProduct'>
-                <p>{order.nameProduct}</p>
-              </div>
-              {
-                order.bill_of_lading_code !== null ? (
-                  <div className='orderCode'>
-                    <span>Mã vận đơn: </span>
-                    <span>{order.bill_of_lading_code}</span>
+          )}
+          <div className='informationProduct'>
+            {order.order_detail.map((detail) => (
+              <div className='orderDetail' key={detail.id}>
+                <div className='imgProduct'>
+                  <img src={detail.created_by_product.image} alt="product" />
+                </div>
+                <div style={{flexDirection: 'column', margin: '0 0 0 10px'}}>
+                  <div className='nameProduct'>
+                    <p>{detail.created_by_product.name}</p>
                   </div>
-                ) : null
-              }
-              <div className='amount'>
-                <span>x <span style={{fontWeight: '500'}}>{order.amount}</span></span>
-                <div className='price'>
-                    <p className='newPrice'>{Number(order.totalMoney).toLocaleString('vi-VN')}đ</p>
-                    {
-                      order.discount !== 0 && (
-                        <p className='oldPrice'>{(Number(order.price)*(order.amount)).toLocaleString('vi-VN')}đ</p>
+                  <div className='amount'>
+                    <span>
+                      x <span style={{fontWeight: '500'}}>{detail.amount}</span> 
+                      {detail.variant && <span style={{fontWeight: '500'}}>({detail.variant})</span>}
+                    </span>
+
+                    {/* Kiểm tra và render giá trị cho variants */}
+                    {detail.created_by_product.variants && detail.created_by_product.variants.length > 0 ? (
+                      detail.created_by_product.variants.map((vsrt) => 
+                        vsrt.name === detail.variant && (
+                          <div className='price' key={vsrt.id}>
+                            <p className='newPrice'>
+                              {Number(vsrt.price - (vsrt.price * detail.created_by_product.discount) / 100).toLocaleString('vi-VN')}đ
+                            </p>
+                            {detail.created_by_product.discount !== 0 && (
+                              <p className='oldPrice'>{Number(vsrt.price).toLocaleString('vi-VN')}đ</p>
+                            )}
+                          </div>
+                        )
                       )
-                    }
+                    ) : (
+                      <div className='price'>
+                        <p className='newPrice'>
+                          {Number(detail.created_by_product.price - (detail.created_by_product.price * detail.created_by_product.discount) / 100).toLocaleString('vi-VN')}đ
+                        </p>
+                        {detail.created_by_product.discount !== 0 && (
+                          <p className='oldPrice'>{Number(detail.created_by_product.price).toLocaleString('vi-VN')}đ</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className='totalMoney'>
-                <p>Thành tiền: <span style={{color:'red', fontWeight:'500'}}>{Number(order.totalMoney).toLocaleString('vi-VN')}</span>đ(<span>{order.status}</span>)</p>
-              </div>
-            </div>
-          </WrapperInformation>
-          <WrapperUser>
-                <div>
-                  <p className='name'>Tới:<span>{order.userName}</span></p>
-                  <p className='phone'>Số điện thoại:<span>{order.phone}</span></p>
-                </div>
-                <p className='address'>Địa chỉ: <span> {order.address}</span></p>
-            </WrapperUser>
-          {
-            order.condition === 'Chờ xác nhận' ? (
-                <WrapperSelect>
-                  <button className='cancel'onClick={() => handleCondition("Hủy", order)}>Hủy</button>
-                </WrapperSelect>
+            ))}
+          </div>
+          <div className='totalMoney'>
+            <p>Thành tiền: 
+              <span style={{color:'red', fontWeight:'500'}}>
+                {Number(order.totalMoney).toLocaleString('vi-VN')}
+              </span>đ
+              (<span>{order.status}</span>)
+            </p>
+          </div>
+        </WrapperInformation>
+        <WrapperUser>
+          <div>
+            <p className='name'>Tới:<span>{order.userName}</span></p>
+            <p className='phone'>Số điện thoại:<span>{order.phone}</span></p>
+          </div>
+          <p className='address'>Địa chỉ: <span>{order.address}</span></p>
+        </WrapperUser>
+
+        {/* Các điều kiện xử lý trạng thái đơn hàng */}
+        {order.condition === 'Chờ xác nhận' ? (
+          <WrapperSelect>
+            <button className='cancel' onClick={() => handleCondition("Hủy", order)}>Hủy</button>
+          </WrapperSelect>
+        ) : (
+          <WrapperSelect>
+            {order.condition === 'Đã giao' ? (
+              <>
+                <button className='confirm' onClick={() => handleCondition("Xác nhận", order)}>Xác nhận</button>
+                <button className='cancel' onClick={() => handleCondition("Hủy", order)}>Hủy</button>
+              </>
             ) : (
-              <WrapperSelect>
-                {order.condition === 'Đã giao' ? (
-                    <>
-                    <button className='confirm' onClick={() => handleCondition("Xác nhận", order)}>Xác nhận</button>
-                    <button className='cancel' onClick={() => handleCondition("Hủy", order)}>Hủy</button>
-                    </>
-                ) : (
-                  <button className=' acquisition' onClick={() => handleAcquisition(order)}>
-                    Mua lại
-                </button>
-                )}
-                </WrapperSelect>
-            )
-          }   
-        </div>
-        
+              <button className='acquisition' onClick={() => handleAcquisition(order)}>Mua lại</button>
+            )}
+          </WrapperSelect>
+        )}
+      </div>
     ))
   ) : (
     <p>Không có đơn hàng</p>
   )}
-  {
-    filteredOrders.length > 0 ? (
-        <WrapperPaginate>
-          <Pagination
-            current={currentPage}
-            total={filteredOrders.length}
-            pageSize={itemsPerPage}
-            onChange={handlePageChange}
-          />
-        </WrapperPaginate>
-    ) : null
-  }
-        
-    </Wrapper>
+
+  {filteredOrders.length > 0 && (
+    <WrapperPaginate>
+      <Pagination
+        current={currentPage}
+        total={filteredOrders.length}
+        pageSize={itemsPerPage}
+        onChange={handlePageChange}
+      />
+    </WrapperPaginate>
+  )}
+</Wrapper>
   );
 };
 

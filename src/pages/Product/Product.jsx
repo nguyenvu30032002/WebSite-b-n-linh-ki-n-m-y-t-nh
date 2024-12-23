@@ -210,6 +210,15 @@ const handleShareMessage = () => {
       setValueRadio(e.target.value); // Cập nhật giá trị khi chọn radio
     };
     const handleOk = (e) => {
+      const productIds = Array.isArray(product.id) ? product.id : [product.id];
+      const amounts = Array.isArray(amount) ? amount : [amount];
+      let variantNames = null;
+      if(product.variants && product.variants.length > 0 && selectedVariant){
+        const variantsArray  = Array.isArray(selectedVariant) ? selectedVariant : [selectedVariant];
+        variantNames = variantsArray.length > 0 ? variantsArray.map(variant => variant.name) : null;
+      }
+      
+      
       const data =
        {
         user_id: user.id,
@@ -217,13 +226,10 @@ const handleShareMessage = () => {
         address: user.address,
         phone: user.phone,
         status: valueRadio,
-        product_id: product.id,
-        imgProduct: product.image,
-        nameProduct: product.name,
-        amount: amount,
-        totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
-        price: product.price,
-        discount: product.discount
+        product_id: productIds,
+        amount: amounts,
+        totalMoney: product.variants && product.variants.length > 0 && selectedVariant ? ((selectedVariant.price) - (selectedVariant.price * (product.discount / 100)))*amount : ((product.price) - (product.price * (product.discount / 100)))*amount,
+        variant: variantNames
        };
 
       if(!(user.address)){
@@ -784,7 +790,7 @@ return (
                   product.variants && product.variants.length > 0 && selectedVariant ? (
                     <>
                       <p>{selectedVariant.name}</p>
-                      <p>{(Number((selectedVariant.price) - (selectedVariant.price * (product.discount / 100)))*amount).toLocaleString('vi-VN')} đ</p>
+                      <p>{(Number((selectedVariant.price) - (selectedVariant.price * (product.discount / 100)))*amount).toLocaleString('vi-VN')}đ</p>
                     </>
                   ):(
                     <p>{(Number((product.price) - (product.price * (product.discount / 100)))*amount).toLocaleString('vi-VN')} đ</p>
@@ -844,21 +850,25 @@ return (
                       onApprove={async (data, actions) => {
                         try{
                           const details = await actions.order.capture();
+                          const productIds = Array.isArray(product.id) ? product.id : [product.id];
+                          const amounts = Array.isArray(amount) ? amount : [amount];
+                          let variantNames = null;
+                          if(product.variants && product.variants.length > 0 && selectedVariant){
+                            const variantsArray  = Array.isArray(selectedVariant) ? selectedVariant : [selectedVariant];
+                            variantNames = variantsArray.length > 0 ? variantsArray.map(variant => variant.name) : null;
+                          }
                           const data =
-                        {
-                         user_id: user.id,
-                         userName: user.name,
-                         address: user.address,
-                         phone: user.phone,
-                         status: valueRadio,
-                         product_id: product.id,
-                         imgProduct: product.image,
-                         nameProduct: product.name,
-                         amount: amount,
-                         totalMoney: ((product.price) - (product.price * (product.discount / 100)))*amount,
-                         price: product.price,
-                         discount: product.discount
-                        };
+                           {
+                            user_id: user.id,
+                            userName: user.name,
+                            address: user.address,
+                            phone: user.phone,
+                            status: valueRadio,
+                            product_id: productIds,
+                            amount: amounts,
+                            totalMoney: product.variants && product.variants.length > 0 && selectedVariant ? ((selectedVariant.price) - (selectedVariant.price * (product.discount / 100)))*amount : ((product.price) - (product.price * (product.discount / 100)))*amount,
+                            variant: variantNames
+                           };
                  
                        if(!(user.address)){
                          message.error('Vui lòng điền địa chỉ nhận hàng')
