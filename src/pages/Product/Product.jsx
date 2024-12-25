@@ -37,6 +37,8 @@ const Product = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [favourite, setFavourite] = useState([])
     const [product, setProduct] = useState([])
+    const [selectedVariantPrice, setSelectedVariantPrice] = useState(null);
+    const [selectedVariant, setSelectedVariant] = useState(null);
     const dispatch = useDispatch();
 
     ////////////////////////////////////////////////////////////////
@@ -100,7 +102,6 @@ const Product = () => {
     useEffect(() => {
       fetchComments()
     },[fetchComments])
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -293,16 +294,9 @@ const fetchCarts = useCallback(async() => {
         const data =
        {
         user_id: user.id,
-        userName: user.name,
-        address: user.address,
-        phone: user.phone,
         product_id: product.id,
-        imgProduct: product.image,
-        nameProduct: product.name,
         amount: amount,
-        newPrice: ((product.price) - (product.price * (product.discount / 100))),
-        oldPrice: product.price,
-        discount: product.discount
+        variant: product.variants && product.variants.length > 0 ? (selectedVariant ? selectedVariant.name : product.variants[0].name) : null
        };
        userCart(data)
        .then((reponse) => {
@@ -313,10 +307,12 @@ const fetchCarts = useCallback(async() => {
           message.success('Thêm vào giỏ hàng thành công')
         }
         else{
+          fetchCarts()
           message.error('Thêm vào giỏ hàng thất bại')
         }
        })
        .catch((error) => {
+        fetchCarts()
         message.error('Có lỗi xảy ra, vui lòng thử lại!');
         setIsModalOpen(false);
       })
@@ -415,8 +411,7 @@ const handleUploadChange = ({ fileList: newFileList }) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-const [selectedVariantPrice, setSelectedVariantPrice] = useState(null);
-const [selectedVariant, setSelectedVariant] = useState(null);
+
 
 const handleVariantClick = (variant) => {
   setSelectedVariant(variant); // Cập nhật variant được chọn

@@ -2,16 +2,17 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
     width: 100%;
-    height: 100%;
+    max-height: 1200px;
+    min-height: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
+    /* position: relative; */
     /* gap: 25px;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); */
     & .product{
         width: 750px;
-        max-height: 550px;
+        max-height: 600px;
         border: 1px solid #ccc;
         box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .1), 0 2px 6px 2px rgba(60, 64, 67, .15);
         margin: 10px 20px 10px 20px;
@@ -20,15 +21,16 @@ export const Wrapper = styled.div`
 ` 
 export const WrapperInformation = styled.div`
     width: 750px;
-    max-height: 250px;
+    max-height: 500px;
     background-color: white;
     display: flex;
     flex-direction: column;
     align-items: end;
     border: none;
     border-radius: 10px;
+    flex-wrap: wrap; 
     
-    & .orderCode{
+        & .orderCode{
         display: flex;
         max-width: 420px;
         align-items: center;
@@ -44,14 +46,16 @@ export const WrapperInformation = styled.div`
     
     & .informationProduct{
         width: 740px;
-        max-height: 150px;
+        max-height: 230px;
         margin: 10px auto;
-        display: flex;
-        justify-content: center;
-        overflow: hidden;
+        display: grid;  /* Sử dụng grid */
+        grid-template-columns: 1fr ;  /* Chia layout thành 2 cột */
+        gap: 10px;  /* Khoảng cách giữa các phần tử */
+        overflow-y: auto;
         & .orderDetail{
             display: flex;
-            max-height: 150px;
+            max-height: 250px;  
+            margin: 0px 10px 0px 10px;
             & .imgProduct{
                 width: 100px;
                 height: 100px;
@@ -59,7 +63,7 @@ export const WrapperInformation = styled.div`
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                margin: 5px 0 5px 0;
+                margin: 5px 0 5px 5px;
                 & img{
                     width: 100px;
                     height: 100px;
@@ -110,6 +114,7 @@ export const WrapperInformation = styled.div`
 
             }
         }
+        
         
     }
     
@@ -243,8 +248,8 @@ export const WrapperPaginate = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute;
-    bottom: 0;
+    margin-top:auto;
+    margin-bottom: 10px;
 `
 
 

@@ -59,10 +59,15 @@ export const WrapperCart = styled.div`
             & img{
                 width: 35px;
                 height: 35px;
-                border: 1px solid #000;
+                border: 1px dotted rgba(0, 0, 0, .09);
             }
-            & .nameProduct{
-                width: 100px;
+            & .nameP{
+                height: 50px;
+                width: 250px;
+                display: flex;
+                justify-content: space-around;
+                & .nameProduct{
+                max-width: 150px;
                 height: 30px;
                 display: inline-block;
                 justify-content: center;
@@ -71,7 +76,17 @@ export const WrapperCart = styled.div`
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                }
+                & .variantProduct{
+                    min-width: 70px;
+                    max-width: 70;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    text-align: center;
+                }
             }
+            
             & div{
                 width: 90px;
                 height: 30px;

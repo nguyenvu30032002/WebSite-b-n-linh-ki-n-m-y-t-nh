@@ -2,12 +2,17 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Wrapper, WrapperInformation, WrapperPaginate, WrapperSelect, WrapperUser } from './style';
 import UserService from '../../services/UserService';
 import { message, Pagination } from 'antd';
+import { useDispatch } from 'react-redux';
+import { setCart } from '../../store/Action';
+import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
+
 
 const OrderComponent = ({ selectedOrderStatus }) => {
-  const {user, getOrder, updateCondition, userCart} = UserService();
+  const {user, getOrder, updateCondition, userCart, getCart} = UserService();
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [currentPageDetail, setCurrentPageDetail] = useState(1);
+  const dispatch = useDispatch();
   const fetchOrders = useCallback(async() => {
     try{
       const data = await getOrder(user.id)
@@ -22,7 +27,6 @@ const OrderComponent = ({ selectedOrderStatus }) => {
       fetchOrders()
     }
   }, [fetchOrders, user])
-
   ///////////////////////////////////////////////////////////
 
   const handleCondition = (condition, order) => {
@@ -70,32 +74,42 @@ const OrderComponent = ({ selectedOrderStatus }) => {
 
   ////////////////////////////////////////////////////////
 
+const fetchCarts = useCallback(async() => {
+    try {
+      if (user) { 
+        const dataCarts = await getCart(user.id);
+        dispatch(setCart(dataCarts.length));
+      }
+    } catch (error) {
+      throw error
+    }
+  }, [getCart, user, dispatch])
+
+  useEffect(() => {
+    fetchCarts();
+  }, [fetchCarts]);
+
   const handleAcquisition = (order) => {
-    const data =
-    {
-     user_id: user.id,
-     userName: user.name,
-     address: user.address,
-     phone: user.phone,
-     product_id: order.product_id,
-     imgProduct: order.imgProduct,
-     nameProduct: order.nameProduct,
-     amount: 1,
-     newPrice: ((order.price) - (order.price * (order.discount / 100))),
-     oldPrice: order.price,
-     discount: order.discount
-    };
+    const data = order.order_detail.map((cart) => ({
+      user_id: user.id,
+      product_id: cart.product_id,
+      amount: 1,
+      variant: cart.variant
+    }));
     userCart(data)
     .then((reponse) => {
      const data = reponse.data
      if(data){
+      fetchCarts()
        message.success('Đã thêm vào giỏ hàng')
      }
      else{
+      fetchCarts()
        message.error('Thêm vào giỏ hàng thất bại')
      }
     })
     .catch((error) => {
+      fetchCarts()
      message.error('Có lỗi xảy ra, vui lòng thử lại!');
    })
 
@@ -110,7 +124,7 @@ const OrderComponent = ({ selectedOrderStatus }) => {
   ///////////////////////////////////////////////////////////////////////////////
 
   // Trạng thái trang hiện tại và số sản phẩm hiển thị trên mỗi trang
-    const itemsPerPage = 1;
+    const itemsPerPage = 2;
     // Tính toán các sản phẩm hiển thị trên trang hiện tại
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -125,6 +139,7 @@ const OrderComponent = ({ selectedOrderStatus }) => {
       setCurrentPage(1);
     }, [selectedOrderStatus]);
 
+
   return (
 <Wrapper>
   {currentItems.length > 0 ? (
@@ -138,53 +153,54 @@ const OrderComponent = ({ selectedOrderStatus }) => {
             </div>
           )}
           <div className='informationProduct'>
+           
             {order.order_detail.map((detail) => (
-              <div className='orderDetail' key={detail.id}>
-                <div className='imgProduct'>
-                  <img src={detail.created_by_product.image} alt="product" />
-                </div>
-                <div style={{flexDirection: 'column', margin: '0 0 0 10px'}}>
-                  <div className='nameProduct'>
-                    <p>{detail.created_by_product.name}</p>
+                <div className='orderDetail' key={detail.id}>
+                  <div className='imgProduct'>
+                    <img src={detail.created_by_product.image} alt="product" />
                   </div>
-                  <div className='amount'>
-                    <span>
-                      x <span style={{fontWeight: '500'}}>{detail.amount}</span> 
-                      {detail.variant && <span style={{fontWeight: '500'}}>({detail.variant})</span>}
-                    </span>
+                  <div style={{flexDirection: 'column', margin: '0 0 0 10px'}}>
+                    <div className='nameProduct'>
+                      <p>{detail.created_by_product.name}</p>
+                    </div>
+                    <div className='amount'>
+                      <span>
+                        x <span style={{fontWeight: '500'}}>{detail.amount}</span> 
+                        {detail.variant && <span style={{fontWeight: '400', margin: ' 0 0 0 5px'}}>({detail.variant})</span>}
+                      </span>
 
-                    {/* Kiểm tra và render giá trị cho variants */}
-                    {detail.created_by_product.variants && detail.created_by_product.variants.length > 0 ? (
-                      detail.created_by_product.variants.map((vsrt) => 
-                        vsrt.name === detail.variant && (
-                          <div className='price' key={vsrt.id}>
-                            <p className='newPrice'>
-                              {Number(vsrt.price - (vsrt.price * detail.created_by_product.discount) / 100).toLocaleString('vi-VN')}đ
-                            </p>
-                            {detail.created_by_product.discount !== 0 && (
-                              <p className='oldPrice'>{Number(vsrt.price).toLocaleString('vi-VN')}đ</p>
-                            )}
-                          </div>
+                      {/* Kiểm tra và render giá trị cho variants */}
+                      {detail.created_by_product.variants && detail.created_by_product.variants.length > 0 ? (
+                        detail.created_by_product.variants.map((vsrt) => 
+                          vsrt.name === detail.variant && (
+                            <div className='price' key={vsrt.id}>
+                              <p className='newPrice'>
+                                {Number(vsrt.price - (vsrt.price * detail.created_by_product.discount) / 100).toLocaleString('vi-VN')}đ
+                              </p>
+                              {detail.created_by_product.discount !== 0 && (
+                                <p className='oldPrice'>{Number(vsrt.price).toLocaleString('vi-VN')}đ</p>
+                              )}
+                            </div>
+                          )
                         )
-                      )
-                    ) : (
-                      <div className='price'>
-                        <p className='newPrice'>
-                          {Number(detail.created_by_product.price - (detail.created_by_product.price * detail.created_by_product.discount) / 100).toLocaleString('vi-VN')}đ
-                        </p>
-                        {detail.created_by_product.discount !== 0 && (
-                          <p className='oldPrice'>{Number(detail.created_by_product.price).toLocaleString('vi-VN')}đ</p>
-                        )}
-                      </div>
-                    )}
+                      ) : (
+                        <div className='price'>
+                          <p className='newPrice'>
+                            {Number(detail.created_by_product.price - (detail.created_by_product.price * detail.created_by_product.discount) / 100).toLocaleString('vi-VN')}đ
+                          </p>
+                          {detail.created_by_product.discount !== 0 && (
+                            <p className='oldPrice'>{Number(detail.created_by_product.price).toLocaleString('vi-VN')}đ</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
           <div className='totalMoney'>
             <p>Thành tiền: 
-              <span style={{color:'red', fontWeight:'500'}}>
+              <span style={{color:'red', fontWeight:'500', margin:'0 0 0 5px'}}>
                 {Number(order.totalMoney).toLocaleString('vi-VN')}
               </span>đ
               (<span>{order.status}</span>)
@@ -222,7 +238,7 @@ const OrderComponent = ({ selectedOrderStatus }) => {
     <p>Không có đơn hàng</p>
   )}
 
-  {filteredOrders.length > 0 && (
+{filteredOrders.length > 0 && (
     <WrapperPaginate>
       <Pagination
         current={currentPage}
@@ -233,7 +249,9 @@ const OrderComponent = ({ selectedOrderStatus }) => {
     </WrapperPaginate>
   )}
 </Wrapper>
+
   );
+  
 };
 
 

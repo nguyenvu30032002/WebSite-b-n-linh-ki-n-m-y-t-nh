@@ -176,7 +176,7 @@ const orderCart = async(orderCart) => {
   try {
       const response = await axios.post(
           `${apiUrl}/orderCart`, 
-          { orders: orderCart },
+          orderCart,
           {
               headers: {
                   "Content-Type": "application/json",

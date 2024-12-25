@@ -33,7 +33,6 @@ const Cart = () => {
       fetchCart(); 
     }
   }, [fetchCart, user]);
-
    // Lưu trạng thái các sản phẩm đã chọn
   const cartOptions = carts.map((cart) => cart.id);
   const checkAll = carts.length > 0 && checkedList.length === cartOptions.length;
@@ -42,11 +41,29 @@ const Cart = () => {
   // Tính tổng giá trị dựa trên sản phẩm được chọn và số lượng
   useEffect(() => {
     const total = carts
-      .filter((cart) => checkedList.includes(cart.id))
-      .reduce((sum, cart) => sum + cart.newPrice * cart.amount, 0);
+        .filter((cart) => checkedList.includes(cart.id))
+        .reduce((sum, cart) => {
+            let price = 0;
+
+            // Nếu sản phẩm có variants
+            if (cart.product.variants && cart.product.variants.length > 0) {
+                const variant = cart.product.variants.find(
+                    (v) => cart.product_id === v.product_id && cart.variant === v.name
+                );
+                if (variant) {
+                    price = variant.price - (variant.price * cart.product.discount) / 100;
+                }
+            } else {
+                // Nếu sản phẩm không có variants
+                price = cart.product.price - (cart.product.price * cart.product.discount) / 100;
+            }
+
+            // Tổng cộng
+            return sum + price * cart.amount;
+        }, 0);
 
     setTotalPrice(total);
-  }, [checkedList, carts]);
+}, [checkedList, carts]);
 
   // Xử lý khi thay đổi trạng thái checkbox từng sản phẩm
   const handleProductChange = (list) => {
@@ -81,17 +98,22 @@ const Cart = () => {
   };
 
    // State lưu thông tin các sản phẩm đã chọn sau khi nhấn "Đặt hàng"
-  useEffect(() => {
+   useEffect(() => {
     const selected = carts
       .filter((cart) => checkedList.includes(cart.id)) // Lọc sản phẩm có trong checkedList
-      .map((cart) => ({
-        ...cart,
-        quantity: cart.amount, // Thêm số lượng vào sản phẩm
-        totalPrice: cart.newPrice * cart.amount, // Tính tổng giá sản phẩm
-      }));
+      .reduce(
+        (acc, cart) => {
+          acc.id_products.push(cart.product_id); // Gộp id_product
+          acc.amounts.push(cart.amount); // Gộp số lượng
+          acc.variants.push(cart.variant); // Gộp variant
+          acc.id_carts.push(cart.id);
+          return acc;
+        },
+        { id_products: [], amounts: [], variants: [] , id_carts: []} // Khởi tạo đối tượng với các mảng rỗng
+      );
+  
     setSelectedCarts(selected); // Lưu thông tin sản phẩm đã chọn
   }, [carts, checkedList]); // Chỉ chạy khi carts hoặc checkedList thay đổi
-  
   // // Hàm xử lý khi nhấn nút "Đặt hàng"
   const handleOrder = () => {
     
@@ -102,23 +124,19 @@ const Cart = () => {
       message.error('Vui lòng điền thêm địa chỉ nhận hàng')
     }
     else{
-      // const selectedCarts = carts.filter(cart => checkedList.includes(cart.id));
-      const orders = selectedCarts.map((cart) => ({
+      const orders = {
         user_id: user.id,
         userName: user.name,
         address: user.address,
         phone: user.phone,
         status: value,
-        product_id: cart.product_id,
-        imgProduct: cart.imgProduct,
-        nameProduct: cart.nameProduct,
-        amount: cart.amount,
-        price: cart.oldPrice,
-        totalMoney: cart.totalPrice,
-        discount: cart.discount,
-        id_cart: cart.id
-        
-      }));
+        product_id: selectedCarts.id_products,
+        amount: selectedCarts.amounts,
+        totalMoney: totalPrice,
+        variant: selectedCarts.variants,
+        id_cart: selectedCarts.id_carts,
+         
+      };
       orderCart(orders)
       .then((response) => {
         const data = response.data
@@ -198,8 +216,21 @@ const Cart = () => {
               <div className="Order" key={cart.id}>
                 <Checkbox onClick={handleCheckbox} value={cart.id} />
                 <div className="informationOrder">
-                  <img src={cart.imgProduct} alt={cart.nameProduct} />
-                  <p className="nameProduct">{cart.nameProduct}</p>
+                  <img src={cart.product.image} alt={cart.product.name} />
+                  <div className='nameP' style={{justifyContent: cart.product.variants && cart.product.variants.length > 0 ? 'space-around' : 'start' }}>
+                    <p className="nameProduct" 
+                    style={{
+                      maxWidth: cart.product.variants && cart.product.variants.length > 0 ? '150px' : '210px',
+                      margin: cart.product.variants && cart.product.variants.length > 0 ? '0' : ' 0 0 0 10px'
+                      }}>
+                      {cart.product.name}</p>
+                    {
+                      cart.product.variants && cart.product.variants.length > 0 && (
+                        <span className='variantProduct'>{cart.variant}</span>
+                      )
+                    }
+                  </div>
+                  
                   <div>
                     <InputNumber
                       min={1}
@@ -208,9 +239,27 @@ const Cart = () => {
                       onChange={(value) => handleAmountChange(cart.id, value)}
                     />
                   </div>
-                  <p className="price">
-                    {Number((cart.newPrice) * (cart.amount)).toLocaleString('vi-VN')} đ
-                  </p>
+                  {
+                    cart.product.variants && cart.product.variants.length > 0 ? (
+                      (() => {
+                        const variant = cart.product.variants.find(
+                          (v) => cart.product_id === v.product_id && cart.variant === v.name
+                        );
+                        if (variant) {
+                          return (
+                            <p className="price">
+                              {Number(((variant.price - (variant.price * cart.product.discount) / 100) * cart.amount)).toLocaleString('vi-VN')} đ
+                            </p>
+                          );
+                        }
+                      })()
+                    ) : (
+                      <p className="price">
+                        {Number(((cart.product.price - (cart.product.price * cart.product.discount) / 100) * cart.amount)).toLocaleString('vi-VN')} đ
+                      </p>
+                    )
+                  }
+                  
                 </div>
               </div>
             ))}
@@ -278,21 +327,18 @@ const Cart = () => {
                         }
                         else{
                           // const selectedCarts = carts.filter(cart => checkedList.includes(cart.id));
-                          const orders = selectedCarts.map((cart) => ({
+                          const orders = {
                             user_id: user.id,
                             userName: user.name,
                             address: user.address,
                             phone: user.phone,
                             status: value,
-                            product_id: cart.product_id,
-                            imgProduct: cart.imgProduct,
-                            nameProduct: cart.nameProduct,
-                            amount: cart.amount,
-                            price: cart.oldPrice,
-                            totalMoney: cart.totalPrice,
-                            discount: cart.discount,
-                            id_cart: cart.id
-                          }));
+                            product_id: selectedCarts.id_products,
+                            amount: selectedCarts.amounts,
+                            totalMoney: totalPrice,
+                            variant: selectedCarts.variants,
+                            id_cart: selectedCarts.id_carts,
+                          };
                           orderCart(orders)
                           .then((response) => {
                             const data = response.data

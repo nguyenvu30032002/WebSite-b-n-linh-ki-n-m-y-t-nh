@@ -23,12 +23,13 @@ export const WrapperBody = styled.div`
     background-color: #fff;
     display: flex;
     width: 1230px;
-    height: 800px;
+    max-height: 1200px;
+    min-height: 800px;
     justify-content: center;
     margin: 0 auto; // Căn giữa theo chiều ngang
     border-left: 1px solid black;
     border-right: 1px solid black;
-
+  
 `
 
 export const WrapperNav = styled.div`
