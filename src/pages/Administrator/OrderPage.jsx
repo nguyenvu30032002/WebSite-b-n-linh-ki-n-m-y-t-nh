@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { Button, Flex, message, Table } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react'
+import { Button, Flex, message } from 'antd';
 import AdminService from '../../services/AdminService';
 import { WrapperModal, WrapperTable } from './Order';
-import { CopyOutlined, DeleteOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons';
+import { CopyOutlined, DeleteOutlined, PrinterOutlined } from '@ant-design/icons';
 import Search from 'antd/es/input/Search';
 import * as XLSX from 'xlsx';
 
@@ -10,22 +10,34 @@ const columns = [
   {
     title: 'Name',
     dataIndex: 'userName',
+    sorter: (a, b) => a.userName.length - b.userName.length,
+        sortDirections: ['descend'],
   },
   {
     title: 'Phone',
     dataIndex: 'phone',
   },
   {
-    title: 'Product',
-    dataIndex: 'nameProduct',
+    title: 'Address',
+    dataIndex: 'address',
   },
 
 
   {
-    title: 'Condition',
-    dataIndex: 'condition'
+    title: 'Pending Payment',
+    dataIndex: 'pending_payment'
   },
 
+  {
+    title: 'Order Status',
+    dataIndex: 'order_status'
+  },
+  {
+    title: 'Created_at',
+    dataIndex: 'created_at',
+    sorter: (a, b) => a.created_at.length - b.created_at.length,
+        sortDirections: ['descend'],
+  },
   {
     title: 'Options',
     dataIndex: 'options',
@@ -38,25 +50,46 @@ const columns = [
 const OrderPage = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(false);
-  const {updateOrder, orders} = AdminService();
+  const {updateOrder, getAllOrder} = AdminService();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orders, setOrders] = useState([]);
 
+
+  const fetchAllOrder = useCallback(async() => {
+    try{
+        const dataOrder= await getAllOrder()
+        setOrders(dataOrder);
+    }
+    catch(error){
+        throw error
+    }
+},[getAllOrder])
+fetchAllOrder();
+
+useEffect(() => {
+  fetchAllOrder()
+}, [fetchAllOrder])
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Tháng bắt đầu từ 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`; // Định dạng dd/mm/yyyy
+};
   const dataSource = orders.map((order, index) => ({
+    
     key: order.id,
     user_id: order.user_id,
     userName: order.userName,
     address: order.address,
     phone: order.phone,
-    status: order.status,
-    product_id: order.product_id,
-    imgProduct: order.imgProduct,
-    nameProduct: order.nameProduct,
-    amount: order.amount,
-    totalMoney: order.totalMoney,
-    condition: order.condition,
-    origin: order.origin,
+    pending_payment: order.status,
+    order_status: order.condition,
     bill_of_lading_code: order.bill_of_lading_code,
+    order_detail: order.order_detail,
+    created_at: formatDate(order.created_at),
     options: (
       <>
         {
@@ -65,12 +98,44 @@ const OrderPage = () => {
       <Button onClick={() => {
         const condition = "Đã giao";
         const id = order.id;
-        updateOrder(condition, id);
+        updateOrder(condition, id)
+        .then((response) => {
+          const data = response.data
+          if(data.message === 'Đã giao'){
+            fetchAllOrder()
+            message.success('Xác nhận đơn hàng thành công')
+          }else if(data.message === 'Đã hủy'){
+            fetchAllOrder()
+            message.success('Hủy đơn hàng thành công')
+          }else{
+            fetchAllOrder()
+            message.error('Lỗi xác nhận đơn hàng')
+          }
+        })
+        .catch((error) => {
+          throw error
+        })
       }} type="primary">Xác nhận</Button>
       <Button onClick={() => {
         const condition = "Đã hủy";
         const id = order.id;
-        updateOrder(condition, id);
+        updateOrder(condition, id)
+        .then((response) => {
+          const data = response.data
+          if(data.message === 'Đã giao'){
+            fetchAllOrder()
+            message.success('Xác nhận đơn hàng thành công')
+          }else if(data.message === 'Đã hủy'){
+            fetchAllOrder()
+            message.success('Hủy đơn hàng thành công')
+          }else{
+            fetchAllOrder()
+            message.error('Lỗi xác nhận đơn hàng')
+          }
+        })
+        .catch((error) => {
+          throw error
+        })
       }} type="primary" danger style={{ marginLeft: '10px' }}>Hủy</Button>
     </>
   )
@@ -166,7 +231,7 @@ function copyToClipboard(text) {
           message.error('Không thể sao chép mã vận đơn.');
       });
 }
-
+console.log('selectedOrder', selectedOrder)
   return (
     <>
     <h1>Order</h1>
@@ -191,27 +256,56 @@ function copyToClipboard(text) {
         })} />;
         </Flex>
     
-    <WrapperModal title="Basic Modal" open={isModalOpen} onCancel={isClose} footer={[]} >
+    <WrapperModal title="Chi tiết đơn hàng" open={isModalOpen} onCancel={isClose} footer={[]} >
     {selectedOrder ? ( // Kiểm tra xem selectedOrder không phải là null
        <>
+       {
+        selectedOrder.bill_of_lading_code  ?(
+          <p className='bill_of_lading_code'>Mã vận đơn: <span style={{margin: '0 0 0 10px', fontWeight: '600', color: '#ee4d2d'}}>{selectedOrder.bill_of_lading_code}</span><CopyOutlined onClick={() => copyToClipboard(selectedOrder.bill_of_lading_code)} style={{margin: '0 0 0 20px', cursor:'pointer'}}/></p>
+          ) : null
+        }
         <div className='product'>
-            <img src={selectedOrder.imgProduct} alt={selectedOrder.nameProduct} />
-            <div>
-                <p>{selectedOrder.nameProduct} </p>
-                {
-                  selectedOrder.condition === 'Đã giao' ?(
-                <p>Mã vận đơn: {selectedOrder.bill_of_lading_code}<CopyOutlined onClick={() => copyToClipboard(selectedOrder.bill_of_lading_code)} style={{margin: '0 0 0 20px', cursor:'pointer'}}/></p>
-                  ) : null
-                }
-                <p>Tổng tiền: <span style={{color:'#d70018'}}>{Number(selectedOrder.totalMoney).toLocaleString('vi-VN')} đ</span></p>
-                <p>Số lượng: <span style={{color:'#d70018'}}>x{selectedOrder.amount}</span></p>
-                <p>Tình trạng: <span style={{color:'#d70018'}}>{selectedOrder.status}</span></p>
+          {
+            selectedOrder.order_detail && selectedOrder.order_detail.length > 0 && (
+            selectedOrder.order_detail.map((detail) => (
+            <div key={detail.id} 
+              style={{ 
+                borderBottom: 
+                  selectedOrder.order_detail.length > 1 && 
+                  detail.id !== selectedOrder.order_detail[selectedOrder.order_detail.length - 1].id 
+                    ? '1px dotted rgba(0, 0, 0, .09)' 
+                    : 'none'
+            }}>
+      
+                      <img src={detail.created_by_product.image} alt={detail.created_by_product.name} />
+                      <p className='nameProduct'>{detail.created_by_product.name}</p>
+                      <p className='amount'>Số lượng: <span style={{color:'#d70018'}}>x{detail.amount} {detail.variant ?  <span style={{color: '#000'}}>({detail.variant})</span> : null}</span></p>
+
             </div>
+              ))
+                  
+            ) 
+          }
         </div>
         <div className='user'>
-              <p>Người mua: <span style={{color: '#4096ff'}}>{selectedOrder.userName}</span></p>
-              <p>Địa chỉ: <span style={{color: '#4096ff'}}>{selectedOrder.address}</span></p>
-              <p>Số điện thoại: <span style={{color: '#4096ff'}}>{selectedOrder.phone}</span></p>
+              <div>
+                <p style={{
+                  minWidth: '400px',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis'
+                }}>
+                  Người mua: 
+                  <span style={{color: '#4096ff'}}> {selectedOrder.userName}</span></p>
+                <p style={{
+                  minWidth: '400px',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis'
+                }}>Địa chỉ: 
+                <span style={{color: '#4096ff'}}> {selectedOrder.address}</span></p>
+              </div>
+              <p>Số điện thoại: <span style={{color: '#4096ff'}}> {selectedOrder.phone}</span></p>
 
         </div>
        </>

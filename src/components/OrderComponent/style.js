@@ -68,7 +68,7 @@ export const WrapperInformation = styled.div`
                     width: 100px;
                     height: 100px;
                     object-fit: contain;
-                    border: 1px solid #e1e1e1;
+                    border: 1px solid #efefef;
                     
                 }
             }

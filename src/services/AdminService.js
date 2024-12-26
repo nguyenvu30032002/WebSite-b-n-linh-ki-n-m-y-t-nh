@@ -1,12 +1,10 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback} from "react";
 import AuthUser from "./AuthUser";
-import { message } from "antd";
 
 export default function AdminService(){
     const apiUrl = process.env.REACT_APP_API_URL_ADMIN;
     const {token} = AuthUser();
-    const [orders, setOrders] = useState([]);
 
 
 ///////////// ADMIN ///////////////////////////////////////
@@ -320,25 +318,13 @@ const deleteCategories = async(selectedRowKeys) =>{
                     "Content-Type": "application/json",
                 },
             });
-            setOrders(response.data)
             return response.data;
         } catch (error) {
             throw error;
         }
     }, [apiUrl]);
 
-    useEffect(() => {
-        const fetchAllOrder = async() => {
-            try{
-                const dataOrder= await getAllOrder()
-                setOrders(dataOrder);
-            }
-            catch(error){
-                throw error
-            }
-        }
-        fetchAllOrder();
-    }, [getAllOrder])
+
 
     const updateOrder = async(condition, id) => {
         try{
@@ -353,18 +339,7 @@ const deleteCategories = async(selectedRowKeys) =>{
                     "Authorization": `Bearer ${token}`
                 }
             })
-            if(response.data.message === 'Đã giao'){
-                message.success('Xác nhận đơn hàng thành công')
-            }
-            else if(response.data.message === 'Đã hủy'){
-                message.success('Hủy đơn hàng thành công')
-            }
-            else{
-                message.error('Lỗi xác nhận đơn hàng')
-            }
-            const dataOrder= await getAllOrder()
-            setOrders(dataOrder);
-            //  getAllOrder()
+           return response
         }
         catch(error){
             throw error
@@ -634,7 +609,7 @@ const getUserMessage = useCallback(async(id) => {
         updateCategory,
         deleteCategories,
         updateOrder,
-        orders,
+        getAllOrder,
         createSuppliers,
         getSuppliers,
         updateSuppliers,
