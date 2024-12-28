@@ -231,7 +231,6 @@ function copyToClipboard(text) {
           message.error('Không thể sao chép mã vận đơn.');
       });
 }
-console.log('selectedOrder', selectedOrder)
   return (
     <>
     <h1>Order</h1>
@@ -253,7 +252,7 @@ console.log('selectedOrder', selectedOrder)
           <WrapperTable rowSelection={rowSelection} columns={columns} dataSource={dataSource} pagination={{ pageSize: 6 }}  onRow={(record) => ({
           onClick: (event) => handleRowClick(record, event),
           style: { cursor: 'pointer' }, // Gọi hàm khi click vào hàng
-        })} />;
+        })} />
         </Flex>
     
     <WrapperModal title="Chi tiết đơn hàng" open={isModalOpen} onCancel={isClose} footer={[]} >

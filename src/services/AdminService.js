@@ -578,7 +578,6 @@ const getUserMessage = useCallback(async(id) => {
     try{
       const response = await axios.get(`${apiUrl}/notReadMessage`,
         {
-          
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}` 
@@ -590,6 +589,42 @@ const getUserMessage = useCallback(async(id) => {
       throw error
     }
   },[apiUrl, token])
+
+ /////////////////////////////////////////////// Turnover ////////////////////////////////////////////////
+ 
+ const SumTotalMoney = useCallback(async(search) => {
+    try{
+        const response = await axios.get(`${apiUrl}/SumTotalMoney`,
+            {
+                params: { search },
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}` 
+                }
+              })
+        return response.data      
+    }
+    catch(error){
+        throw error
+    }
+ },[apiUrl,token])
+
+ const AmountProduct = useCallback(async(search) => {
+    try{
+        const response = await axios.get(`${apiUrl}/AmountProduct`,
+            {
+                params: { search },
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}` 
+                }
+              })
+        return response.data      
+    }
+    catch(error){
+        throw error
+    }
+ },[apiUrl,token])
 
 
     return{
@@ -622,6 +657,8 @@ const getUserMessage = useCallback(async(id) => {
         getUserMessage,
         readMessage,
         sendMessageAdmin,
-        notReadMessage
+        notReadMessage,
+        SumTotalMoney,
+        AmountProduct
     }
 }

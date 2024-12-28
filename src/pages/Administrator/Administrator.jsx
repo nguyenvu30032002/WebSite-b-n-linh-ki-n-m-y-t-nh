@@ -13,6 +13,7 @@ import InformationComponent from "../../components/InformationComponent/Informat
 import Suppliers from './Suppliers.jsx';
 import Variants from './Variants.jsx';
 import MessageAdminComponent from '../../components/Message/MessageAdminComponent.jsx';
+import Turnover from './Turnover.jsx';
 
 const Administrator = () => {
   const [selectedPage, setSelectedPage] = useState('admin');
@@ -32,7 +33,9 @@ const Administrator = () => {
             case 'order':
                 return <OrderPage/>;
             case 'variants':
-                return <Variants/>    
+                return <Variants/>  
+            case 'turnover':
+                return <Turnover/>          
             default:
                 return <h1>Vui lòng chọn một mục để quản lý</h1>;
         }
@@ -54,7 +57,7 @@ const Administrator = () => {
               <span onClick={() => setSelectedPage('variants')}><FontAwesomeIcon icon={faSliders} style={{margin: '0 15px 0 0'}} /> Phân loại sản phẩm</span>
               <span onClick={() => setSelectedPage('supplier')}><FontAwesomeIcon icon={faParachuteBox} style={{margin: '0 15px 0 0'}} /> Nhà cung cấp</span>
               <span onClick={() => setSelectedPage('order')}><FontAwesomeIcon icon={faTruck} style={{margin: '0 15px 0 0'}} /> Đơn hàng</span>
-              
+              <span onClick={() => setSelectedPage('turnover')}><FontAwesomeIcon icon={faTruck} style={{margin: '0 15px 0 0'}} /> Doanh thu</span>
             </WrapperNav>
             <Wrappertable>
                 {renderContent()}
