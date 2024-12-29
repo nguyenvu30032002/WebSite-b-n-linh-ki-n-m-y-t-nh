@@ -7,6 +7,7 @@ display: flex;
 flex-direction: column;
 align-items: center;
 overflow-y: auto;
+overflow-x: hidden;
     & .divZero{
         width: 100%;
         min-height: 50px;
@@ -19,14 +20,16 @@ overflow-y: auto;
         width: 100%;
         height: 100%;
         display: flex;
-        margin: 0 0 50px 0;
+        margin: 0 0 70px 0;
         & .sumOrder{
-        width: 500px;
-        height: 300px;
-        }
-        & .totalMoney{
             width: 500px;
             height: 300px;
+
+        }
+        & .totalMoney{  
+            width: 500px;
+            height: 300px;
+
         }
     }
 
@@ -34,14 +37,23 @@ overflow-y: auto;
         width: 100%;
         height: 100%;
         display: flex;
-        margin: 50px 0 0 0;
+        margin: 70px 0 0 0;
         & .sumPayProduct{
             width: 500px;
             height: 300px;
+            /* display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; */
         }
         & .productPay{
             width: 500px;
             height: 300px;
+            & .recharts-wrapper{
+                width: 500px;
+                height: 300px;
+            }
+           
         }
     }
     

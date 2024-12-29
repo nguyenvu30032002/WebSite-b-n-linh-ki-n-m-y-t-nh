@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, RadialBar, RadialBarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Wrapper } from './Turnover';
 import { DatePicker } from 'antd';
 import AdminService from '../../services/AdminService';
@@ -188,18 +188,59 @@ const calculateOrderCountByMonth = (month) => {
     // Chuyển `counts` thành mảng
     const dataSumProduct = Object.values(counts);
     
-//////////////////////////////////////////////////////////////////////////////////////////////
 
 const sortedData = dataSumProduct.sort((a, b) => b.amount - a.amount);
 
 // Lấy 5 sản phẩm bán chạy nhất
 const top5Products = sortedData.slice(0, 5);
 
+const totalOrderDetails = amountProduct.reduce((total, order) => {
+  return total + (order.order_detail?.length || 0);
+}, 0);
+
 // Chuyển đổi dữ liệu để phù hợp với dataProduct
 const dataProduct = top5Products.map((product) => ({
   name: product.name,
   value: product.amount,
+  amount:  totalOrderDetails,
 }));
+
+const CustomTooltip = ({ payload, label, active }) => {
+  if (active && payload && payload.length) {
+    const product = payload[0].payload;
+ 
+    return (
+      <div className="custom-tooltip" style={{backgroundColor: '#fff', maxWidth: '180px', border: '1px solid #ccc'}}>
+        <p>{`Sản phẩm: ${product.name}`}</p>
+        <p>{`Đã bán: ${product.value}/${totalOrderDetails}`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#63f059'];
+
+const data = [
+  {
+    name: 'Mục tiêu',  // Thêm phần còn lại để hoàn thành 100%
+    amount: 100,  // Phần còn lại của vòng tròn
+    fill: '#c8ee55', // Màu của phần còn lại
+  },
+  {
+    name: 'Đã bán',
+    amount: totalOrderDetails,
+    fill: '#63f059',
+  },
+  
+];
+
+const style = {
+  top: '50%',
+  right: 0,
+  transform: 'translate(0, -50%)',
+  lineHeight: '24px',
+};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -263,23 +304,38 @@ const dataProduct = top5Products.map((product) => ({
             <div className='sumPayProduct'>
                 <h3>Sản phẩm đã bán</h3>
                 <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={dataSumProduct}>
-                    <Tooltip />
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="name" />
-                    <PolarRadiusAxis />
-                    <Radar name="Đã bán" dataKey="amount" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                    </RadarChart>
+                    <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" barSize={50} data={data}>
+                      <RadialBar
+                        minAngle={15}
+                        label={{ position: 'insideStart', fill: '#000000' }}
+                        background
+                        clockWise
+                        dataKey="amount" // Chỉ định giá trị cần hiển thị (tỷ lệ phần trăm)
+                      />
+                      <Tooltip />
+                      <Legend iconSize={10} layout="vertical" verticalAlign="middle" wrapperStyle={style} />
+                    </RadialBarChart>
                 </ResponsiveContainer>
             </div>
             <div className='productPay'>
                 <h3>Sản phẩm bán chạy</h3>
-                <ResponsiveContainer>
-                <PieChart>
-                    <Tooltip />
-                    <Pie dataKey="value" data={dataProduct} fill="#05cd2a" label />
+                <PieChart width={500} height={300} >
+                  <Pie
+                    data={dataProduct}
+                    cx={250}
+                    cy={140}
+                    innerRadius={90}
+                    outerRadius={120}
+                    fill="#8884d8"
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {dataProduct.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
                 </PieChart>
-                </ResponsiveContainer>
             </div>
         </div>
     </Wrapper>
