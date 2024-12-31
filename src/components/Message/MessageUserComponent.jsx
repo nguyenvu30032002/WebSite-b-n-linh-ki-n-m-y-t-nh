@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Wrapper, WrapperMessage, WrappperImage } from './styleUser'
 import { CloseOutlined, SendOutlined } from '@ant-design/icons'
-import { message,Space } from 'antd'
+import { message,Select,Space } from 'antd'
 import Input from 'antd/es/input/Input'
 import UserService from '../../services/UserService'
 import Pusher from 'pusher-js'
@@ -16,18 +16,25 @@ const MessageUserComponent = () => {
   const [messager, setMessager] = useState('')
   const [getMessages, setGetMessages] = useState([])
   const [isLoading, setIsLoading] = useState(true);
+  const [chatWithAdmin, setChatWithAdmin] = useState(false)
+  const [chatWithAi, setChatWithAi] = useState(false)
+  const [userQuestion, setUserQuestion] = useState([])
 
   const handleOpenMessage = () => {
     if(user){
       fetchMessageUser()
     }
+    setChatWithAdmin(true)
     setOpenMessage(true)
   }
   const handleCloseMessage = () => {
     if(user){
       fetchMessageUser();
     }
+    setUserQuestion([])
     setMessages([])
+    setChatWithAdmin(false)
+    setChatWithAi(false)
     setOpenMessage(false)
   }
   useEffect(() => {
@@ -121,6 +128,44 @@ const MessageUserComponent = () => {
   }
  },[fetchReadMessage, user, openMessage])
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+const handleChange = (value) => {
+  if(value === 'Chat với nhân viên tư vấn')
+  {
+    setChatWithAi(false)
+    setChatWithAdmin(true)
+  }
+  else{
+    setChatWithAdmin(false)
+    setChatWithAi(true)
+  }
+};
+
+const handleSubmitAI = (e) => {
+  e.preventDefault()
+  if (!messager.trim()) {
+    message.error('Tin nhắn không được để trống');
+    return; // Dừng hàm nếu điều kiện không đạt
+  }
+  if(!user){
+    setMessager('')
+    message.error('Vui lòng đăng nhập')
+    
+  }
+  else{
+    // const data = {
+    //   user_id : user.id,
+    //   message : messager
+    // }
+    // setMessager('')
+    // messageUser(data)
+    setMessager('')
+    setUserQuestion([...userQuestion, messager])
+  }
+};
+
   return (
     <Wrapper>
         {
@@ -139,72 +184,178 @@ const MessageUserComponent = () => {
         openMessage === true && (
           <WrapperMessage>
           <div className='header'>
-            <p>Chat với nhân viên tư vấn</p>
+            <p>
+              <Select
+                defaultValue="Chat với nhân viên tư vấn"
+                style={{
+                  width: 220,
+                }}
+                onChange={handleChange}
+                options={[
+                  { value: 'Chat với nhân viên tư vấn', label: 'Chat với nhân viên tư vấn' },
+                  { value: 'Chat với AI', label: 'Chat với AI' },
+                  
+                ]}
+              />
+              
+            </p>
             <CloseOutlined onClick={handleCloseMessage}/>
           </div>
 
-          <div className='main'>
-            {
-             isLoading ? (
-              <div style={{width: '100%', height: '100%', display: 'flex', justifyContent:' center', alignItems: 'center'}}>
-                  <FontAwesomeIcon icon={faSpinner} spin  style={{color: "#74C0FC", fontSize: '40px'}}  />
-              </div>
-              
-             ) : getMessages.length === 0 &&  messages.length === 0 ? (
-                <div style={{width: '100%', height: '100%', display: 'flex', justifyContent:' center', alignItems: 'center'}}>
-                  <p>Không có tin nhắn</p>
-                </div>
-            ) :  (
-              getMessages.map((msg, index) => (
-                <div key={index} style={{justifyContent: msg.is_from_user ? 'flex-end' : 'flex-start' }}>
+          {
+            chatWithAdmin === true && (
+              <>
+                <div className='main'>
+            
                   {
-                    (msg?.message) && (
-                      <p className='mess'>
-                        {msg.message}
-                      </p>
-                    )
-                  }
-                 {
-                  (msg?.product_id) && (
-                    <div className='product'>
-                        <div className='product_info'>
-                          <img src={msg.created_by_product.image} alt="" />
-                          <div className='name_price'>
-                            <span className='name'>{msg.created_by_product.name}</span>
-                            <span className='oldPrice'>{Number(msg.created_by_product.price).toLocaleString('vi-VN')}</span>
-                            <span className='newPrice'>{Number((msg.created_by_product.price) - (msg.created_by_product.price * (msg.created_by_product.discount / 100))).toLocaleString('vi-VN')}</span>
-                          </div>
-                        </div>
+                  isLoading ? (
+                    <div style={{width: '100%', height: '100%', display: 'flex', justifyContent:' center', alignItems: 'center'}}>
+                        <FontAwesomeIcon icon={faSpinner} spin  style={{color: "#74C0FC", fontSize: '40px'}}  />
                     </div>
+                    
+                  ) : getMessages.length === 0 &&  messages.length === 0 ? (
+                      <div style={{width: '100%', height: '100%', display: 'flex', justifyContent:' center', alignItems: 'center'}}>
+                        <p>Không có tin nhắn</p>
+                      </div>
+                  ) :  (
+                    getMessages.map((msg, index) => (
+                      <div key={index} style={{justifyContent: msg.is_from_user ? 'flex-end' : 'flex-start' }}>
+                        {
+                          (msg?.message) && (
+                            <p className='mess'>
+                              {msg.message}
+                            </p>
+                          )
+                        }
+                      {
+                        (msg?.product_id) && (
+                          <div className='product'>
+                              <div className='product_info'>
+                                <img src={msg.created_by_product.image} alt="" />
+                                <div className='name_price'>
+                                  <span className='name'>{msg.created_by_product.name}</span>
+                                  <span className='oldPrice'>{Number(msg.created_by_product.price).toLocaleString('vi-VN')}</span>
+                                  <span className='newPrice'>{Number((msg.created_by_product.price) - (msg.created_by_product.price * (msg.created_by_product.discount / 100))).toLocaleString('vi-VN')}</span>
+                                </div>
+                              </div>
+                          </div>
+                        )
+                      }
+                      </div>
+                    ))
                   )
-                 }
+                  }     
+                  
+                  {
+                    messages.map((msg, index) => (
+                      <div key={index} style={{justifyContent: msg.user_id === user.id ? 'flex-end' : 'flex-start' }}>
+                        <p className='mess'>
+                          {msg.message}
+                        </p>
+                      </div>
+                    ))
+                  }     
+                  <div ref={endOfMessagesRef} /> 
                 </div>
-              ))
-             )
-            }     
-             
-            {
-              messages.map((msg, index) => (
-                <div key={index} style={{justifyContent: msg.user_id === user.id ? 'flex-end' : 'flex-start' }}>
-                  <p className='mess'>
-                    {msg.message}
-                  </p>
+                
+                <div className='footer'>
+                  <Space.Compact
+                    style={{
+                      width: '100%',
+                    }}
+                  >
+                    <Input value={messager} onChange={(e) => setMessager(e.target.value)} onPressEnter={handleSubmit} />
+                    <SendOutlined type="primary" onClick={handleSubmit}/>
+                  </Space.Compact>
                 </div>
-              ))
-            }     
-            <div ref={endOfMessagesRef} /> 
-          </div>
-          
-          <div className='footer'>
-          <Space.Compact
-            style={{
-              width: '100%',
-            }}
-          >
-            <Input value={messager} onChange={(e) => setMessager(e.target.value)} onPressEnter={handleSubmit} />
-            <SendOutlined type="primary" onClick={handleSubmit}/>
-          </Space.Compact>
-          </div>
+              </>
+            )
+          }
+          {
+            chatWithAi === true && (
+              <>
+                <div className='main'>
+            
+                  {/* {
+                  isLoading ? (
+                    <div style={{width: '100%', height: '100%', display: 'flex', justifyContent:' center', alignItems: 'center'}}>
+                        <FontAwesomeIcon icon={faSpinner} spin  style={{color: "#74C0FC", fontSize: '40px'}}  />
+                    </div>
+                    
+                  ) : getMessages.length === 0 &&  messages.length === 0 ? (
+                      <div style={{width: '100%', height: '100%', display: 'flex', justifyContent:' center', alignItems: 'center'}}>
+                        <p>Không có tin nhắn</p>
+                      </div>
+                  ) :  (
+                    getMessages.map((msg, index) => (
+                      <div key={index} style={{justifyContent: msg.is_from_user ? 'flex-end' : 'flex-start' }}>
+                        {
+                          (msg?.message) && (
+                            <p className='mess'>
+                              {msg.message}
+                            </p>
+                          )
+                        }
+                      {
+                        (msg?.product_id) && (
+                          <div className='product'>
+                              <div className='product_info'>
+                                <img src={msg.created_by_product.image} alt="" />
+                                <div className='name_price'>
+                                  <span className='name'>{msg.created_by_product.name}</span>
+                                  <span className='oldPrice'>{Number(msg.created_by_product.price).toLocaleString('vi-VN')}</span>
+                                  <span className='newPrice'>{Number((msg.created_by_product.price) - (msg.created_by_product.price * (msg.created_by_product.discount / 100))).toLocaleString('vi-VN')}</span>
+                                </div>
+                              </div>
+                          </div>
+                        )
+                      }
+                      </div>
+                    ))
+                  )
+                  }     
+                  
+                  {
+                    messages.map((msg, index) => (
+                      <div key={index} style={{justifyContent: msg.user_id === user.id ? 'flex-end' : 'flex-start' }}>
+                        <p className='mess'>
+                          {msg.message}
+                        </p>
+                      </div>
+                    ))
+                  }      */}
+                      <div style={{justifyContent: 'flex-start' , alignItems: 'center' }}>
+                        <img style={{width: '35px', height: '35px', margin: '0 -20px 0 0'}} src="./robot-chatbot-icon-sign-free-vector.jpg" alt="chat bot" />
+                        <p className='mess'>
+                          Tôi có thể giúp gì cho bạn
+                        </p>
+                      </div>
+                      {userQuestion.map((question, index) => (
+                          <div 
+                              key={index} 
+                              style={{ justifyContent: 'flex-end', alignItems: 'center' }}
+                          >
+                              <p className='mess'>
+                                  {question}
+                              </p>
+                          </div>
+                      ))}
+                  <div ref={endOfMessagesRef} />               
+                  </div>
+                
+                <div className='footer'>
+                  <Space.Compact
+                    style={{
+                      width: '100%',
+                    }}
+                  >
+                    <Input value={messager} onChange={(e) => setMessager(e.target.value)} onPressEnter={handleSubmitAI} />
+                    <SendOutlined type="primary" onClick={handleSubmitAI}/>
+                  </Space.Compact>
+                </div>
+              </>
+            )
+          }
         </WrapperMessage>
         )
        }
