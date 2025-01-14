@@ -4,14 +4,14 @@ import UserService from '../../services/UserService';
 import { message, Pagination } from 'antd';
 import { useDispatch } from 'react-redux';
 import { setCart } from '../../store/Action';
-import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
+// import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
 
 
 const OrderComponent = ({ selectedOrderStatus }) => {
   const {user, getOrder, updateCondition, userCart, getCart} = UserService();
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentPageDetail, setCurrentPageDetail] = useState(1);
+  // const [currentPageDetail, setCurrentPageDetail] = useState(1);
   const dispatch = useDispatch();
   const fetchOrders = useCallback(async() => {
     try{

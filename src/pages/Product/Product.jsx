@@ -855,7 +855,7 @@ return (
                       }}
                       onApprove={async (data, actions) => {
                         try{
-                          const details = await actions.order.capture();
+                          // const details = await actions.order.capture();
                           const productIds = Array.isArray(product.id) ? product.id : [product.id];
                           const amounts = Array.isArray(amount) ? amount : [amount];
                           let variantNames = null;

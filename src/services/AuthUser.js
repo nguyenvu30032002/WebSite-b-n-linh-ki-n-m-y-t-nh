@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import { message } from "antd";
 
@@ -35,27 +35,6 @@ export default function AuthUser() {
         setExpires_in(expires_in);
     }
 
-    const logoutUser = useCallback(async() => {
-        try{
-            const response = await axios.post(`${apiUrl}/logout/${getUser().id}`,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    }
-                }
-            )
-            return response
-        }
-        catch(error){
-            throw error
-        }
-    },[])
-
-    const logout = () => {
-        logoutUser()
-        sessionStorage.clear();
-        navigate('/login');
-    }
 
     // Tạo instance Axios
     const http = axios.create({
@@ -82,6 +61,33 @@ export default function AuthUser() {
         }
         return null; 
    };
+
+   const id = getUser().id
+   const logoutUser = useCallback(async () => {
+       
+       try {
+           
+           const response = await axios.post(
+               `${apiUrl}/logout/${id}`,
+               {}, // Empty body, as you're just logging out
+               {
+                   headers: {
+                       "Content-Type": "application/json",
+                   }
+               }
+           );
+           return response;
+       } catch (error) {
+           throw error;
+       }
+   }, [apiUrl, id]); // Add getUser as a dependency
+   
+
+   const logout = () => {
+       logoutUser()
+       sessionStorage.clear();
+       navigate('/login');
+   }
  
     const [user, setUser] = useState(getUser());
      const saveUser = (userData) => {
