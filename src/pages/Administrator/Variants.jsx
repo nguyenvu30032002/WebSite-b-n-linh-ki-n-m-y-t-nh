@@ -75,7 +75,7 @@ const Variants = () => {
     const [products, setProducts] = useState([]);
     const [variants, setVariants] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const {createVariants, getVariants, updateVariants, deleteVariants, getProduct} = AdminService()
+    const {createVariants, getVariants, deleteVariants, getProduct} = AdminService()
     const {user} = AuthUser()
   
     const fetchProduct = useCallback(async() =>{

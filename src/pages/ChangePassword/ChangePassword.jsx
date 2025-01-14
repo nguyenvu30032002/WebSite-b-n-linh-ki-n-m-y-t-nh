@@ -5,7 +5,6 @@ import Footer from '../../parts/Footer/Footer'
 import { useNavigate } from 'react-router-dom'
 import { Button, Form, Input, message } from 'antd'
 import { WrapperForm } from '../Register/style'
-import AuthUser from '../../services/AuthUser'
 import UserService from '../../services/UserService'
 
 const formItemLayout = {

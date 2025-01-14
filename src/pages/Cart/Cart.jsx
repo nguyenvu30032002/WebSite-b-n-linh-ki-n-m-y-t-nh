@@ -318,7 +318,7 @@ const Cart = () => {
                     }}
                     onApprove={async (data, actions) => {
                       try{
-                        const details = await actions.order.capture();
+                        // const details = await actions.order.capture();
                         if(!(user.phone)) {
                           message.error('Vui lòng thêm số điện thoại')
                         }
